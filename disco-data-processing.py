@@ -12,7 +12,7 @@
 # input/all raw books in here
 #      
 
-# In[51]:
+# In[145]:
 
 
 # importing required libraries:
@@ -21,13 +21,16 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
+from matplotlib import pyplot
 
 
-# In[52]:
+# In[2]:
 
 
 import os 
 import glob
+
+#PART 1 -------- Reading in Data and Visualizing the Results
 
 #assign local path to raw Excel books
 raw_book_path = os.path.abspath('input')
@@ -38,7 +41,7 @@ list_of_raw_books = glob.glob("input/*.xlsx")
 print('Raw books to be analyzed are: ', list_of_raw_books, '\n')
 
 
-# In[64]:
+# In[3]:
 
 
 #initialize a global list to hold all dataframes generated of Excel books analyzed in this script
@@ -243,19 +246,19 @@ for b in list_of_raw_books:
     #concatenate the global list of dataframes into one big beautiful clean dataframe!
     big_df = pd.concat(df_list)
 #     big_df.to_excel("big_df.xlsx")
-    print("Done - global list has been concatenated into one big beautiful dataframe, and exported to Excel!")
+    print("The current book has been concatenated into a dataframe!")
 
     #Before looping to the next book, append big_df containing the current book to the global list "clean_book_df_list"
     clean_book_df_list.append(big_df)
 
 #after looping through all books in the input folder, concatenate all book level dataframes into one collective dataframe, title strings will be unique
 collective_books_df = pd.concat(clean_book_df_list)
+print("Done - global list of books has been concatenated into one big beautiful dataframe!")
+# print("The collective dataframe for all books is")
+# collective_books_df
 
-print("The collective dataframe for all books is")
-collective_books_df
 
-
-# In[83]:
+# In[12]:
 
 
 #remove rows that contain only redundant experimental parameter titles, contained in each index 0 row:
@@ -265,7 +268,10 @@ collective_books_df_redundant = collective_books_df[collective_books_df.index ==
 #to make sure prospective redundant rows are actually redundant, check if there is only one unique intensity value in these suspect rows (i.e. suspect rows only contain the title value for intensity, indicating they are redundant)
 if collective_books_df_redundant.nunique().loc['intensity'] == 1:
     collective_books_df_clean = collective_books_df[collective_books_df.index != 0]
-    
+
+#remove duplicate rows
+collective_books_df_clean = collective_books_df_clean.drop_duplicates()
+
 #export collective book to excel output
 output_directory = "output"
 output_file_name = "output.xlsx"
@@ -281,9 +287,82 @@ print('Export complete! Navigate to output directory to see the clean Excel file
 collective_books_df_clean
 
 
-# In[ ]:
+# In[113]:
 
 
+# get % attenuation of peak integral, true and false irrad dataframes below are one to one, so can perform simple subtraction
+intensity_irrad_true = collective_books_df_clean.loc[(collective_books_df_clean['irrad_bool'] == 1.0), ['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time', 'ppm', 'intensity', 'range', 'normalized', 'absolute']]
+intensity_irrad_false = collective_books_df_clean.loc[(collective_books_df_clean['irrad_bool'] == 0.0), ['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time', 'ppm', 'intensity', 'range', 'normalized', 'absolute']]
+
+p_attenuation_intensity = intensity_irrad_false[['intensity']] - intensity_irrad_true[['intensity']]
+
+#Update irradiated dataframe to include the % attenuation of the irradiated samples and controls
+intensity_irrad_true['%_attenuation'] = p_attenuation_intensity
+
+#probably should add some kind of a check here that they are one to one but my manual tests worked...
+# irrad_true_match = intensity_irrad_true.loc[(intensity_irrad_true['sample_or_control']) & (intensity_irrad_true['replicate']) & (intensity_irrad_true['title_string']) & (intensity_irrad_true['concentration']) & (intensity_irrad_true['sat_time'])]
+# irrad_false_match = intensity_irrad_false.loc[(intensity_irrad_true['sample_or_control']) & (intensity_irrad_true['replicate']) & (intensity_irrad_true['title_string']) & (intensity_irrad_true['concentration']) & (intensity_irrad_true['sat_time'])]
+# if irrad_true_match == irrad_false_match:
+
+intensity_irrad_true
+
+
+# In[118]:
+
+
+#get corrected % attenuation:
+
+#subset dataframe where irrad is true for % attenuation where sample is true
+p_atten_intensity_sample = intensity_irrad_true.loc[(intensity_irrad_true['sample_or_control'] == 'sample')]['%_attenuation']
+#subset dataframe where irrad is true for % attenuation where control is true
+p_atten_intensity_control = intensity_irrad_true.loc[(intensity_irrad_true['sample_or_control'] == 'control')]['%_attenuation']
+#subset dataframe where irrad is false for intensity where sample is true
+intensity_irrad_false_sample = intensity_irrad_false.loc[(intensity_irrad_false['sample_or_control'] == 'sample')]['intensity']
+
+#Calculate Corrected % attentuation, as applies to: irrad_bool == 1.0, sample_or_control = sample 
+corr_p_attenuation = (1/intensity_irrad_false_sample)*(p_atten_intensity_sample - p_atten_intensity_control)
+
+#Subset original irrad true dataframe to include only sample_or_control = sample 
+subset_irrad_sample_df = intensity_irrad_true.loc[(intensity_irrad_true['sample_or_control'] == 'sample')]
+
+#Create a new dataframe to hold the corrected % attenuation for this subset
+corr_attentuation_sample_irrad_df = pd.DataFrame(subset_irrad_sample_df)
+corr_attentuation_sample_irrad_df['corr_%_attenuation'] = corr_p_attenuation
+corr_attentuation_sample_irrad_df
+
+
+# In[166]:
+
+
+#bonus, visualizations, concentration overlaid with attenuation and saturation time
+
+a4_dims = (11.7, 8.27)
+fig1, ax = pyplot.subplots(figsize = a4_dims)
+sns.stripplot(ax = ax, x = 'sat_time', y = 'corr_%_attenuation', data = corr_attentuation_sample_irrad_df, hue = 'concentration', palette = 'viridis')
+
+plt.title("Polymer KHABSM Sample Attenuation vs Saturation Time")
+plt.ylabel("Corrected Signal Intensity Attenuation (%)")
+plt.xlabel("NMR Pulse Saturation Time (s)")
+
+
+# In[167]:
+
+
+#bonus, visualizations, ppm overlaid with attenuation and saturation time
+
+a4_dims = (11.7, 8.27)
+fig2, ax2 = pyplot.subplots(figsize = a4_dims)
+sns.stripplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = corr_attentuation_sample_irrad_df, hue = 'ppm', palette = 'viridis')
+
+plt.title("Polymer KHABSM Sample Attenuation vs Saturation Time")
+plt.ylabel("Corrected Signal Intensity Attenuation  (%)")
+plt.xlabel("NMR Pulse Saturation Time (s)")
+
+
+# In[216]:
+
+
+#PART 2 -------- Modelling the Data - WIP
 
 
 
