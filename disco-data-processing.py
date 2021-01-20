@@ -12,7 +12,7 @@
 # - input/"raw_book_with_a_title_you_like.xlsx"
 #      
 
-# In[1820]:
+# In[2]:
 
 
 # importing required libraries:
@@ -28,7 +28,7 @@ import os
 import glob
 
 
-# In[1821]:
+# In[3]:
 
 
 #PART 1 -------- Reading in Data and Visualizing the Results
@@ -42,8 +42,10 @@ list_of_raw_books = glob.glob("input/*.xlsx")
 print('List of raw books to be analyzed are: ', list_of_raw_books, '\n')
 
 
-# In[1839]:
+# In[70]:
 
+
+# CELL FOR TESTING A BETTER WAY TO RUN THIS CODE
 
 #initialize a global list to hold all dataframes generated of Excel books analyzed in this script
 clean_book_df_list = []
@@ -140,106 +142,103 @@ for b in list_of_raw_books:
         #initialize/reset dfs, current is for CURRENT sub-tables being looped over, big_df is to concatenate all the sub-dfs in this book
         current_exp_df = []
         big_df = []
+        
+        #make a list of coordinate pair tuples for this sheet using list comprehension
+        sheet_coords_list = [(conc_indices[i], conc_columns[i]) for i in range(len(conc_indices))]
 
-        #within the current_sheet_raw, [i,j] will be the row and column indices of the concentration cell (top left cell) for each experimental sub-table
-        for i in conc_indices:
-            for j in conc_columns:
+        for coords in sheet_coords_list:
+        
+            #Determine the current 'sample_or_control' and 'replicate' values by taking the nth value (aka current sheet value) from the lists determined above
+            current_sample_or_control = sample_control_initializer[n]
+            current_replicate = total_replicate_index[n]
 
-                #Determine the current 'sample_or_control' and 'replicate' values by taking the nth value (aka current sheet value) from the lists determined above
-                current_sample_or_control = sample_control_initializer[n]
-                current_replicate = total_replicate_index[n]
-
-                #assign current values to the fixed experimental parameters for this experimental sub-table
-                fixed_parameters_per_set = current_sheet_raw.loc[i,j]
-#                 fixed_parameters_per_set = current_sheet_raw.loc[conc_indices, conc_columns]
+            #assign current values to the fixed experimental parameters for this experimental sub-table
+            fixed_parameters_per_set = current_sheet_raw.loc[coords[0], coords[1]]
     
-                #Hard coding the indices of the different parameters based on constant pattern 
-                current_title_string = fixed_parameters_per_set.index[0]
-                current_concentration = fixed_parameters_per_set[1]
-                current_sat_time = fixed_parameters_per_set[3]
-                current_irrad_bool = fixed_parameters_per_set[5]
+            #Hard coding the indices of the different parameters based on constant pattern 
+            current_title_string = fixed_parameters_per_set.index[0]
+            current_concentration = fixed_parameters_per_set[1]
+            current_sat_time = fixed_parameters_per_set[3]
+            current_irrad_bool = fixed_parameters_per_set[5]
 
-                #initialize/reset experimental lists to null for this experimental set
-                list_current_ppm_experimental = []
-                list_current_intensity_experimental = []
-                list_current_width_experimental = []
-                list_current_area_experimental = []
-                list_current_type_experimental = []
-                list_current_flags_experimental = []
-                list_current_impuritycomp_experimental = []
-                list_current_annotation_experimental = []
-                list_current_range_experimental = []
-                list_current_normalized_experimental = []
-                list_current_absolute_experimental = []
+            #initialize/reset experimental lists to null for this experimental set
+            list_current_ppm_experimental = []
+            list_current_intensity_experimental = []
+            list_current_width_experimental = []
+            list_current_area_experimental = []
+            list_current_type_experimental = []
+            list_current_flags_experimental = []
+            list_current_impuritycomp_experimental = []
+            list_current_annotation_experimental = []
+            list_current_range_experimental = []
+            list_current_normalized_experimental = []
+            list_current_absolute_experimental = []
 
-                #  now need to find and assign the sub-table's actual experimental data to the new lists 
+            #  now need to find and assign the sub-table's actual experimental data to the new lists 
                 
-                # Initializing the "boundaries" of the sub-table containing values of interest in a generalizable way below
-                experimental_index_starter = i+1
-#                 experimental_index_starter = conc_indices+1
-#                 print("Experimental Index Starter is:", experimental_index_starter)
+            # Initializing the "boundaries" of the sub-table containing values of interest in a generalizable way below
+            experimental_index_starter = coords[0]+1
+#             print("Experimental Index Starter is:", experimental_index_starter)
 
-                experimental_index_range = range(num_experimental_indices)
-#                 print("Experimental Index Range is:", experimental_index_range)
+            experimental_index_range = range(num_experimental_indices)
+#             print("Experimental Index Range is:", experimental_index_range)
 
-                experimental_column_range = range(num_experimental_cols)
-#                 print("Experimental Column Range is:", experimental_index_range)
+            experimental_column_range = range(num_experimental_cols)
+#             print("Experimental Column Range is:", experimental_column_range)
 
-                combined_experimental_index_range = experimental_index_starter + experimental_index_range
-#                 print("Combined Experimental Index Range is:", combined_experimental_index_range)
+            combined_experimental_index_range = experimental_index_starter + experimental_index_range
+#             print("Combined Experimental Index Range Type is:", type(combined_experimental_index_range))
 
-                #Obtain experimental column range using boolean mask as column labels are title_strings for each experimental set
-                experimental_column_range_mask = current_sheet_raw.columns.get_loc(j)
-
-#                 experimental_column_range_mask = current_sheet_raw.columns.get_loc(conc_columns)
+            #Obtain experimental column range using boolean mask as column labels are title_strings for each experimental set
+            experimental_column_range_mask = current_sheet_raw.columns.get_loc(coords[1])
     
-                combined_experimental_column_range = np.where(experimental_column_range_mask)
-#                 print("Combined Experimental Column Range is:", combined_experimental_column_range)
+            combined_experimental_column_range = np.where(experimental_column_range_mask)
+#             print("Combined Experimental Column Range Type is:", type(combined_experimental_column_range))
+            
+            #loop through and collect experimental index and experimental column range for the ith and jth experimental sub-table
+            for ei in combined_experimental_index_range:
+                for ec in combined_experimental_column_range:
+                    
+#                 use iloc to grab NMR experimental variables for this set into a series
+                    variable_parameters_per_set = current_sheet_raw.iloc[ei, ec]
+#                     print(variable_parameters_per_set)
 
-                #loop through and collect experimental index and experimental column range for the ith and jth experimental sub-table
-                for ei in combined_experimental_index_range:
-                    for ec in combined_experimental_column_range:
-
-        #               use iloc to grab NMR experimental variables for this set into a series
-                        variable_parameters_per_set = current_sheet_raw.iloc[ei, ec]
-#                         print(variable_parameters_per_set)
-
-        #               append designated variable parameters from the generated Series' into lists for those parameters for this experimental set
-        #               hard coded based on known order of columns
-                        list_current_ppm_experimental.append(variable_parameters_per_set.iloc[1])
-                        list_current_intensity_experimental.append(variable_parameters_per_set.iloc[2])
-                        list_current_width_experimental.append(variable_parameters_per_set.iloc[3])
-                        list_current_area_experimental.append(variable_parameters_per_set.iloc[4])
-                        list_current_type_experimental.append(variable_parameters_per_set.iloc[5])
-                        list_current_flags_experimental.append(variable_parameters_per_set.iloc[6])
-                        list_current_impuritycomp_experimental.append(variable_parameters_per_set.iloc[7])
-                        list_current_annotation_experimental.append(variable_parameters_per_set.iloc[8])
-                        list_current_range_experimental.append(variable_parameters_per_set.iloc[11])
-                        list_current_normalized_experimental.append(variable_parameters_per_set.iloc[12])
-                        list_current_absolute_experimental.append(variable_parameters_per_set.iloc[13])
+#             append designated variable parameters from the generated Series' into lists for those parameters for this experimental set
+        #     hard coded based on known order of columns
+                    list_current_ppm_experimental.append(variable_parameters_per_set.iloc[1])
+                    list_current_intensity_experimental.append(variable_parameters_per_set.iloc[2])
+                    list_current_width_experimental.append(variable_parameters_per_set.iloc[3])
+                    list_current_area_experimental.append(variable_parameters_per_set.iloc[4])
+                    list_current_type_experimental.append(variable_parameters_per_set.iloc[5])
+                    list_current_flags_experimental.append(variable_parameters_per_set.iloc[6])
+                    list_current_impuritycomp_experimental.append(variable_parameters_per_set.iloc[7])
+                    list_current_annotation_experimental.append(variable_parameters_per_set.iloc[8])
+                    list_current_range_experimental.append(variable_parameters_per_set.iloc[11])
+                    list_current_normalized_experimental.append(variable_parameters_per_set.iloc[12])
+                    list_current_absolute_experimental.append(variable_parameters_per_set.iloc[13])
                     
 
-                #after all the experimental lists are populated, define length of the experimental parameter lists (number of true experimental rows)
-                exp_list_length = len(list_current_ppm_experimental)
+            #after all the experimental lists are populated, define length of the experimental parameter lists (number of true experimental rows)
+            exp_list_length = len(list_current_ppm_experimental)
 #                 print('Experimental List Length is:', exp_list_length)
 
-                #create "ranged" lists of the constant experimental values to make them the same length as the unique variable experimental values, so we can add information "per observation" to the dataframe
-                ranged_sample_or_control = exp_list_length * [current_sample_or_control]
+            #create "ranged" lists of the constant experimental values to make them the same length as the unique variable experimental values, so we can add information "per observation" to the dataframe
+            ranged_sample_or_control = exp_list_length * [current_sample_or_control]
 #                 print(len(ranged_sample_or_control))
-                ranged_replicate = exp_list_length * [current_replicate]
+            ranged_replicate = exp_list_length * [current_replicate]
 #                 print(len(ranged_replicate))
-                ranged_title_string = exp_list_length * [current_title_string]
+            ranged_title_string = exp_list_length * [current_title_string]
 #                 print(len(ranged_title_string))
-                ranged_concentration = exp_list_length * [current_concentration] 
+            ranged_concentration = exp_list_length * [current_concentration] 
 #                 print(len(ranged_concentration))
-                ranged_sat_time = exp_list_length * [current_sat_time]
+            ranged_sat_time = exp_list_length * [current_sat_time]
 #                 print(len(ranged_sat_time))
-                ranged_irrad_bool = exp_list_length * [current_irrad_bool]
+            ranged_irrad_bool = exp_list_length * [current_irrad_bool]
 #                 print(len(ranged_irrad_bool))
                 
 
-                #assign all current experimental values for this experimental set to a dataframe via a dictionary
-                current_dict = {"sample_or_control":ranged_sample_or_control,
+            #assign all current experimental values for this experimental set to a dataframe via a dictionary
+            current_dict = {"sample_or_control":ranged_sample_or_control,
                                 "replicate":ranged_replicate,
                                 "title_string":ranged_title_string, 
                                 "concentration":ranged_concentration,
@@ -257,12 +256,12 @@ for b in list_of_raw_books:
                                 "normalized":list_current_normalized_experimental, 
                                 "absolute":list_current_absolute_experimental}
             
-                current_exp_df = pd.DataFrame(current_dict)
+            current_exp_df = pd.DataFrame(current_dict)
     
-                #before moving on to next experimental set, append the dataframe from this experimental set to a book-level list of dataframes
-                df_list.append(current_exp_df)
+            #before moving on to next experimental set, append the dataframe from this experimental set to a book-level list of dataframes
+            df_list.append(current_exp_df)
 
-            print("Data frame for the experimental set at coordinates:", i, j, "has been appended to the global list of dataframes.")
+        print("Data frame for the experimental set at coordinates:", coords, "has been appended to the global list of dataframes.")
 #     print("Data frame for the experimental set at coordinates:", conc_indices, conc_columns, "has been appended to the global list of dataframes.") 
     
     #after looping through all sheets in the book, and after appending all experimental dataframes from each sheet to a list...
@@ -279,7 +278,13 @@ collective_books_df = pd.concat(clean_book_df_list)
 print("Done - the information from this book has been concatenated into one big beautiful dataframe! Book: ", current_book_title)
 
 
-# In[1840]:
+# In[71]:
+
+
+collective_books_df
+
+
+# In[73]:
 
 
 # UNCOMMENT THIS SECTION TO EXPORT THE RAW OUTPUT OF THE DATA COLLECTION CODE TO EXCEL AND VIEW IT BELOW ---------------------------
@@ -301,7 +306,7 @@ print("Done - the information from this book has been concatenated into one big 
 # ---------------------------------------------------------------------------------
 
 
-# In[1972]:
+# In[74]:
 
 
 #drop the file extension from current book title for easier file naming in the rest of the code
@@ -309,12 +314,12 @@ sep = '.'
 current_book_title = current_book_title.split(sep, 1)[0]
 
 
-# In[1973]:
+# In[75]:
 
 
-#THIS CODE CLEANS THE RAW BOOK-LEVEL DATAFRAME EXPORTED FROM THE RATHER INEFFICIENT DATA PROCESSING CODE -----------------
+#THIS CODE CLEANS THE RAW BOOK-LEVEL DATAFRAME EXPORTED FROM THE DATA PROCESSING CODE -----------------
 
-#Need to remove redundant rows (generated by the rather inefficient data processing loops above)
+#Need to remove redundant rows (generated by the data processing loops above)
 
 #assign prosepctive redundant title rows at index zero to a variable
 collective_books_df_redundant = collective_books_df[collective_books_df.index == 0]
@@ -345,7 +350,7 @@ print('Export complete! Navigate to output directory to see the clean Excel file
 collective_books_df_clean
 
 
-# In[1974]:
+# In[76]:
 
 
 def attenuation_calc_equality_checker(compare_df_1, compare_df_2):
@@ -389,7 +394,7 @@ def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, comp
         return print("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
 
-# In[1975]:
+# In[77]:
 
 
 # get % attenuation of peak integral, true and false irrad dataframes below are one to one, so can perform simple subtraction
@@ -411,7 +416,7 @@ else:
 intensity_irrad_true
 
 
-# In[1976]:
+# In[78]:
 
 
 #calculate the corrected % attenuation:
@@ -427,7 +432,7 @@ intensity_irrad_false_sample = intensity_irrad_false.loc[(intensity_irrad_false[
 corr_atten_equality_check = corrected_attenuation_calc_equality_checker(p_atten_intensity_sample, p_atten_intensity_control, intensity_irrad_false_sample)
 
 
-# In[1977]:
+# In[79]:
 
 
 if corr_atten_equality_check == True:
@@ -453,14 +458,14 @@ else:
     print("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
 
 
-# In[1978]:
+# In[80]:
 
 
 #view the cleaned dataframe with corr_p_attenuation values used for Data Visualization below
 corr_p_attenuation_df
 
 
-# In[1979]:
+# In[81]:
 
 
 #Exploratory Data Analysis visualizations. 
@@ -475,7 +480,7 @@ plt.ylabel("Corrected Signal Intensity Attenuation (%)")
 plt.xlabel("NMR Pulse Saturation Time (s)")
 
 
-# In[1980]:
+# In[82]:
 
 
 #bonus ---- visualizations, ppm overlaid with attenuation and saturation time
@@ -493,7 +498,7 @@ plt.xlabel("NMR Pulse Saturation Time (s)")
 ax2.legend() 
 
 
-# In[1981]:
+# In[83]:
 
 
 ##UNCOMMENT IF WANT TO SANITY CHECK WITH JEFF'S CODE USING FIGURES FROM THE PAA DATASET --------------------------------------------
@@ -512,7 +517,7 @@ ax2.legend()
 # plt.ylim(-0.025, 0.03)
 
 
-# In[1982]:
+# In[84]:
 
 
 ##UNCOMMENT IF WANT TO SANITY CHECK WITH JEFF'S CODE USING FIGURES FROM THE PAA DATASET --------------------------------------------
@@ -531,7 +536,7 @@ ax2.legend()
 # plt.ylim(-0.025, 0.03)
 
 
-# In[1983]:
+# In[85]:
 
 
 ## UNCOMMENT IF WANT TO SANITY CHECK WITH JEFF'S CODE USING FIGURES FROM THE PAA DATASET --------------------------------------------
@@ -550,7 +555,7 @@ ax2.legend()
 # plt.ylim(-0.025, 0.03)
 
 
-# In[1984]:
+# In[86]:
 
 
 ## UNCOMMENT IF WANT TO SANITY CHECK WITH JEFF'S CODE USING FIGURES FROM THE PAA DATASET --------------------------------------------
@@ -569,7 +574,7 @@ ax2.legend()
 # plt.ylim(-0.025, 0.03)
 
 
-# In[1985]:
+# In[87]:
 
 
 ## UNCOMMENT IF WANT TO SANITY CHECK WITH JEFF'S CODE USING FIGURES FROM THE PAA DATASET --------------------------------------------
@@ -588,7 +593,7 @@ ax2.legend()
 # plt.ylim(-0.025, 0.03)
 
 
-# In[1986]:
+# In[88]:
 
 
 ## UNCOMMENT IF WANT TO SANITY CHECK WITH JEFF'S CODE USING FIGURES FROM THE PAA DATASET --------------------------------------------
@@ -612,7 +617,7 @@ ax2.legend()
 # 
 # <p>Please ensure Part 1 has been run, and the data makes sense, before entering part 2.</p>
 
-# In[1987]:
+# In[89]:
 
 
 #PART 2 -------- Modelling the Data ---------------------------------------
@@ -620,7 +625,7 @@ ax2.legend()
 corr_p_attenuation_df
 
 
-# In[1988]:
+# In[90]:
 
 
 # now drop the rows that are entirely null from the dataframe shown above
@@ -633,7 +638,7 @@ corr_p_attenuation_df
 # corr_p_attenuation_df.info()
 
 
-# In[1989]:
+# In[91]:
 
 
 # MORE SANITY CHECKING CODE ------------------------------------------------------------------------
@@ -660,7 +665,7 @@ corr_p_attenuation_df
 # ------------------------------------------------------------------------------------------------------
 
 
-# In[1990]:
+# In[92]:
 
 
 # now drop the column fields not required for stats modelling and further analysis
@@ -682,7 +687,7 @@ mean_corr_attenuation_ppm = regrouped_df.groupby(by = ['concentration', 'sat_tim
 mean_corr_attenuation_ppm
 
 
-# In[1991]:
+# In[93]:
 
 
 def get_dofs(peak_indices_array):
@@ -723,7 +728,7 @@ def get_dofs(peak_indices_array):
     
 
 
-# In[1992]:
+# In[94]:
 
 
 #some old code: if reset_index() is uncommented above this works ----------------------------
@@ -742,7 +747,7 @@ mean_corr_attenuation_ppm['sample_size'] = np.asarray(dofs) + 1
 mean_corr_attenuation_ppm
 
 
-# In[1993]:
+# In[95]:
 
 
 #now, we have all the required information in one table to test for statistical significance, via a one sample t-test against population distribution.
@@ -788,7 +793,7 @@ mean_corr_attenuation_ppm['significance'] = mean_corr_attenuation_ppm['t_results
 mean_corr_attenuation_ppm
 
 
-# In[1994]:
+# In[96]:
 
 
 #For each concentration, compute the amplification factor AFconc = Cj/10. 
@@ -805,14 +810,14 @@ data_for_stats['amp_factor'] = np.array(data_for_stats[['concentration']])/amp_f
 mean_corr_attenuation_ppm
 
 
-# In[1995]:
+# In[97]:
 
 
 #Display the per-replicate data table (the table before grouping for statisitcal analysis) with the amp_factor added:
 data_for_stats
 
 
-# In[1996]:
+# In[98]:
 
 
 #identify non-statistically significant peaks to be removed from comparison for both mean and per replicate dataframes, and drop them from the dataframes
@@ -860,7 +865,7 @@ dropped_points_file.write("The datapoints dropped from consideration due to not 
 dropped_points_file.close()
 
 
-# In[1997]:
+# In[99]:
 
 
 #Remove the corresponding points from the per-replicate data that failed the acceptance criterion  ------------------------------------------------
@@ -881,21 +886,21 @@ stats_df_replicates = data_for_stats.reset_index()
 stats_df_mean = significant_corr_attenuation
 
 
-# In[1998]:
+# In[100]:
 
 
 #View the Mean Stats Dataframe after points dropped, before curve fitting
 stats_df_mean
 
 
-# In[1999]:
+# In[101]:
 
 
 #View the Per Replicate Stats DataFrame after points dropped, before curve fitting
 stats_df_replicates
 
 
-# In[2000]:
+# In[102]:
 
 
 '''
@@ -922,7 +927,7 @@ stats_df_mean['yikj_bar'] = (stats_df_mean['corr_%_attenuation']['mean'])*(stats
 # stats_df_mean_curvefit_subset = stats_df_mean.loc[stats_df_mean['significance'] == True]
 
 
-# In[2001]:
+# In[105]:
 
 
 #Define Function to be Curve Fit 
@@ -939,7 +944,7 @@ def y_hat_fit(t, a, b):
     return a * (1 - np.exp(t * -b))
 
 
-# In[2003]:
+# In[106]:
 
 
 #Assign unique protons to a list to use for subsetting the df via the shortcut multi-index index slicing method
@@ -1025,7 +1030,7 @@ for c in unique_concentrations:
         ax1.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c,ppm_bar))
         ax1.set_xlabel('NMR Saturation Time (s)')
         ax1.set_ylabel('I/Io')
-        fig.tight_layout()
+        fig1.tight_layout()
 
         # export to file
         fig1.savefig(output_file_name_figsmean, dpi=300)
@@ -1086,7 +1091,7 @@ for c in unique_concentrations:
 print('Export of all figures to file complete!')            
 
 
-# In[2004]:
+# In[107]:
 
 
 #export final replicates table to an excel output
@@ -1105,7 +1110,7 @@ output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_book_titl
 stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
 
 
-# In[1780]:
+# In[108]:
 
 
 # The code below can be uncommented for easily "sanity checking" the subset data appended to the mean and replicate dataframes. -----------
