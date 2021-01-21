@@ -290,7 +290,7 @@ def convert_excel_to_dataframe(b):
     
     # merge current_book_title and clean_df into a tuple, as "key value pairs" that can be generically indexed
     clean_tuple = (current_book_title, clean_df)
-    print('Function has returned a tuple containing the title of the current book, and the cleaned dataframe for {}.\n', current_book_title)
+    print('Function has returned a tuple containing the title of the current book, and the cleaned dataframe for {}.\n'.format(current_book_title))
     
     return clean_tuple
 
