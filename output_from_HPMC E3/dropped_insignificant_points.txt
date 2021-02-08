@@ -1,0 +1,16 @@
+The datapoints dropped from consideration due to not meeting the criteria for significance are: 
+[MultiIndex([(9, 0.25, 2, 4.00005),
+            (9,  0.5, 2, 4.00005),
+            (9, 0.75, 2, 4.00005),
+            (9,  1.0, 2, 4.00005),
+            (9, 1.25, 2, 4.00005),
+            (9,  1.5, 2, 4.00005),
+            (9, 1.75, 2, 4.00005)],
+           names=['concentration', 'sat_time', 'proton_peak_index', 'ppm']), MultiIndex([(9, 0.25, 3, 3.8044000000000002),
+            (9,  0.5, 3, 3.8044000000000002),
+            (9, 0.75, 3, 3.8044000000000002),
+            (9,  1.0, 3, 3.8044000000000002),
+            (9, 1.25, 3, 3.8044000000000002),
+            (9,  1.5, 3, 3.8044000000000002),
+            (9, 1.75, 3, 3.8044000000000002)],
+           names=['concentration', 'sat_time', 'proton_peak_index', 'ppm'])]
