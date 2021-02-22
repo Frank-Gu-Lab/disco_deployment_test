@@ -20,7 +20,7 @@
 # <p>Use the exploratory data visualizations from part 1 to see if you're on the right track, and to give context to the statistical analysis.</p>
 # 
 
-# In[337]:
+# In[1]:
 
 
 # importing required libraries:
@@ -41,7 +41,7 @@ idx = pd.IndexSlice
 
 # Make sure to run all of the function definition cells below first if you are in Jupyter Notebook.
 
-# In[338]:
+# In[2]:
 
 
 def convert_excel_to_dataframe(b):
@@ -299,7 +299,7 @@ def convert_excel_to_dataframe(b):
     return clean_tuple
 
 
-# In[339]:
+# In[3]:
 
 
 def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book = 'book'):
@@ -393,7 +393,7 @@ def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, comp
         raise ValueError("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
 
-# In[340]:
+# In[4]:
 
 
 def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_book = 'book'):
@@ -477,7 +477,7 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         
 
 
-# In[341]:
+# In[5]:
 
 
 def generate_concentration_plot(current_df_attenuation):
@@ -510,7 +510,7 @@ def generate_concentration_plot(current_df_attenuation):
     return
 
 
-# In[342]:
+# In[6]:
 
 
 def generate_ppm_plot(current_df_attenuation):
@@ -546,7 +546,7 @@ def generate_ppm_plot(current_df_attenuation):
     return
 
 
-# In[343]:
+# In[7]:
 
 
 def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
@@ -654,7 +654,7 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     return mean_corr_attenuation_ppm 
 
 
-# In[344]:
+# In[8]:
 
 
 def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
@@ -691,7 +691,7 @@ def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book')
     return replicate_df_for_stats
 
 
-# In[345]:
+# In[9]:
 
 
 def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
@@ -743,7 +743,7 @@ def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
     return mean_corr_attenuation_ppm
 
 
-# In[346]:
+# In[10]:
 
 
 def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_df, af_denominator):
@@ -774,7 +774,7 @@ def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_
     return current_mean_stats_df, current_replicate_stats_df
 
 
-# In[347]:
+# In[11]:
 
 
 def drop_bad_peaks(current_df_mean, current_df_replicates, batch_or_book = 'book'):
@@ -908,7 +908,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, batch_or_book = 'book
         return current_df_mean_passed, current_df_replicates_passed
 
 
-# In[348]:
+# In[12]:
 
 
 def y_hat_fit(t, a, b):
@@ -924,7 +924,7 @@ def y_hat_fit(t, a, b):
     return a * (1 - np.exp(t * -b))
 
 
-# In[349]:
+# In[13]:
 
 
 def execute_curvefit(stats_df_mean, stats_df_replicates, batch_or_book = 'book'):
@@ -1226,14 +1226,14 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, batch_or_book = 'book')
         output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title) 
 
         #export replicates final results table to a summary file in Excel
-        display(stats_df_replicates)
+#         display(stats_df_replicates)
         stats_df_replicates.to_excel(os.path.join(output_directory3, output_file_name))
         
         #if there are replicates, and mean data was created, export the final mean data to excel as well
         if current_df_mean.shape[0] != 0:
 
             #export mean final results table to a summary file in Excel
-            display(stats_df_mean)
+#             display(stats_df_mean)
             output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
             stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
         
@@ -1241,7 +1241,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, batch_or_book = 'book')
         return stats_df_mean, stats_df_replicates      
 
 
-# In[350]:
+# In[14]:
 
 
 def initialize_excel_batch_replicates(b):
@@ -1313,7 +1313,7 @@ def initialize_excel_batch_replicates(b):
     return unique_polymers, unique_polymer_replicates, all_sheets_complete_removed    
 
 
-# In[351]:
+# In[15]:
 
 
 # define a function for batch processing books into the clean_df format
@@ -1499,7 +1499,7 @@ def convert_excel_batch_to_dataframe(b):
     return list_of_clean_dfs
 
 
-# In[352]:
+# In[16]:
 
 
 def clean_the_batch_tuple_list(list_of_clean_dfs):
@@ -1565,7 +1565,7 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
 
 # <h1> The main code starts here! </h1>
 
-# In[353]:
+# In[17]:
 
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
@@ -1600,7 +1600,7 @@ for book in list_of_raw_books:
         clean_book_tuple_list.append(convert_excel_to_dataframe(book))
 
 
-# In[354]:
+# In[18]:
 
 
 # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
@@ -1616,7 +1616,7 @@ clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_ba
 # clean_batch_tuple_list[4][1]
 
 
-# In[355]:
+# In[19]:
 
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE POLYMER BOOK LIST GENERATED ABOVE, IF ANY ----------------------------------
@@ -1682,7 +1682,7 @@ if len(clean_book_tuple_list) != 0:
         current_df_replicates = prep_replicate_data_for_stats(current_df_attenuation)
 
         # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
-        current_df_mean = get_t_test_results(current_df_mean, p=0.90)
+        current_df_mean = get_t_test_results(current_df_mean, p=0.95)
 
         # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
         current_df_mean, current_df_replicates = compute_amplification_factor(current_df_mean, current_df_replicates, af_denominator = 10)
@@ -1697,7 +1697,7 @@ if len(clean_book_tuple_list) != 0:
     print("Hooray! All polymers in the input files have been processed.")
 
 
-# In[356]:
+# In[20]:
 
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
@@ -1762,7 +1762,7 @@ if len(clean_batch_tuple_list) != 0:
         current_df_replicates = prep_replicate_data_for_stats(current_df_attenuation, 'batch')
 
         # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
-        current_df_mean = get_t_test_results(current_df_mean, p=0.90)
+        current_df_mean = get_t_test_results(current_df_mean, p=0.95)
 
         # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
         # note: if AF denominators are different for each polymer, should make a list of all values for all polymers, then pass list[i] to af_denominator here
@@ -1778,7 +1778,7 @@ if len(clean_batch_tuple_list) != 0:
     print("Hooray! All polymers in the input files have been processed.")
 
 
-# In[362]:
+# In[21]:
 
 
 # The below code below can be uncommented for easily "sanity checking" the data. -----------
