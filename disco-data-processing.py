@@ -20,7 +20,7 @@
 # <p>Use the exploratory data visualizations from part 1 to see if you're on the right track, and to give context to the statistical analysis.</p>
 # 
 
-# In[1]:
+# In[43]:
 
 
 # importing required libraries:
@@ -41,7 +41,7 @@ idx = pd.IndexSlice
 
 # Make sure to run all of the function definition cells below first if you are in Jupyter Notebook.
 
-# In[2]:
+# In[44]:
 
 
 def convert_excel_to_dataframe(b):
@@ -299,7 +299,7 @@ def convert_excel_to_dataframe(b):
     return clean_tuple
 
 
-# In[3]:
+# In[45]:
 
 
 def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book = 'book'):
@@ -393,7 +393,7 @@ def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, comp
         raise ValueError("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
 
-# In[4]:
+# In[46]:
 
 
 def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_book = 'book'):
@@ -477,7 +477,7 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         
 
 
-# In[5]:
+# In[47]:
 
 
 def generate_concentration_plot(current_df_attenuation):
@@ -510,7 +510,7 @@ def generate_concentration_plot(current_df_attenuation):
     return
 
 
-# In[6]:
+# In[48]:
 
 
 def generate_ppm_plot(current_df_attenuation):
@@ -546,7 +546,7 @@ def generate_ppm_plot(current_df_attenuation):
     return
 
 
-# In[7]:
+# In[49]:
 
 
 def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
@@ -654,7 +654,7 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     return mean_corr_attenuation_ppm 
 
 
-# In[8]:
+# In[50]:
 
 
 def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
@@ -691,7 +691,7 @@ def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book')
     return replicate_df_for_stats
 
 
-# In[9]:
+# In[51]:
 
 
 def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
@@ -743,7 +743,7 @@ def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
     return mean_corr_attenuation_ppm
 
 
-# In[10]:
+# In[52]:
 
 
 def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_df, af_denominator):
@@ -769,12 +769,12 @@ def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_
 
     # Calculate the amplification factor for the data_for_stats ungrouped table as well (i.e. per replicate data table)
     current_replicate_stats_df['amp_factor'] = np.array(current_replicate_stats_df[['concentration']])/amp_factor_denominator
-
+    
     # return the mean data table with the amp_factor added
     return current_mean_stats_df, current_replicate_stats_df
 
 
-# In[11]:
+# In[53]:
 
 
 def drop_bad_peaks(current_df_mean, current_df_replicates, batch_or_book = 'book'):
@@ -908,7 +908,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, batch_or_book = 'book
         return current_df_mean_passed, current_df_replicates_passed
 
 
-# In[12]:
+# In[54]:
 
 
 def y_hat_fit(t, a, b):
@@ -924,7 +924,7 @@ def y_hat_fit(t, a, b):
     return a * (1 - np.exp(t * -b))
 
 
-# In[13]:
+# In[55]:
 
 
 def execute_curvefit(stats_df_mean, stats_df_replicates, batch_or_book = 'book'):
@@ -1241,7 +1241,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, batch_or_book = 'book')
         return stats_df_mean, stats_df_replicates      
 
 
-# In[14]:
+# In[56]:
 
 
 def initialize_excel_batch_replicates(b):
@@ -1313,7 +1313,7 @@ def initialize_excel_batch_replicates(b):
     return unique_polymers, unique_polymer_replicates, all_sheets_complete_removed    
 
 
-# In[15]:
+# In[57]:
 
 
 # define a function for batch processing books into the clean_df format
@@ -1499,7 +1499,7 @@ def convert_excel_batch_to_dataframe(b):
     return list_of_clean_dfs
 
 
-# In[16]:
+# In[58]:
 
 
 def clean_the_batch_tuple_list(list_of_clean_dfs):
@@ -1565,7 +1565,7 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
 
 # <h1> The main code starts here! </h1>
 
-# In[17]:
+# In[59]:
 
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
@@ -1600,7 +1600,7 @@ for book in list_of_raw_books:
         clean_book_tuple_list.append(convert_excel_to_dataframe(book))
 
 
-# In[18]:
+# In[60]:
 
 
 # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
@@ -1616,7 +1616,7 @@ clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_ba
 # clean_batch_tuple_list[4][1]
 
 
-# In[19]:
+# In[61]:
 
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE POLYMER BOOK LIST GENERATED ABOVE, IF ANY ----------------------------------
@@ -1686,7 +1686,13 @@ if len(clean_book_tuple_list) != 0:
 
         # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
         current_df_mean, current_df_replicates = compute_amplification_factor(current_df_mean, current_df_replicates, af_denominator = 10)
-
+        
+        # export current dataframes to excel with no observations dropped, for future reference in ML -----
+        output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
+        current_df_replicates.to_excel(os.path.join(output_directory3, output_file_name)) 
+        output_file_name = "stats_analysis_output_mean_all_{}.xlsx".format(current_df_title) # mean
+        current_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
+        
         # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates)
 
@@ -1697,7 +1703,7 @@ if len(clean_book_tuple_list) != 0:
     print("Hooray! All polymers in the input files have been processed.")
 
 
-# In[20]:
+# In[62]:
 
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
@@ -1767,7 +1773,13 @@ if len(clean_batch_tuple_list) != 0:
         # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
         # note: if AF denominators are different for each polymer, should make a list of all values for all polymers, then pass list[i] to af_denominator here
         current_df_mean, current_df_replicates = compute_amplification_factor(current_df_mean, current_df_replicates, af_denominator = 10)
-
+        
+        # export current dataframes to excel with no observations dropped, for future reference in ML -----
+        output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
+        current_df_replicates.to_excel(os.path.join(output_directory3, output_file_name)) 
+        output_file_name = "stats_analysis_output_mean_all_{}.xlsx".format(current_df_title) # mean
+        current_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
+        
         # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, batch_or_book = 'batch')
 
@@ -1778,7 +1790,7 @@ if len(clean_batch_tuple_list) != 0:
     print("Hooray! All polymers in the input files have been processed.")
 
 
-# In[21]:
+# In[63]:
 
 
 # The below code below can be uncommented for easily "sanity checking" the data. -----------
