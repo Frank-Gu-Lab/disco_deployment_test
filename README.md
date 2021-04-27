@@ -8,5 +8,4 @@ For instructions on setting up the code for execution, please see the Jupyter No
 
 <a>![](https://media.tenor.com/images/dedb6f501250b912f125112d6a04a26e/tenor.gif)</a>
 
-<b>See the Pseudocode for the Repository:</b>
-https://utoronto.sharepoint.com/:b:/r/sites/fase-che-fgl-nano/DISCOML/Shared%20Documents/Filesharing/disco-data-processing-pseudocode.pdf?csf=1&web=1&e=Ye55Bj
+<b>[Read the Pseudocode for the Repository](https://utoronto.sharepoint.com/:b:/r/sites/fase-che-fgl-nano/DISCOML/Shared%20Documents/Filesharing/disco-data-processing-pseudocode.pdf?csf=1&web=1&e=Ye55Bj)</b>
