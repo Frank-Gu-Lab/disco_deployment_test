@@ -8,9 +8,10 @@ This code transforms outputs from individual DISCO NMR experiments in MaestraNov
 If you have a feature you would like to request, or have observed a bug in the code, please submit your comments through an "Issue" under the Issues tab.  
 
 <h3> <b> Data Process Description </b> </h3>
+
 - Part 1 : Reading and Cleaning Data      (reads and prepares data for statistical analysis)
 - Part 2 : Statistical Analysis           (classifies true positive binding proton observations, generates AFo plots, writes outputs to file)
-- Part 3 : Generate DataFrame + Export to Excel     (merges true positive and true negative observations classified from Part 2 into ML-ready dataset) 
+- Part 3 : Generate DataFrame + Export to Excel     (merges true positive and true negative observations classified from Part 2 into ML-ready dataset)
 
 <b>[Read the Pseudocode + Stats Description for Part 1 and Part 2 Here](https://utoronto.sharepoint.com/:b:/r/sites/fase-che-fgl-nano/DISCOML/Shared%20Documents/Filesharing/disco-data-processing-pseudocode.pdf?csf=1&web=1&e=Ye55Bj)</b>
 
