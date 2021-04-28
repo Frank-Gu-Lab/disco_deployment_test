@@ -14,7 +14,7 @@ idx = pd.IndexSlice
 
 # functions are ordered below in the order they are called in the disco-data-processing script
 
-def convert_excel_to_dataframe(b):
+def convert_excel_to_dataframe(b, global_output_directory):
     '''
     This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
     organized Pandas DataFrames for further processing.
@@ -249,8 +249,8 @@ def convert_excel_to_dataframe(b):
     clean_df = clean_df.drop_duplicates()
 
     # export the cleaned dataframe of the book to excel in a custom output folder
-    output_directory = "output_from_{}".format(current_book_title)
-    output_file_name = "{}_clean_raw_dataframe.xlsx".format(current_book_title)
+    output_directory = "{}/{}".format(global_output_directory, current_book_title)
+    output_file_name = "{}_clean_raw_df.xlsx".format(current_book_title)
 
     # make directory if there isn't already one for output 
     if not os.path.exists(output_directory):

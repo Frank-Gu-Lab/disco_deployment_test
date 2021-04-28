@@ -3,18 +3,18 @@
 
 # Disco Data Processing Script
 # Prior to running the script, please ensure you have inserted all the books you would like to be analyzed inside the input directory. The code will create custom output folders based on the name of the input books, so nothing overwrites. This code supports polymer data from the NMR analysis in "Book Format" (See PAA.xlsx for example) and "Batch Format" (See Batch 1, Batch 2 files for an example of what this looks like). 
-# 
+
 # For Batch Format inputs, please ensure unique observations intended to be analyzed together follow the same naming format. For example, if there are 4 total CMC results, 3 from one day to be analyzed together, and 1 from a separate occasion, the sheet tabs should be named according to one format: CMC (1), CMC (2), CMC (3) {These 3 will be analyzed together. The 4th CMC tab should be named something different, such as CMC_other, and will be treated separately.
-#     
+    
 # Your Input Folder Should Look Like:    
 # - disco-data-processing.py
 # - data_wrangling_functions.py
 # - input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
-# 
-# Then simply run on this .py script. 
+
+# Then simply run this .py script. 
 # Part 1 : Reading and Cleaning Data  - prepare the data for statistical analysis
 # Part 2 : Statistical Analysis - classify true positive binding proton observations, generate AFo plots
-# (TO DO) Part 3 : Merge true positive and true Negative Observations into clean dataset for future machine learning
+# Part 3 : Merge true positive and true negative observations into clean dataset for future machine learning
 
 # importing required libraries:
 import pandas as pd
@@ -30,8 +30,9 @@ import glob
 # define handy shortcut for indexing a multi-index dataframe
 idx = pd.IndexSlice
 
-# import all data wrangling functions
+# import all data wrangling functions for Pt. 1 & 2, and data merge function for Pt. 3
 from data_wrangling_functions import *
+from data_merging import merge
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
 
@@ -42,6 +43,12 @@ print('Searching in directory:', raw_book_path, '\n')
 #list all raw books in file
 list_of_raw_books = glob.glob("input/*.xlsx")
 print('List of raw books to be analyzed are: ', list_of_raw_books, '\n')
+
+# makes a global ouput directory if there isn't already one
+global_output_directory = "output"
+
+if not os.path.exists(global_output_directory):
+    os.makedirs(global_output_directory)
 
 # PERFORM DATA WRANGLING - CONVERT ALL EXCEL BOOKS IN INPUT FOLDER TO DATAFRAMES ---------------------
 
@@ -62,7 +69,7 @@ for book in list_of_raw_books:
     # indicates book is ok to be handled via the individual data cleaning function before appending to the clean data list    
     else: 
         print("Book contains individual polymer, entering individual processing function.")
-        clean_book_tuple_list.append(convert_excel_to_dataframe(book))
+        clean_book_tuple_list.append(convert_excel_to_dataframe(book, global_output_directory))
 
 # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
 
@@ -87,30 +94,30 @@ if len(clean_book_tuple_list) != 0:
 
         print("Beginning data analysis for {}...".format(current_df_title))
 
-        # DEFINE GLOBAL CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
+        # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
-        # Define a global custom output directory for the current df in the list
-        output_directory = "output_from_{}".format(current_df_title)
+        # Define a custom output directory for the current df in the list
+        output_directory = "{}/{}".format(global_output_directory, current_df_title)
 
-        # make global directory if there isn't already one for overall output for current df
+        # make directory if there isn't already one for overall output for current df
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-        # Define a global output exploratory directory for the exploratory plots 
+        # Define a output exploratory directory for the exploratory plots 
         output_directory_exploratory = "{}/exploratory_plots_from_{}".format(output_directory, current_df_title)
 
         # make directory if there isn't already one for exploratory output 
         if not os.path.exists(output_directory_exploratory):
             os.makedirs(output_directory_exploratory)
 
-        # Define a global output directory for the curve fit plots for the current df title
+        # Define a output directory for the curve fit plots for the current df title
         output_directory2 = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the curve_fit_plots
         if not os.path.exists(output_directory2):
             os.makedirs(output_directory2)  
 
-        # Define a global output directory for the final data tables after curve fitting and stats
+        # Define a output directory for the final data tables after curve fitting and stats
         output_directory3 = "{}/data_tables_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the data tables
@@ -170,30 +177,30 @@ if len(clean_batch_tuple_list) != 0:
 
         print("Beginning data analysis for {}...".format(current_df_title))
 
-        # DEFINE GLOBAL CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
+        # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
-        # Define a global custom output directory for the current df in the list
-        output_directory = "output_from_{}".format(current_df_title)
+        # Define a custom output directory for the current df in the list
+        output_directory = "{}/{}".format(global_output_directory, current_df_title)
 
-        # make global directory if there isn't already one for overall output for current df
+        # make directory if there isn't already one for overall output for current df
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-        # Define a global output exploratory directory for the exploratory plots 
+        # Define an output exploratory directory for the exploratory plots 
         output_directory_exploratory = "{}/exploratory_plots_from_{}".format(output_directory, current_df_title)
 
         # make directory if there isn't already one for exploratory output 
         if not os.path.exists(output_directory_exploratory):
             os.makedirs(output_directory_exploratory)
 
-        # Define a global output directory for the curve fit plots for the current df title
+        # Define an output directory for the curve fit plots for the current df title
         output_directory2 = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the curve_fit_plots
         if not os.path.exists(output_directory2):
             os.makedirs(output_directory2)  
 
-        # Define a global output directory for the final data tables after curve fitting and stats
+        # Define an output directory for the final data tables after curve fitting and stats
         output_directory3 = "{}/data_tables_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the data tables
@@ -240,3 +247,22 @@ if len(clean_batch_tuple_list) != 0:
         print("All activities are now completed for: {}".format(current_df_title))
 
     print("Hooray! All polymers in the input files have been processed.")
+
+
+# PART 3 - MERGE TRUE POSITIVE AND TRUE NEGATIVE BINDING OBSERVATIONS ---------------------
+
+# makes a global ouput directory for merged data if not existing
+merge_output_directory = "{}/merged".format(global_output_directory)
+
+if not os.path.exists(merge_output_directory):
+    os.makedirs(merge_output_directory)
+
+# define data source path and data destination path to pass to data merging function
+source_path = '../disco-data-processing/{}/*/data_tables_from_*'.format(global_output_directory)
+destination_path = '../disco-data-processing/{}'.format(merge_output_directory)
+
+# call data merging function and write complete dataset to file
+merged_dataset = merge(source_path, destination_path, merge_output_directory)
+output_file_name = "merged_binding_dataset.xlsx"
+merged_dataset.to_excel(os.path.join(merge_output_directory, output_file_name))
+print("Data processing completed! Merged_binding_dataset.xlsx file available in the output directory under merged.")
