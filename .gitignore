@@ -4,3 +4,5 @@ input/already_passed/
 disco-data-processing-p0.95.zip
 __pycache__/
 .vscode/
+output
+archive
