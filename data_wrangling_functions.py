@@ -903,7 +903,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 #COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
 
                 # subset the df into the data for one graph, via index slice based on the current peak and concentration
-                one_graph_data_mean = stats_df_mean.loc[idx[c, :, p]]
+                one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)) , :]
 
                 #Make a boolean significance mask based on the one graph subset, for calculating parameters based on only significant pts
                 boolean_sig_mask = one_graph_data_mean.significance == True
@@ -932,17 +932,17 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 sse_bar = np.square(y_hat_fit(significant_sat_time, *best_param_vals_bar) - significant_yikj_bar)
 
                 #append sum of square error calculated for this graph to the PARENT mean dataframe at this c and p
-                stats_df_mean.loc[idx[c, :, p], ('SSE_bar')] = sse_bar.sum()
-
+                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('SSE_bar')] = sse_bar.sum()
+                
                 # append best parameters to variables, and then generate the instantaneous amplification factor 
                 a_kj_bar = best_param_vals_bar[0]
                 b_kj_bar = best_param_vals_bar[1]
 
                 amp_factor_instantaneous_bar = a_kj_bar * b_kj_bar
-
+                
                 #append instantaneous amplification factor calculated to the PARENT mean dataframe, for all datapoints in this graph
-                stats_df_mean.loc[idx[c, :, p], ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
-
+                # stats_df_mean.loc[idx[c, :, p], ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
+                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
                 # define file name for curve fits by mean
                 output_file_name_figsmean = "{}/mean_concentration{}_ppm{}_CurveFit.png".format(output_directory2, c, ppm_bar)
 
@@ -1031,7 +1031,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 #COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
 
                 # subset the df into the data for one graph, via index slice based on the current peak and concentration
-                one_graph_data_mean = stats_df_mean.loc[idx[c, :, p]]
+                # one_graph_data_mean = stats_df_mean.loc[idx[c, :, p], :]
+                one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)), :]
 
                 #Make a boolean significance mask based on the one graph subset, for calculating parameters based on only significant pts
                 boolean_sig_mask = one_graph_data_mean.significance == True
@@ -1060,7 +1061,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 sse_bar = np.square(y_hat_fit(significant_sat_time, *best_param_vals_bar) - significant_yikj_bar)
 
                 #append sum of square error calculated for this graph to the PARENT mean dataframe at this c and p
-                stats_df_mean.loc[idx[c, :, p], ('SSE_bar')] = sse_bar.sum()
+                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('SSE_bar')] = sse_bar.sum()
 
                 # append best parameters to variables, and then generate the instantaneous amplification factor 
                 a_kj_bar = best_param_vals_bar[0]
@@ -1069,8 +1070,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 amp_factor_instantaneous_bar = a_kj_bar * b_kj_bar
 
                 #append instantaneous amplification factor calculated to the PARENT mean dataframe, for all datapoints in this graph
-                stats_df_mean.loc[idx[c, :, p], ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
-
+                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
+                
                 # define file name for curve fits by mean
                 output_file_name_figsmean = "{}/mean_concentration{}_ppm{}_CurveFit.png".format(output_directory2, c, ppm_bar)
 
