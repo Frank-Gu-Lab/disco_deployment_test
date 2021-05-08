@@ -944,7 +944,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 # stats_df_mean.loc[idx[c, :, p], ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
                 stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
                 # define file name for curve fits by mean
-                output_file_name_figsmean = "{}/mean_concentration{}_ppm{}_CurveFit.png".format(output_directory2, c, ppm_bar)
+                output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
 
                 # PLOT MEAN DF CURVE FITS with the original data and save to file
                 fig1, (ax1) = plt.subplots(1, figsize = (8, 4))
@@ -994,8 +994,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                     mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].mean().astype(float).round(4)    
 
                     # file name for curve fits by replicate 
-                    output_file_name_figsrep = "{}/replicate{}_concentration{}_ppm{}_CurveFit.png".format(output_directory2, r, c, mean_current_ppm)
-
+                    output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
+                    
                     # PLOT CURVE FITS with original data per Replicate and save to file
                     fig2, (ax2) = plt.subplots(1, figsize = (8, 4))
                     ax2.plot(sat_time, y_hat_fit(sat_time, *best_param_vals), 'b-', label='data')
@@ -1073,7 +1073,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
                 
                 # define file name for curve fits by mean
-                output_file_name_figsmean = "{}/mean_concentration{}_ppm{}_CurveFit.png".format(output_directory2, c, ppm_bar)
+                output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
 
                 # PLOT MEAN DF CURVE FITS with the original data and save to file
                 fig1, (ax1) = plt.subplots(1, figsize = (8, 4))
@@ -1123,8 +1123,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                     mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)    
     
                     # file name for curve fits by replicate 
-                    output_file_name_figsrep = "{}/replicate{}_concentration{}_ppm{}_CurveFit.png".format(output_directory2, r, c, mean_current_ppm)
-
+                    output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
+                    
                     # PLOT CURVE FITS with original data per Replicate and save to file
                     fig2, (ax2) = plt.subplots(1, figsize = (8, 4))
                     ax2.plot(sat_time, y_hat_fit(sat_time, *best_param_vals), 'b-', label='data')

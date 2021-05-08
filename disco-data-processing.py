@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # coding: utf-8
 
 # Disco Data Processing Script
@@ -91,6 +91,9 @@ if len(clean_book_tuple_list) != 0:
         #define current dataframe to be analyzed and its title from the tuple output of the data cleaning code
         current_df = clean_book_tuple_list[i][1]
         current_df_title = clean_book_tuple_list[i][0]
+        
+        # remove any spaces from title
+        current_df_title = current_df_title.replace(' ', '')
 
         print("Beginning data analysis for {}...".format(current_df_title))
 
@@ -174,6 +177,9 @@ if len(clean_batch_tuple_list) != 0:
         #define current dataframe to be analyzed and its title from the tuple output of the data cleaning code
         current_df = clean_batch_tuple_list[i][1]
         current_df_title = clean_batch_tuple_list[i][0]
+
+        # remove any spaces from title
+        current_df_title = current_df_title.replace(' ', '')
 
         print("Beginning data analysis for {}...".format(current_df_title))
 
