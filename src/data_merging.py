@@ -38,7 +38,7 @@ def move(source_path, destination_path):
     
     return print("Files for merging have been moved to the destination directory.")
 
-def merge(source_path, destination_path, merge_output_directory):
+def merge(source_path, destination_path):
 
     ''' 
     This function generates a merged machine learning ready dataset.
@@ -60,9 +60,6 @@ def merge(source_path, destination_path, merge_output_directory):
     # Move relevant preprocessed Excel files from Pt. 1 and Pt. 2 to a central destination folder for data merging
     move(source_path, destination_path)
 
-    # 1 & 2) create list of all Excel file candidates for merging
-    # input_path = os.path.abspath(merge_output_directory)
-    # all_files = glob.glob("{merge_output_directory}/*.xlsx")
     all_files = glob.glob("{}/*.xlsx".format(destination_path))
 
     # 1 & 2) indicate which data format, mean based or replicate based, (from the output of the preprocessing) will be used for machine learning
@@ -143,7 +140,7 @@ def merge(source_path, destination_path, merge_output_directory):
     selected_dataframes_neg = pd.concat(selected_dataframes_neg_list)
 
     # 2) drop extra ppm column that gets created from combining multi indices
-    selected_dataframes_neg = selected_dataframes_neg.drop(columns = 'ppm')
+    #selected_dataframes_neg = selected_dataframes_neg.drop(columns = 'ppm')
 
     # 2) drop sat time from index
     selected_dataframes_neg.index = selected_dataframes_neg.index.droplevel(1)
