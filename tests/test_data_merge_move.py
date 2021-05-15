@@ -1,34 +1,45 @@
 import pytest
-import sys
 import unittest
+import sys
 import os
+import shutil
+import glob
+
 
 # modifying path to access sibling directory
 sys.path.append(os.getcwd() + '\\..')
 
 from src.data_merging import move, merge
 
-class TestMerge(unittest.TestCase):
+# FIXTURES DON'T WORK WHEN CLASSES ARE DEFINED IDK WHY
+
+################## TESTING MOVE ####################
+
+def test_move():
     
-    def something(self):
-        return
-        
-class TestMove(unittest.TestCase):
+    # SETUP
+    src_path = ".\\test-files\\test_move_normal"
+    dst_path = ".\\test-files\\output"
     
-    """@pytest.fixture
-    def setup(self, tmpdir):
-        #
+    os.mkdir(dst_path)
     
-    def test_one_row(self, setup):
-        assert 1 == 1
+    # grab file names from src
+    
+    filenames = glob.glob(src_path + "\\*")
+    
+    move(src_path, dst_path)
+    
+    try:
         
-    def test_not_excel(self):
+        for file in filenames: # file = absolute path
+            filename = os.path.basename(file)
+            assert os.path.isfile(dst_path + "\\" + filename)
+
+    finally:
         
-        with pytest.raises(ValueError):
-            move(path, out)
+        # TEARDOWN
+        shutil.rmtree(dst_path)
+
+################## TESTING MERGE ####################
         
-        
-    def test_multi_row(self, setup):
-        
-    def 
-    """        
+    
