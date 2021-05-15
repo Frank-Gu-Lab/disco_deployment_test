@@ -15,25 +15,29 @@ from src.data_merging import move, merge
 
 ################## TESTING MOVE ####################
 
+# testing overall functionality
+
 def test_move():
     
     # SETUP
-    src_path = ".\\test-files\\test_move_normal"
+    src_path = ".\\test-files\\test_move\\*"
     dst_path = ".\\test-files\\output"
     
     os.mkdir(dst_path)
     
     # grab file names from src
     
-    filenames = glob.glob(src_path + "\\*")
-    
-    move(src_path, dst_path)
-    
+    directories = glob.glob(src_path)
+    filenames = [glob.glob("{}/*".format(dir)) for dir in directories]
+
     try:
         
-        for file in filenames: # file = absolute path
-            filename = os.path.basename(file)
-            assert os.path.isfile(dst_path + "\\" + filename)
+        move(src_path, dst_path)
+        
+        for i in range(len(filenames)):
+            for file in filenames[i]: # file = absolute path
+                filename = os.path.basename(file)
+                assert os.path.isfile(dst_path + "\\" + filename)
 
     finally:
         
@@ -41,5 +45,7 @@ def test_move():
         shutil.rmtree(dst_path)
 
 ################## TESTING MERGE ####################
-        
-    
+      
+# testing overall functionality
+  
+#def test_merge():
