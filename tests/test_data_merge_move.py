@@ -54,22 +54,28 @@ def test_merge():
     src_path = ".\\test-files\\test_merge\\data\\*"
     dst_path = ".\\test-files\\test_merge\\output"
     merge_path = ".\\test-files\\test_merge\\actual"
+    output_file_name = "merged_binding_dataset.xlsx"
 
     try:
 
         output = merge(src_path, dst_path)
-        output_file_name = "merged_binding_dataset.xlsx"
         output.to_excel(os.path.join(merge_path, output_file_name))
         
         actual = pd.read_excel(merge_path + "\\" + output_file_name)
         expected = pd.read_excel(".\\test-files\\test_merge\\expected\\merged_binding_dataset.xlsx")
+
         
-        assert helpers.compare_excel(actual, expected)
-        
-    
+        # check if file is as expected
+        msg2 = "{} was not properly created.".format(merge_path + "\\" + output_file_name)
+        assert helpers.compare_excel(actual, expected), msg2
+       
     finally:
         
         # TEARDOWN
+        
+         # check if file exists
+        msg1 = "{} was not successfully created.".format(merge_path + "\\" + output_file_name)
+        assert os.path.exists(merge_path + "\\" + output_file_name), msg1
         
         os.remove(merge_path + "\\" + output_file_name)
     
