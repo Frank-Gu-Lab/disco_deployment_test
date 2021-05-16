@@ -12,6 +12,10 @@ def compare_excel(ex1, ex2):
     -------
     boolean
         True, if identical, otherwise False
+        
+    Notes
+    -----
+    Assumes one column for index and no stacking. Very very simple df -- maybe edit
     """
     
     # same shape
