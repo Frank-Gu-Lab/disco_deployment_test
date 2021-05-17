@@ -12,8 +12,6 @@ sys.path.append(os.getcwd() + '\\..')
 
 from src.data_merging import move, merge
 
-# FIXTURES DON'T WORK WHEN CLASSES ARE DEFINED IDK WHY
-
 ################## TESTING MOVE ####################
 
 # testing overall functionality
