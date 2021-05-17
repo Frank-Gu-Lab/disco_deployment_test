@@ -56,6 +56,9 @@ if not os.path.exists(global_output_directory):
 clean_book_tuple_list = []
 batch_tuple_list = []
 
+clean_batch_tuple_list = []
+clean_batch_list = []
+
 # Convert all Excel books in the input folder into tuple key-value pairs that can be indexed
 for book in list_of_raw_books:
     
@@ -78,7 +81,7 @@ if len(batch_tuple_list) != 0:
     clean_batch_list = clean_the_batch_tuple_list(batch_tuple_list)
 
 # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
-clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]
+    clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE POLYMER BOOK LIST GENERATED ABOVE, IF ANY ----------------------------------
 # custom processing functions default to the "book" path, so no additional parameters passed here
