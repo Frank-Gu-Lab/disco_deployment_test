@@ -47,12 +47,9 @@ def test_move():
 ################## TESTING MERGE ####################
       
 # testing overall functionality
-@pytest.mark.xfail
+
 def test_merge():
-    '''
-    global_output_directory = "../data/output"
-    src_path = '../disco-data-processing/{}/*/data_tables_from_*'.format(global_output_directory)
-    '''
+    
     src_path = ".\\test-files\\test_merge\\data\\*"
     dst_path = ".\\test-files\\test_merge\\output"
     merge_path = ".\\test-files\\test_merge\\actual"
@@ -78,7 +75,7 @@ def test_merge():
         
         # TEARDOWN
         
-         # check if file exists
+        # check if file exists
         msg1 = "{} was not successfully created.".format(merge_path + "\\" + output_file_name)
         assert os.path.exists(merge_path + "\\" + output_file_name), msg1
         
