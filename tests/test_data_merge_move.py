@@ -4,8 +4,7 @@ import os
 import shutil
 import glob
 import pandas as pd
-from . import helpers
-compare_excel = helpers.compare_excel
+from helpers import compare_excel
 
 # modifying path to access sibling directory
 sys.path.append(os.getcwd() + '\\..')
