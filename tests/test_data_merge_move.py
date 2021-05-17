@@ -5,6 +5,7 @@ import shutil
 import glob
 import pandas as pd
 from . import helpers
+compare_excel = helpers.compare_excel
 
 # modifying path to access sibling directory
 sys.path.append(os.getcwd() + '\\..')
@@ -66,8 +67,8 @@ def test_merge():
 
         
         # check if file is as expected
-        msg2 = "{} was not properly created.".format(merge_path + "\\" + output_file_name)
-        assert helpers.compare_excel(actual, expected), msg2
+        msg2 = "{} does not contain all the expected information.".format(merge_path + "\\" + output_file_name)
+        assert compare_excel(actual, expected), msg2
        
     finally:
         

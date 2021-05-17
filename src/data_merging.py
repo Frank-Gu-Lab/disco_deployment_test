@@ -198,9 +198,6 @@ def merge(source_path, destination_path):
     ''' 
     This function generates a merged machine learning ready dataset.
 
-    It calls the move function to move relevant preprocessing Excel file outputs from Pt. 1 and Pt. 2 to a central repository
-    for data merging.
-
     It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.
     
     Parameters
@@ -215,14 +212,6 @@ def merge(source_path, destination_path):
     -------
     table_c : Pandas.DataFrame
         DataFrame containing the resulting merged datafiles from destination_path.
-
-    TO DO: Refactor this spaghetti code into something more maintainable + write tests. 
-
-    Split this into multiple functions - each function should do only one thing. (Matching Numbers added in comments to help w refactor)
-    - 1) Merge and clean applicable input folder data to generate a true positive dataset (+ class as determined in preprocessing)
-    - 2) Merge and clean applicable input folder data to generate a true negative dataset (- class as determined in preprocessing)
-    - 3) Merge Positive and Negative Example Datasets into one ground truth clean dataset 
-
     '''
 
     # Move relevant preprocessed Excel files from Pt. 1 and Pt. 2 to a central destination folder for data merging
@@ -270,5 +259,3 @@ def merge(source_path, destination_path):
     ################# REFACTOR --> JOIN #################
 
     return join(selected_dataframes_pos, selected_dataframes_neg)
-
-

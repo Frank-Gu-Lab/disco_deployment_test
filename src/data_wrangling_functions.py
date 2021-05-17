@@ -1,4 +1,4 @@
-# define functions used in data cleaning 
+# define functions used in data cleaning
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -9,10 +9,198 @@ from scipy.optimize import curve_fit
 import os
 import glob
 
+from . import data_wrangling_helpers
+initialize_excel_batch_replicates = data_wrangling_helpers.initialize_excel_batch_replicates
+
 # define handy shortcut for indexing a multi-index dataframe
 idx = pd.IndexSlice
 
 # functions are ordered below in the order they are called in the disco-data-processing script
+
+def convert_excel_batch_to_dataframe(b):
+    '''
+    This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
+    
+    Parameters
+    ----------
+    b : str
+        String representing the relative path to an Excel Batch Book.
+    
+    Returns
+    -------
+    list_clean_dfs : list
+        List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
+    '''
+    # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
+    current_polymer_df_list = []
+    list_of_clean_dfs = []
+    current_polymer_df = pd.DataFrame([],[])
+    replicate_index = []
+    
+    # initialize current_polymer_name and last_polymer_sheet to empty strings
+    current_polymer_name = ' '
+    last_polymer_sheet = ' '
+    
+    #load excel book into Pandas
+    current_book_title = os.path.basename(str(b))
+    
+    print("The current book being analyzed is: ", current_book_title)
+    
+    # return list of unique polymer names in the book, their replicates, and the sheets containing raw data to loop through
+    unique_polymers, unique_polymer_replicates, name_sheets = initialize_excel_batch_replicates(b)
+    
+    # generate a new replicate index list that holds the nth replicate associated with each raw data sheet in book
+    for i in range(len(unique_polymer_replicates)):
+        current_replicate_range = range(1,int(unique_polymer_replicates[i]+1),1)
+        for j in current_replicate_range:
+            replicate_index.append(j)
+    
+    # BEGIN WRANGLING DATA FROM THE EXCEL FILE, AND TRANSLATING INTO ORGANIZED DATAFRAME ----------------
+
+    # loop once through every sheet in the book containing raw data, and execute actions along the way
+    for i in range(len(name_sheets)):
+    
+        #assign current sheet name to current sheet
+        current_sheet = name_sheets[i]
+        
+        # read in the current book's current sheet into a Pandas dataframe
+        current_sheet_df = pd.read_excel(b, sheet_name = current_sheet)
+        
+        #initialize nth_replicate to the correct replicate index
+        nth_replicate = replicate_index[i]
+        
+        # if it's the first replicate of a polymer AND it's not the first datasheet being assessed, append old polymer info to df and reset
+        if (nth_replicate == 1 and (i != 0)):
+            
+            # concatenate the current_polymer_df_list into the current polymer_df
+            current_polymer_df = pd.concat(current_polymer_df_list)
+            
+            # append the current polymer df to the global list_of_clean_dfs as a tuple with the polymer name
+            list_of_clean_dfs.append((current_polymer_name, current_polymer_df))
+            
+            # reset the current_polymer_df_list to empty so that the next polymer can be appended to it
+            current_polymer_df_list = []
+            
+        print("Reading in Data From Sheet: ", current_sheet)
+        
+        # update current polymer name, if it's the first replicate
+        if nth_replicate == 1: 
+            current_polymer_name = current_sheet
+             
+        # Now that we know it's not a Complete sheet, and have ensured values have been reset as required, enter current sheet
+            
+        # use np.where to get sheet sub-table coordinates, and infer the table bounds from its surroundings
+        sub_table_indicator = 'Range'
+            
+        i, c = np.where(current_sheet_df == sub_table_indicator)
+
+        # assigns coordinates of all upper left 'Range' cells to an index (row) array and a column numerical index
+        table_indices = i
+        table_columns = c
+
+        # determine the number of experimental rows in each NMR results sub-table
+        # minus 1 to exclude Range cell row itself
+        num_experimental_indices = np.unique(table_indices)[2] - np.unique(table_indices)[1] - 1
+
+        # minus 2 to account for an empty row and the indices of the next column, as Range is the defining word
+        num_experimental_cols = np.unique(table_columns)[1] - np.unique(table_columns)[0] - 2
+
+        # initialize/reset current_exp_df, current is for CURRENT sub-tables being looped over
+        current_exp_df = []
+
+        # make a list of coordinate pair tuples for this sheet using list comprehension
+        sheet_coords_list = [(table_indices[i], table_columns[i]) for i in range(len(table_indices))]
+
+        # iterate through coordinates
+        for coords in sheet_coords_list:
+            
+            #makes coords mutable as a numpy array unlike tuples
+            coords_copy = np.asarray([coords[0], coords[1]])
+            
+            # assign current values to the fixed experimental parameters for this experimental sub-table relative to Range...
+    
+            # sat time is one cell up and one cell to the left of Range, chain indexed at second col in the row generated by loc
+            current_sat_time = current_sheet_df.iloc[(coords_copy[0]-1), (coords_copy[1]-1)]
+            # irrad_bool is one cell above Range in same column, chain indexed at third col in the row generated by loc
+            current_irrad_bool = current_sheet_df.iloc[(coords_copy[0]-1), (coords_copy[1])]
+            # Hard coding arbitrary concentration as batches were from industry and only know the volume conc (9mg/ml we know)
+            current_concentration = 9
+            # sample or control is one cell above Range in one column to the right, chain indexed at fourth col in the row generated by loc
+            current_sample_or_control = current_sheet_df.iloc[(coords_copy[0]-1), (coords_copy[1]+1)]
+            current_replicate = nth_replicate
+                
+            # initialize/reset experimental lists to null for this experimental set
+            list_current_subtable_experimental = []
+
+            # now need to find and assign the sub-table's actual experimental data to the new lists 
+
+            # Initializing the indexing "boundaries" of the sub-table rectangle containing values of interest in a generalizable way, based on white cell left of Range
+            experimental_index_starter = coords_copy[0]+1
+            experimental_index_range = range(num_experimental_indices)
+            experimental_column_range = range(num_experimental_cols)
+            combined_experimental_index_range = experimental_index_starter + experimental_index_range
+            experimental_column_starter = coords_copy[1]
+            combined_experimental_column_range = experimental_column_starter + experimental_column_range
+            
+            # for ease of reading, designating index start and end variables
+            index_slice_start = experimental_index_starter
+            index_slice_end = experimental_index_starter + num_experimental_indices -1
+            column_slice_start = experimental_column_starter -1
+            column_slice_end = experimental_column_starter + num_experimental_cols
+            
+            #make new mini dataframe of the current experimetnal subtable values
+            current_subtable_experimental = pd.DataFrame(current_sheet_df.iloc[index_slice_start:index_slice_end,column_slice_start:column_slice_end])
+            
+            # define length of the experimental parameter lists (number of experimental rows per subtable)
+            exp_list_length = index_slice_end - index_slice_start
+
+            # create "ranged" lists of the constant experimental values to make them the same length as the unique variable experimental values, so we can add information "per observation" to the dataframe
+            ranged_sample_or_control = exp_list_length * [current_sample_or_control]
+            ranged_replicate = exp_list_length * [current_replicate]
+            ranged_polymer_name = exp_list_length * [current_polymer_name]
+            ranged_concentration = exp_list_length * [current_concentration]
+            ranged_sat_time = exp_list_length * [current_sat_time]
+            ranged_irrad_bool = exp_list_length * [current_irrad_bool]
+            
+        
+            # assign all current sub-table experimental values for this experimental sub-table to a dataframe via a dictionary
+            current_dict = {        "polymer_name":ranged_polymer_name,
+                                    "concentration":ranged_concentration,
+                                    "proton_peak_index":current_subtable_experimental.iloc[:,0],
+                                    "ppm_range":current_subtable_experimental.iloc[:,1],
+                                    "absolute":current_subtable_experimental.iloc[:,3],
+                                    "sample_or_control":ranged_sample_or_control,
+                                    "replicate":ranged_replicate,
+                                    "sat_time":ranged_sat_time, 
+                                    "irrad_bool":ranged_irrad_bool,  
+                                    }
+        
+
+            # this is now a dataframe of a polymer sub-table
+            current_exp_df = pd.DataFrame(current_dict)
+
+            # append the dataframe of the polymer sub-table to the global polymer-level list of dataframes
+            current_polymer_df_list.append(current_exp_df)
+            
+        # after we have looped through all the coordinates of one sheet, before going to the next sheet, assign the last_sheet polymer variable to this sheet's name
+        last_polymer_sheet = current_sheet
+        
+        # if it's the last sheet, append final polymer info to dfs
+        if current_sheet == name_sheets[-1]:
+            
+            # concatenate the current_polymer_df_list into the current polymer_df
+            current_polymer_df = pd.concat(current_polymer_df_list)
+            
+            # append the current polymer df to the global list_of_clean_dfs as a tuple with the polymer name
+            list_of_clean_dfs.append((current_polymer_name, current_polymer_df))
+            
+            # reset the current_polymer_df_list to empty so that the next polymer can be appended to it
+            current_polymer_df_list = []
+    
+    # After all is said and done, return a list of the clean dfs containing polymer tuples of format (polymer_name, polymer_df)
+    print("Returning a list of tuples containing all polymer information from Batch: ", b)
+    
+    return list_of_clean_dfs
 
 def convert_excel_to_dataframe(b, global_output_directory):
     '''
@@ -1154,253 +1342,6 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
         
         print('Export of all figures to file complete!')
         return stats_df_mean, stats_df_replicates      
-
-def initialize_excel_batch_replicates(b):
-    
-    '''
-    This function determines the unique polymers contained in an excel book,
-    the number of replicates of those polymers, and also returns an iterable of 
-    the sheet names without Complete in them.
-    
-    '''
-    all_sheets_iterator = []
-    all_data_sheets = []
-    name_sheets = []
-    unique_polymers = []
-    unique_polymer_replicates = []
-    all_sheets_complete_removed = []
-    intermediate_string = []
-    match_checker = []
-    
-    # load excel book into Pandas 
-    current_book_title = os.path.basename(str(b))
-
-    # determine the number and names of sheets in the book
-    name_sheets = pd.ExcelFile(b).sheet_names
-    
-    # remove sheets with complete from the list
-    all_sheets_iterable = [sheet for sheet in name_sheets]
-    
-    def DropComplete(x): 
-        if "omplete" in x: return False 
-        else: return True
-        
-    all_sheets_complete_removed = list(filter(DropComplete, all_sheets_iterable))
-    
-    # sort all sheets with complete removed alphebetically for generalizable replicate ordering and processing
-    all_sheets_complete_removed = sorted(all_sheets_complete_removed)
-    
-    # generate a list of unique polymers in the book 
-    for sheet in range(len(all_sheets_complete_removed)):
-        # drop string after brackets
-        intermediate_string = all_sheets_complete_removed[sheet].split('(', 1)[0]
-    
-        #if there's a trailing space after dropping the bracket, remove it as well
-        if intermediate_string[-1] == ' ':
-            intermediate_string = intermediate_string[0:-1]
-        
-        unique_polymers.append(intermediate_string) 
-    
-    # drop duplicates to generate a unique polymers list
-    unique_polymers = list(dict.fromkeys(unique_polymers))
-    
-    # initialize zero array that corresponds to each unique_polymer
-    unique_polymer_replicates = np.zeros(len(unique_polymers))
-    
-    # calculate the number of replicates of the polymers in the book by matching unique polymers to sheet names
-    for i in range(len(unique_polymers)):
-        for j in range(len(all_sheets_complete_removed)):
-        
-            #calculate the current match checker the same way unique polymers were calculated
-            match_checker = all_sheets_complete_removed[j].split('(', 1)[0]
-            if match_checker[-1] == ' ':
-                match_checker = match_checker[0:-1]
-
-            #if unique polymer name matches the checker, increment replicate counter for that polymer
-            if (unique_polymers[i] == match_checker):
-                unique_polymer_replicates[i] +=1
-    
-    return unique_polymers, unique_polymer_replicates, all_sheets_complete_removed    
-
-def convert_excel_batch_to_dataframe(b):
-    
-    '''
-    This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
-    
-    Input: Excel Batch Book (b)
-    Output: List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
-    
-    '''
-    # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
-    current_polymer_df_list = []
-    list_of_clean_dfs = []
-    current_polymer_df = pd.DataFrame([],[])
-    replicate_index = []
-    
-    # initialize current_polymer_name and last_polymer_sheet to empty strings
-    current_polymer_name = ' '
-    last_polymer_sheet = ' '
-    
-    #load excel book into Pandas and 
-    current_book_title = os.path.basename(str(b))
-    
-    print("The current book being analyzed is: ", current_book_title)
-    
-    # return list of unique polymer names in the book, their replicates, and the sheets containing raw data to loop through
-    unique_polymers, unique_polymer_replicates, name_sheets = initialize_excel_batch_replicates(b)
-    
-    # generate a new replicate index list that holds the nth replicate associated with each raw data sheet in book
-    for i in range(len(unique_polymer_replicates)):
-        current_replicate_range = range(1,int(unique_polymer_replicates[i]+1),1)
-        for j in current_replicate_range:
-            replicate_index.append(j)
-    
-    
-    # BEGIN WRANGLING DATA FROM THE EXCEL FILE, AND TRANSLATING INTO ORGANIZED DATAFRAME ----------------
-
-    # loop once through every sheet in the book containing raw data, and execute actions along the way
-    for i in range(len(name_sheets)):
-    
-        #assign current sheet name to current sheet
-        current_sheet = name_sheets[i]
-        
-        # read in the current book's current sheet into a Pandas dataframe
-        current_sheet_df = pd.read_excel(b, sheet_name = current_sheet)
-        
-        #initialize nth_replicate to the correct replicate index
-        nth_replicate = replicate_index[i]
-        
-        # if it's the first replicate of a polymer AND it's not the first datasheet being assessed, append old polymer info to df and reset
-        if (nth_replicate == 1 and (i != 0)):
-            
-            # concatenate the current_polymer_df_list into the current polymer_df
-            current_polymer_df = pd.concat(current_polymer_df_list)
-            
-            # append the current polymer df to the global list_of_clean_dfs as a tuple with the polymer name
-            list_of_clean_dfs.append((current_polymer_name, current_polymer_df))
-            
-            # reset the current_polymer_df_list to empty so that the next polymer can be appended to it
-            current_polymer_df_list = []
-            
-        print("Reading in Data From Sheet: ", current_sheet)
-        
-        # update current polymer name, if it's the first replicate
-        if nth_replicate == 1: current_polymer_name = current_sheet
-             
-        # Now that we know it's not a Complete sheet, and have ensured values have been reset as required, enter current sheet
-            
-        # use np.where to get sheet sub-table coordinates, and infer the table bounds from its surroundings
-        sub_table_indicator = 'Range'
-            
-        i, c = np.where(current_sheet_df == sub_table_indicator)
-
-        # assigns coordinates of all upper left 'Range' cells to an index (row) array and a column numerical index
-        table_indices = i
-        table_columns = c
-
-        # determine the number of experimental rows in each NMR results sub-table
-        # minus 1 to exclude Range cell row itself
-        num_experimental_indices = np.unique(table_indices)[2] - np.unique(table_indices)[1] - 1
-
-        # minus 2 to account for an empty row and the indices of the next column, as Range is the defining word
-        num_experimental_cols = np.unique(table_columns)[1] - np.unique(table_columns)[0] - 2
-
-        # initialize/reset current_exp_df, current is for CURRENT sub-tables being looped over
-        current_exp_df = []
-
-        # make a list of coordinate pair tuples for this sheet using list comprehension
-        sheet_coords_list = [(table_indices[i], table_columns[i]) for i in range(len(table_indices))]
-
-        # iterate through coordinates
-        for coords in sheet_coords_list:
-            
-            #makes coords mutable as a numpy array unlike tuples
-            coords_copy = np.asarray([coords[0], coords[1]])
-            
-            # assign current values to the fixed experimental parameters for this experimental sub-table relative to Range...
-    
-            # sat time is one cell up and one cell to the left of Range, chain indexed at second col in the row generated by loc
-            current_sat_time = current_sheet_df.iloc[(coords_copy[0]-1), (coords_copy[1]-1)]
-            # irrad_bool is one cell above Range in same column, chain indexed at third col in the row generated by loc
-            current_irrad_bool = current_sheet_df.iloc[(coords_copy[0]-1), (coords_copy[1])]
-            # Hard coding arbitrary concentration as batches were from industry and only know the volume conc (9mg/ml we know)
-            current_concentration = 9
-            # sample or control is one cell above Range in one column to the right, chain indexed at fourth col in the row generated by loc
-            current_sample_or_control = current_sheet_df.iloc[(coords_copy[0]-1), (coords_copy[1]+1)]
-            current_replicate = nth_replicate
-                
-            # initialize/reset experimental lists to null for this experimental set
-            list_current_subtable_experimental = []
-
-            # now need to find and assign the sub-table's actual experimental data to the new lists 
-
-            # Initializing the indexing "boundaries" of the sub-table rectangle containing values of interest in a generalizable way, based on white cell left of Range
-            experimental_index_starter = coords_copy[0]+1
-            experimental_index_range = range(num_experimental_indices)
-            experimental_column_range = range(num_experimental_cols)
-            combined_experimental_index_range = experimental_index_starter + experimental_index_range
-            experimental_column_starter = coords_copy[1]
-            combined_experimental_column_range = experimental_column_starter + experimental_column_range
-            
-            # for ease of reading, designating index start and end variables
-            index_slice_start = experimental_index_starter
-            index_slice_end = experimental_index_starter + num_experimental_indices -1
-            column_slice_start = experimental_column_starter -1
-            column_slice_end = experimental_column_starter + num_experimental_cols
-            
-            #make new mini dataframe of the current experimetnal subtable values
-            current_subtable_experimental = pd.DataFrame(current_sheet_df.iloc[index_slice_start:index_slice_end,column_slice_start:column_slice_end])
-            
-            # define length of the experimental parameter lists (number of experimental rows per subtable)
-            exp_list_length = index_slice_end - index_slice_start
-
-            # create "ranged" lists of the constant experimental values to make them the same length as the unique variable experimental values, so we can add information "per observation" to the dataframe
-            ranged_sample_or_control = exp_list_length * [current_sample_or_control]
-            ranged_replicate = exp_list_length * [current_replicate]
-            ranged_polymer_name = exp_list_length * [current_polymer_name]
-            ranged_concentration = exp_list_length * [current_concentration]
-            ranged_sat_time = exp_list_length * [current_sat_time]
-            ranged_irrad_bool = exp_list_length * [current_irrad_bool]
-            
-        
-            # assign all current sub-table experimental values for this experimental sub-table to a dataframe via a dictionary
-            current_dict = {        "polymer_name":ranged_polymer_name,
-                                    "concentration":ranged_concentration,
-                                    "proton_peak_index":current_subtable_experimental.iloc[:,0],
-                                    "ppm_range":current_subtable_experimental.iloc[:,1],
-                                    "absolute":current_subtable_experimental.iloc[:,3],
-                                    "sample_or_control":ranged_sample_or_control,
-                                    "replicate":ranged_replicate,
-                                    "sat_time":ranged_sat_time, 
-                                    "irrad_bool":ranged_irrad_bool,  
-                                    }
-        
-
-            # this is now a dataframe of a polymer sub-table
-            current_exp_df = pd.DataFrame(current_dict)
-
-            # append the dataframe of the polymer sub-table to the global polymer-level list of dataframes
-            current_polymer_df_list.append(current_exp_df)
-            
-        # after we have looped through all the coordinates of one sheet, before going to the next sheet, assign the last_sheet polymer variable to this sheet's name
-        last_polymer_sheet = current_sheet
-        
-        # if it's the last sheet, append final polymer info to dfs
-        if current_sheet == name_sheets[-1]:
-            
-            # concatenate the current_polymer_df_list into the current polymer_df
-            current_polymer_df = pd.concat(current_polymer_df_list)
-            
-            # append the current polymer df to the global list_of_clean_dfs as a tuple with the polymer name
-            list_of_clean_dfs.append((current_polymer_name, current_polymer_df))
-            
-            # reset the current_polymer_df_list to empty so that the next polymer can be appended to it
-            current_polymer_df_list = []
-    
-    # After all is said and done, return a list of the clean dfs containing polymer tuples of format (polymer_name, polymer_df)
-    print("Returning a list of tuples containing all polymer information from Batch: ", b)
-    
-    return list_of_clean_dfs
 
 def clean_the_batch_tuple_list(list_of_clean_dfs):
     '''
