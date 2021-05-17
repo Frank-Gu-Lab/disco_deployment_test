@@ -4,6 +4,8 @@ import os
 import shutil
 import glob
 import pandas as pd
+
+sys.path.append('..')
 from helpers import compare_excel
 
 # modifying path to access sibling directory
@@ -53,6 +55,9 @@ def test_merge():
     dst_path = ".\\test-files\\test_merge\\output"
     merge_path = ".\\test-files\\test_merge\\actual"
     output_file_name = "merged_binding_dataset.xlsx"
+    
+    if not os.path.exists(dst_path):
+        os.mkdir(dst_path)
 
     try:
 
