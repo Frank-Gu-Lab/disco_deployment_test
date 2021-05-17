@@ -41,7 +41,7 @@ def initialize_excel_batch_replicates(b):
     all_sheets_iterable = [sheet for sheet in name_sheets]
     
     def DropComplete(x): 
-        if "complete" in x: 
+        if "omplete" in x: 
             return False 
         else: 
             return True

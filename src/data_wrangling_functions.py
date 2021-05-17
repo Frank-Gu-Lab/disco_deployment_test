@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt     
 from scipy.stats import t
 import scipy.stats as stats
 from scipy.optimize import curve_fit
@@ -18,13 +18,12 @@ idx = pd.IndexSlice
 # functions are ordered below in the order they are called in the disco-data-processing script
 
 def convert_excel_batch_to_dataframe(b):
-    '''
-    This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
+    '''This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
     
     Parameters
     ----------
     b : str
-        String representing the relative path to an Excel Batch Book.
+        The file path to the excel book of interest.
     
     Returns
     -------
@@ -203,19 +202,24 @@ def convert_excel_batch_to_dataframe(b):
     return list_of_clean_dfs
 
 def convert_excel_to_dataframe(b, global_output_directory):
-    '''
-    This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
+    '''This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
     organized Pandas DataFrames for further processing.
     
-    Inputs are:
-    b = The file path to the excel book of interest, obtained generalizably from the "list_of_raw_books" defined above
+    Parameters
+    ----------
+    b : str
+        The file path to the excel book of interest.
+        
+    global_output_directory : str
+        The file path to the directory containing all output cleaned dataframes.
     
-    Output is a tuple (clean_tuple) in a "key-value pair format,"" where the key (at index 0 of the tuple) is:
-        current_book_title, a string containing the title of the current excel input book
-   
-    And the value (at index 1 of the tuple) is:
-        clean_df, the cleaned pandas dataframe corresponding to that book title!
-
+    Returns
+    -------
+    clean_tuple : tuple
+        Returned as a "key-value pair format", where the key (at index 0 of the tuple) is:
+            current_book_title, a string containing the title of the current excel input book
+        And the value (at index 1 of the tuple) is:
+            clean_df, the cleaned pandas dataframe corresponding to that book title!
     '''
     # PREPARE AND INITIALIZE REQUIRED VARIABLES FOR DATA WRANGLING --------------
     
@@ -457,10 +461,29 @@ def convert_excel_to_dataframe(b, global_output_directory):
     return clean_tuple
 
 def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book = 'book'):
+    '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
+    in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
+    'sat_time' 
     
-    '''This functions checks to see if two subset dataframes for the attenuation calculation, one where irrad bool is true, one where irrad bool is false, for calculating attenuation
-    are equal and in the same order in terms of their fixed experimental parameters. 'sample_or_control', 'replicate', 'title_string', 'concentration', 
-    'sat_time' '''
+    Parameters
+    ----------
+    compare_df_1, compare_df_2 : Pandas.DataFrame
+        DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.
+    
+    batch_or_book : str, {'book', 'batch'}
+        String indicating the DataFrame's format. The default runs the 'book' path, but will run the 'batch' path 
+        if indicated in the third argument.
+    
+    Returns
+    -------
+    bool
+        Returns True if the subset dataframes are equal, otherwise False.
+
+    Raises
+    ------
+    ValueError
+        If the passed dataframes do not have the same shape.
+    '''
     
     if (compare_df_1.shape == compare_df_2.shape):
         
@@ -506,10 +529,25 @@ def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book 
         raise ValueError("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
 
 def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, compare_df_3):  
-    
     '''This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
-    are equal and in the same order in terms of their shared fixed experimental parameters. 'replicate', 'concentration', 
-    'sat_time' '''
+    are equal and in the same order in terms of their shared fixed experimental parameters: 'replicate', 'concentration', and
+    'sat_time'
+    
+    Parameters
+    ----------
+    compare_df_1, compare_df_2, compare_df_3 : Pandas.DataFrame
+        DataFrames involved in the corrected attenuation calculation.
+    
+    Returns
+    -------
+    bool
+        Returns True if the subset dataframes are equal, otherwise False.
+
+    Raises
+    ------
+    ValueError
+        If the passed dataframes do not have the same shape.
+    '''
     
     #check if number of rows same in each df, number of columns not same as samples dfs contain attenuation data
     if (compare_df_1.shape[0] == compare_df_2.shape[0] == compare_df_3.shape[0]):
@@ -547,16 +585,26 @@ def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, comp
         raise ValueError("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
 def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_book = 'book'):
-    '''
-    This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
+    '''This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
     
-    Input: current_book, the dataframe output from the convert_excel_to_dataframe() function. (Or batch processing equivalent)
+    Parameters
+    ----------
+    current_book : Pandas.DataFrame
+        The dataframe output from the convert_excel_to_dataframe() function. (Or batch processing equivalent)
     
-    Outut: corr_p_attenuation_df, an updated dataframe that includes the attenuation and corr_%_attenuation columns.
+    batch_or_book : str, {'book', 'batch'}
+        Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
     
-    Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
-    
+    Returns
+    -------
+    corr_p_attenuation_df : Pandas.DataFrame
+        An updated dataframe that includes the attenuation and corr_%_attenuation columns.
+        
+    Raises
+    ------
+    ValueError
+        If the subset dataframes ((corrected) true and false irrad dataframes) are not equal. 
     '''
     
     # to get get % attenuation of peak integral, define true and false irrad dataframes below, can perform simple subtraction if passes check
@@ -625,13 +673,18 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         
 def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
     
-    '''
-    This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
-    concentration is a "hue" to differentiate points. 
+    '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
+    concentration is a "hue" to differentiate points. This function also saves the plot to a custom output folder.
     
-    This function also saves the plot to a custom output folder.
+    Parameters
+    ----------
+    current_df_attenuation : Pandas.DataFrame
+        Dataframe after attenuation and corrected % attenuation have been calculated.
     
-    Input: dataframe after attenuation and corrected % attenuation have been calculated.
+    output_directory_exploratory :
+    
+    cuurent_df_title : str
+
     Output: saves plot to file, and displays it.
     
     '''
