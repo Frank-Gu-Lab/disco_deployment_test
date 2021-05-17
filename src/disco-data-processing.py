@@ -45,7 +45,7 @@ list_of_raw_books = glob.glob("../data/input/*.xlsx")
 print('List of raw books to be analyzed are: ', list_of_raw_books, '\n')
 
 # makes a global ouput directory if there isn't already one
-global_output_directory = "data/output"
+global_output_directory = "../data/output"
 
 if not os.path.exists(global_output_directory):
     os.makedirs(global_output_directory)

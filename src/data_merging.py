@@ -133,7 +133,8 @@ def reformat(df_list, pos : bool):
         df = pd.concat(df_list)
 
         # 2) drop extra ppm column that gets created from combining multi indices
-        df = df.drop(columns = 'ppm')
+        if 'ppm' in df.columns:
+            df = df.drop(columns = 'ppm')
 
         # 2) drop sat time from index
         df.index = df.index.droplevel(1)
