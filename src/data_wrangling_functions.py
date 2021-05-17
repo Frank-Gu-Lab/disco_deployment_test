@@ -8,8 +8,8 @@ import scipy.stats as stats
 from scipy.optimize import curve_fit
 import os
 import glob
+import data_wrangling_helpers
 
-from . import data_wrangling_helpers
 initialize_excel_batch_replicates = data_wrangling_helpers.initialize_excel_batch_replicates
 
 # define handy shortcut for indexing a multi-index dataframe
