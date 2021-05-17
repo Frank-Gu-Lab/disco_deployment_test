@@ -133,7 +133,7 @@ def reformat(df_list, pos : bool):
         df = pd.concat(df_list)
 
         # 2) drop extra ppm column that gets created from combining multi indices
-        #selected_dataframes_neg = selected_dataframes_neg.drop(columns = 'ppm')
+        df = df.drop(columns = 'ppm')
 
         # 2) drop sat time from index
         df.index = df.index.droplevel(1)
