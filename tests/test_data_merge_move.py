@@ -5,7 +5,6 @@ import shutil
 import glob
 import pandas as pd
 
-sys.path.append('..')
 from helpers import compare_excel
 
 # modifying path to access sibling directory
@@ -83,5 +82,4 @@ def test_merge():
         msg1 = "{} was not successfully created.".format(merge_path + "\\" + output_file_name)
         assert os.path.exists(merge_path + "\\" + output_file_name), msg1
         
-        #os.remove(merge_path + "\\" + output_file_name)
-    
+        os.remove(merge_path + "\\" + output_file_name)

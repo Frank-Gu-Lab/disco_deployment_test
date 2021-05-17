@@ -264,8 +264,8 @@ if not os.path.exists(merge_output_directory):
     os.makedirs(merge_output_directory)
 
 # define data source path and data destination path to pass to data merging function
-source_path = '../disco-data-processing/{}/*/data_tables_from_*'.format(global_output_directory)
-destination_path = '../disco-data-processing/{}'.format(merge_output_directory)
+source_path = '{}/*/data_tables_from_*'.format(global_output_directory)
+destination_path = '{}'.format(merge_output_directory)
 
 # call data merging function and write complete dataset to file
 merged_dataset = merge(source_path, destination_path)
