@@ -58,6 +58,9 @@ def test_merge():
     if not os.path.exists(merge_path):
         os.mkdir(merge_path)
 
+    if not os.path.exists(dst_path):
+        os.mkdir(dst_path)
+
     try:
 
         output = merge(src_path, dst_path)
