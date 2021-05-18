@@ -130,6 +130,7 @@ def reformat(df_list, pos : bool):
     else:
         
         # 2) concat into one df
+        
         df = pd.concat(df_list)
 
         # 2) drop extra ppm column that (sometimes) gets created from combining multi indices
@@ -140,8 +141,6 @@ def reformat(df_list, pos : bool):
         df.index = df.index.droplevel(1)
 
         # 2) reset and reformat index
-        
-        df.to_excel("~/Desktop/another.xlsx")
         
         df = df.reset_index()
         df = df.rename_axis(columns = "index")

@@ -50,7 +50,7 @@ def test_move():
 
 def test_merge():
     
-    src_path = ".\\test-files\\test_merge\\data\\*"
+    src_path = ".\\test-files\\test_merge\\data\\KHA\\data_tables_from_KHA"
     dst_path = ".\\test-files\\test_merge\\output"
     merge_path = ".\\test-files\\test_merge\\actual"
     output_file_name = "merged_binding_dataset.xlsx"
