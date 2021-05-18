@@ -48,11 +48,13 @@ def clean(df_list, polymer_list, pos : bool):
     Parameters
     ----------
     df_list : list
+        List of Pandas DataFrames to be cleaned.
     
-    polymer_ list : list
+    polymer_list : list
+        List of polymer names contained in the passed DataFrames.
     
     pos : bool
-
+        True for positive binding observations, False for negative binding observations.
     """
     
     if pos:
@@ -95,19 +97,21 @@ def clean(df_list, polymer_list, pos : bool):
                     (        'amp_factor', 'Unnamed: 11_level_1')]]
                 df_list[i] = df.drop(drop_data_3.columns, axis = 1).droplevel(1, axis = 1)
                 
-
             else:
                 # drop other columns not needed, and drop extra level in column index
                 drop_data_3 = df.iloc[:, [1,2,3,7]]
                 df_list[i] = df.drop(drop_data_3.columns, axis = 1).droplevel(1, axis = 1)
 
 def reformat(df_list, pos : bool):
-    """
+    """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame. 
+    
     Parameters
     ----------
     df_list : list
+        List of Pandas DataFrames to be concatenated and reformatted.
     
     pos : bool
+        True for positive binding observations, False for negative binding observations.
     """
 
     if pos:
@@ -159,7 +163,8 @@ def reformat(df_list, pos : bool):
     return df
 
 def join(df1, df2):
-    """
+    """This function takes in two cleaned DataFrames and merges them in a way that makes sense.
+    
     Parameters
     ----------
     df1 : Pandas.DataFrame
@@ -198,8 +203,7 @@ def join(df1, df2):
 
 def merge(source_path, destination_path):
 
-    ''' 
-    This function generates a merged machine learning ready dataset.
+    ''' This function generates a merged machine learning ready dataset.
 
     It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.
     
@@ -213,7 +217,7 @@ def merge(source_path, destination_path):
         
     Returns
     -------
-    table_c : Pandas.DataFrame
+    Pandas.DataFrame
         DataFrame containing the resulting merged datafiles from destination_path.
     '''
 

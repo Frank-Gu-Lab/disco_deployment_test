@@ -15,24 +15,24 @@ idx = pd.IndexSlice
 # functions are ordered below in the order they are called in the disco-data-processing script
 
 def initialize_excel_batch_replicates(b):
-    '''
-    This function determines the unique polymers contained in an excel book,
-    the number of replicates of those polymers, and also returns an iterable of 
-    the sheet names without Complete in them.
+    '''This function determines the unique polymers contained in an excel book, the number of replicates of those polymers, 
+    and also returns an iterable of the sheet names without Complete in them.
     
     Parameters
     ----------
     b : str
+        Path file to the Excel Batch file of interest.
     
     Returns
     -------
     unique_polymers : list
+        List of unique polymer names contained in b.
     
     unique_polymer_replicates : list
+        List of number of replicates for each unique polymer.
     
     all_sheets_complete_removed : list
-    
-    
+        List of sheet names in b without Complete in them.    
     '''
     all_sheets_iterator = []
     all_data_sheets = []
@@ -759,12 +759,11 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     current_df_attenuation : Pandas.DataFrame
         Dataframe after attenuation and corrected % attenuation have been calculated.
     
-    output_directory_exploratory :
-    
+    output_directory_exploratory : str
+        File path to directory that contains attenuation data for all polymer samples.
+        
     cuurent_df_title : str
-
-    Output: saves plot to file, and displays it.
-    
+        Title of DataFrame.
     '''
     a4_dims = (11.7, 8.27)
     fig1, ax = plt.subplots(figsize = a4_dims)
@@ -785,14 +784,19 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
 
 def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
     
-    '''
-    This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
-    ppm as a "hue" to differentiate points. 
+    '''This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
+    ppm as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
     
-    This function also saves the plot to a custom output folder.
+    Parameters
+    ----------
+    current_df_attenuation : Pandas.DataFrame
+        Dataframe after attenuation and corrected % attenuation have been calculated.
     
-    Input: dataframe after attenuation and corrected % attenuation have been calculated.
-    Output: saves plot to file, and displays it.
+    output_directory_exploratory : str
+        File path to directory that contains attenuation data for all polymer samples.
+        
+    cuurent_df_title : str
+        Title of DataFrame.
     '''
     
     a4_dims = (11.7, 8.27)
@@ -817,8 +821,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
 
 def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     
-    '''
-    This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
+    '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
     
     Statisical analysis is performed on a "mean" basis, across many experimental replicates.
@@ -827,10 +830,15 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     It drops the columns and rows not required for stats, calculates the mean and std of parameters we do 
     care about, and also appends the degrees of freedom and sample size.
     
-    Input: current_df_attenuation
-    Output: mean_current_df_for_stats 
+    Parameters
+    ----------
+    corr_p_attenuation_df : Pandas.DataFrame
     
-    Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
+    batch_or_book : str, {'book', 'batch'}
+        Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
+    
+    Returns
+    -------
     
     '''
     # follow this path if data is from a single polymer book
@@ -969,6 +977,13 @@ def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
 
         Still theoretically need to validate sample data meets assumptions for one sample t test: normal dist, homegeneity of variance, & no outliers. **
         
+        Parameters
+        ----------
+        mean_corr_attenuation_ppm :
+    
+        p : float, default=0.95
+            Statistical p-value
+        
         Input: current_df_mean after having been prepared for stats (output from prep_mean_data_for_stats)
         Output: The same df as input, only now with the t test values and results appended
         
@@ -1001,20 +1016,32 @@ def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
     return mean_corr_attenuation_ppm
 
 def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_df, af_denominator):
-    '''
-    This function computes an amplification factor for the mean stats df and the replicate stats df.
+    '''This function computes an amplification factor for the mean stats df and the replicate stats df.
     Each polymer may have a different denominator to consider for the amp factor calculation, so it
     is passed into this function as a variable.
     
-    Input: mean_stats_df, replicates stats df, the denominator for amp factor calculation
-    Output: mean_stats_df, replicates_stats_df with the amp factor column 
+    Parameters
+    ----------
+    mean_stats_df :
     
+    replicates stats df :
+    
+    af_denominator : 
+        The denominator for amp factor calculation.
+        
+    Returns
+    -------
+    current_mean_stats_df :
+    
+    current_replicates_stats_df with the amp factor column 
+    
+    Notes
+    -----
     For each concentration, compute the amplification factor AFconc = Cj/10. 
     
     Defaults to book path but will take batch path if 'batch' is passed.
     
     Might need to do some further work with custom af_denominators
-    
     '''
     
     amp_factor_denominator = af_denominator
@@ -1028,17 +1055,38 @@ def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_
     return current_mean_stats_df, current_replicate_stats_df
 
 def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory, batch_or_book='book'):
-
-    '''
-    This function identifies whether proton peaks pass or fail an acceptance criterion to allow
+    '''This function identifies whether proton peaks pass or fail an acceptance criterion to allow
     them to be further analyzed. If the peaks fail, they are dropped from further analysis.
     
-    Criterion for dropping peaks from Further consideration: If more than two proton peak datapoints are flagged as not significant in the mean dataframe 
+    Further consideration: If more than two proton peak datapoints are flagged as not significant in the mean dataframe 
     WITHIN a given concentration, the associated proton peak is removed from further analysis.
     
-    Input: current_df_mean and current_df_replicats
-    Outputs: the same dataframes, after dropping proton peaks that fail criterion, writes a text file of which points have been dropped
-
+    Parameters
+    ----------
+    current_df_mean : Pandas.DataFrame
+    
+    current_df_replicates : Pandas.DataFrame
+    
+    current_df_title : str
+        Title of the dataframe of interest.
+    
+    output_directory : str
+        File path to the output directory where the text file containing the dropped points is saved.
+    
+    batch_or_book : str, {'book', 'batch'}    
+        Default is book, but it will run the batch path if 'batch' is passed to function.
+    
+    Returns
+    -------
+    current_df_mean_passed :
+        The current_df_mean dataframe with the insignificant proton peaks removed.
+    
+    current_df_replicates_passed :
+        The current_df_replicates dataframe with the insignificant proton peaks removed.
+        
+    Notes
+    -----
+    Function also saves a text file of which points have been dropped.
     '''
 
     #initialize a df that will keep data from the current mean df that meet the criterion above
@@ -1156,8 +1204,23 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
         return current_df_mean_passed, current_df_replicates_passed
 
 def y_hat_fit(t, a, b):
-    '''
-    This function returns y_ikj_hat as the fit model based on alpha and beta.
+    '''This function returns y_ikj_hat as the fit model based on alpha and beta.
+    
+    Parameters
+    ----------
+    t : 
+    
+    a : float
+     
+    b : float
+    
+    Returns
+    -------
+    np.array
+        NumPy array representing the output values of the fit model based on alpha and beta.
+    
+    Notes
+    -----
     
     Some useful scipy example references for curve fitting:
     1) https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares
@@ -1168,18 +1231,39 @@ def y_hat_fit(t, a, b):
     return a * (1 - np.exp(t * -b))
 
 def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, output_directory3, current_df_title, batch_or_book = 'book'):
-    '''
-    
-    We are now ready to calculate the nonlinear curve fit models (or "hat" models), 
+    '''We are now ready to calculate the nonlinear curve fit models (or "hat" models), 
     for both individual replicate data (via stats_df_replicates), and on a mean (or "bar") basis (via stats_df_mean). 
     
     This function carries out the curve fitting process for the current dataframe.
     It calculates the nonlinear curve fit, then the SSE and AFo on a mean and replicate basis using only significant points.
     
-    Input: stats_df_mean, stats_df_replicates after all other pre processing activities have occurred/bad pts dropped
-    Output: returns final updated dataframes, figures are displayed, figures are saved to file in custom directory, and dataframes saved to Excel file with final results
+    Parameters
+    ----------
+    stats_df_mean : Pandas.DataFrame
     
-    Some housekeeping notes to avoid confusion: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stats_df_replicates : Pandas.DataFrame
+    
+    output_directory2 : str
+        File path to the output directory where the figures are saved.
+    
+    output_directory3 : str
+        File path to the output directory where the final Excel files are saved.
+    
+    current_df_title : str
+    
+    batch_or_book : str, {'book', 'batch'}
+    
+    Input: stats_df_mean, stats_df_replicates after all other pre processing activities have occurred/bad pts dropped
+    
+    Returns
+    -------
+    stats_df_mean : Pandas.DataFrame
+    
+    stats_df_replicates : Pandas.DataFrame
+
+    Notes
+    -----
+    Figures are displayed and saved as a file in custom directory. Dataframes are also saved to Excel files with final results.
     
     Mean, average, and bar are used equivalently in this part of the code.
 
@@ -1192,7 +1276,6 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     yikj = response model (Amp Factor x Corr % Attenuation) on a per replicate basis (not mean), fits with stats_df_replicates
     yikj_bar = response model (Amp Factor x Corr % Attenuation) on an average basis, fits with stats_df_mean
     yikj_hat = the fitted nonlinear model according to the levenburg marquadt minimization of least squares algorithm
-    
     '''
     
     # first assign yijk to the replicate dataframe 
@@ -1287,7 +1370,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                     y_ikj = one_graph_data['yikj']
 
                     #this will skip the graphing and analysis for cases where a proton peak has been removed from consideration 
-                    if y_ikj.size == 0: continue
+                    if y_ikj.size == 0: 
+                        continue
 
                     # define sat_time to be used for the x_data 
                     sat_time = one_graph_data[['sat_time']].values.ravel()
@@ -1475,13 +1559,18 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
         return stats_df_mean, stats_df_replicates      
 
 def clean_the_batch_tuple_list(list_of_clean_dfs):
-    '''
-    This function performs simple data cleaning operations on 
-    batch processed data such that further analysis can be performed equivalently 
+    '''This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently 
     on inputs of batch or individual data formats.
     
-    Outputs a list of clean polymer dataframes.
+    Parameters
+    ----------
+    list_of_clean_dfs : list
+        List of dataframes to be cleaned.
     
+    Returns
+    -------
+    final_clean_polymer_df_list : list
+        List of clean polymer dataframes.    
     '''
     
     print("Beginning batch data cleaning.")
