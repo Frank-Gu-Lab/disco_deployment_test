@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def compare_excel(ex1, ex2):
     """
@@ -37,8 +38,10 @@ def compare_excel(ex1, ex2):
     # compare values
     
     for i in range(ex1.shape[0]):
-        for j in range(ex2.shape[1]):
+        for j in range(ex1.shape[1]):
             if ex1.iloc[i][j] != ex2.iloc[i][j]:
+                if np.isnan(ex1.iloc[i][j]) and np.isnan(ex2.iloc[i][j]): # can't compare nans directly
+                    continue
                 return False
     
     return True

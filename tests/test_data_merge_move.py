@@ -4,8 +4,8 @@ import os
 import shutil
 import glob
 import pandas as pd
-import helpers
-compare_excel = helpers.compare_excel
+
+from helpers import compare_excel
 
 # modifying path to access sibling directory
 sys.path.append(os.getcwd() + '\\..')
@@ -47,13 +47,16 @@ def test_move():
 ################## TESTING MERGE ####################
       
 # testing overall functionality
-  
-def test_merge():
 
-    src_path = ".\\test-files\\test_merge\\data\\*"
+def test_merge():
+    
+    src_path = ".\\test-files\\test_merge\\data\\KHA\\data_tables_from_KHA"
     dst_path = ".\\test-files\\test_merge\\output"
     merge_path = ".\\test-files\\test_merge\\actual"
     output_file_name = "merged_binding_dataset.xlsx"
+    
+    if not os.path.exists(merge_path):
+        os.mkdir(merge_path)
 
     try:
 
@@ -72,9 +75,8 @@ def test_merge():
         
         # TEARDOWN
         
-         # check if file exists
+        # check if file exists
         msg1 = "{} was not successfully created.".format(merge_path + "\\" + output_file_name)
         assert os.path.exists(merge_path + "\\" + output_file_name), msg1
         
         os.remove(merge_path + "\\" + output_file_name)
-    
