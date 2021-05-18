@@ -13,7 +13,7 @@ import glob
 idx = pd.IndexSlice
 
 # functions are ordered below in the order they are called in the disco-data-processing script
-
+# HELPER
 def initialize_excel_batch_replicates(b):
     '''This function determines the unique polymers contained in an excel book, the number of replicates of those polymers, 
     and also returns an iterable of the sheet names without Complete in them.
@@ -107,6 +107,10 @@ def convert_excel_batch_to_dataframe(b):
     -------
     list_clean_dfs : list
         List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
+        Tuples are in a "key-value pair format", where the key (at index 0 of the tuple) is:
+            current_book_title, a string containing the title of the current excel input book
+        And the value (at index 1 of the tuple) is:
+            clean_df, the cleaned pandas dataframe corresponding to that book title!
     '''
     # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
     current_polymer_df_list = []
@@ -538,6 +542,71 @@ def convert_excel_to_dataframe(b, global_output_directory):
     
     return clean_tuple
 
+def clean_the_batch_tuple_list(list_of_clean_dfs):
+    '''This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently 
+    on inputs of batch or individual data formats.
+    
+    Parameters
+    ----------
+    list_of_clean_dfs : list
+        List of dataframes to be cleaned.
+    
+    Returns
+    -------
+    final_clean_polymer_df_list : list
+        List of clean polymer dataframes.    
+    '''
+    
+    print("Beginning batch data cleaning.")
+
+    final_clean_polymer_df_list = []
+    
+    # batch is a list of n batches provided as excel inputs
+    for batch in list_of_clean_dfs:
+
+        #batch[i][1] is the ith polymer dataframe within the batch 
+        for i in range(len(batch)):
+            
+            current_df = batch[i][1]
+            
+            #reset the index of the current df for easier cleaning/avoiding the setting with copy warning
+            current_df = current_df.reset_index()
+            
+            # drop NaN rows from the current df and the old index column
+            current_df = current_df.dropna(axis = 0, how = 'any', inplace = False)
+            current_df = current_df.drop(columns = 'index')
+
+            # remove brackets from polymer name if there are any            
+            clean_polymer_name = current_df['polymer_name'].apply(lambda x: x.split('(')[0])
+            current_df.loc[:,'polymer_name'] = clean_polymer_name
+
+            # change BSM and Control to 'sample' and 'control' 
+            sample_mask = current_df['sample_or_control'].str.contains('BSM')
+            control_mask = current_df['sample_or_control'].str.contains('ontrol') 
+            current_df.loc[sample_mask, 'sample_or_control'] = 'sample'
+            current_df.loc[control_mask, 'sample_or_control'] = 'control'
+
+            # change irrad bool On/Off flags to True and False if not already a bool list
+            if type(current_df['irrad_bool'].iloc[0]) != bool:
+                irrad_true_mask = current_df['irrad_bool'].str.contains('On')
+                irrad_false_mask = current_df['irrad_bool'].str.contains('Off')
+                current_df.loc[irrad_true_mask, 'irrad_bool'] = True
+                current_df.loc[irrad_false_mask, 'irrad_bool'] = False
+
+            # convert ppm range to mean value in a new column
+            ppm_content = current_df['ppm_range'].apply(lambda x: (float(x.split(' .. ')[0]) + float(x.split(' .. ')[1]))*(1/2) )
+            current_df.insert(4, 'ppm', ppm_content)
+            
+            # convert proton_peak_index values from floats into ints via numpy int method
+            ppi_content = current_df['proton_peak_index'].values.astype(int)
+            current_df.loc[:,'proton_peak_index'] = ppi_content
+            
+            # append cleaned df to clean polymer data list
+            final_clean_polymer_df_list.append(current_df)
+
+    print("Batch data cleaning completed.") 
+    return final_clean_polymer_df_list
+
 def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book = 'book'):
     '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
     in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
@@ -750,14 +819,14 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         raise ValueError("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
         
 def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
-    
     '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
-    concentration is a "hue" to differentiate points. This function also saves the plot to a custom output folder.
+    concentration as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
     
     Parameters
     ----------
     current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated.
+        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
+        (output from add_attenuation_and_corr_attenuation_to_dataframe).
     
     output_directory_exploratory : str
         File path to directory that contains attenuation data for all polymer samples.
@@ -783,14 +852,14 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     return
 
 def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
-    
     '''This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
     ppm as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
     
     Parameters
     ----------
     current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated.
+        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
+        (output from add_attenuation_and_corr_attenuation_to_dataframe).
     
     output_directory_exploratory : str
         File path to directory that contains attenuation data for all polymer samples.
@@ -820,7 +889,6 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     return
 
 def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
-    
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
     
@@ -833,13 +901,15 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     Parameters
     ----------
     corr_p_attenuation_df : Pandas.DataFrame
+        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
+        (output from add_attenuation_and_corr_attenuation_to_dataframe).
     
     batch_or_book : str, {'book', 'batch'}
-        Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
-    
-    Returns
+        Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
     -------
-    
+    mean_corr_attenuation_ppm : Pandas.DataFrame
+        Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of 
+        interest are appended. 
     '''
     # follow this path if data is from a single polymer book
     if batch_or_book == 'book':
@@ -853,7 +923,6 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
         # Add a new column to data for the index of proton peaks in an experimental set of a polymer (i.e. proton peak index applies to index protons within one polymer book)
         proton_index = data_for_stats.index
         data_for_stats['proton_peak_index'] = proton_index
-    
     
         # determine mean corr % attenuation and mean ppm per peak index, time, and concentration across replicates using groupby sum (reformat) and groupby mean (calculate mean)
         regrouped_df = data_for_stats.groupby(by = ['concentration', 'sat_time', 'proton_peak_index', 'replicate'])[['ppm','corr_%_attenuation']].sum()
@@ -881,7 +950,6 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
         
     
     def get_dofs(peak_indices_array):
-    
         ''' This function calculates the number of degrees of freedom (i.e. number of experimental replicates minus one) for statistical calculations 
         using the "indices array" of a given experimenal set as input.
     
@@ -889,6 +957,16 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
         where the count of each repeated digit minus one represents the degrees of freedom for that peak (i.e. the number of replicates -1).
         With zero based indexing, the function below generates the DOFs for the input array of proton_peak_index directly, in a format
         that can be directly appended to the stats table.
+        
+        Parameters
+        ----------
+        peak_indices_array : NumPy.array
+            NumPy array representing the proton_peak_index column from the "regrouped_df" from prep_mean_data_for_stats.
+        
+        Returns
+        -------
+        dof_list : list
+            List containing the DOFs for peak_indices_array.
         '''
 
         dof_list = []
@@ -915,7 +993,7 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
                 dof_count = dof_count + 1
 
         return dof_list
-    
+
     # Calculate degrees of freedom and sample size for each datapoint using function above
     peak_index_array = np.array(input_for_dofs)
     dofs = get_dofs(peak_index_array)
@@ -924,24 +1002,31 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     mean_corr_attenuation_ppm['dofs'] = dofs
     mean_corr_attenuation_ppm['sample_size'] = np.asarray(dofs) + 1
         
-        
     return mean_corr_attenuation_ppm 
 
 def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
     
-    '''
-    This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
+    '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
     
     This code prepares the per-observation data accordingly, and outputs the replicate_df_for_stats.
     
     It drops the columns and rows not required for stats, and adds the proton peak index.
     
-    Input: current_df_attenuation
-    Output: replicate_current_df_for_stats 
+    Parameters
+    ----------
+    corr_p_attenuation_df : Pandas.DataFrame
+        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
+        (output from add_attenuation_and_corr_attenuation_to_dataframe).
     
-    Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
+    batch_or_book : str, {'book', 'batch'}
+        Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
     
+    Returns
+    -------
+    replicate_df_for_stats : Pandas.DataFrame
+        Modified dataframe, where columns not required for statistical modelling are dropped and the column for proton peak index
+        is appended.
     '''
     
     # drop any rows that are entirely null from the dataframe 
@@ -962,8 +1047,7 @@ def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book')
 
 def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
 
-    ''' 
-        Procedure followed from: https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/ 
+    ''' Procedure followed from: https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/ 
 
         One sample t test: tests whether the mean of a population is significantly different than a sample mean.
         A proper t-test analysis performs calculations to help infer what the expected population mean (that 
@@ -979,18 +1063,20 @@ def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
         
         Parameters
         ----------
-        mean_corr_attenuation_ppm :
-    
+        mean_corr_attenuation_ppm : Pandas.DataFrame
+            Modified dataframe that has been prepared for statistical modelling (output from prep_mean_data_for_stats).
+
         p : float, default=0.95
-            Statistical p-value
+            Cumulative probability (1 - alpha)
+
+        Returns
+        -------
+        mean_corr_attenuation_ppm : Pandas.DataFrame
+            The input dataframe, now with the t-test values and results appended.
         
-        Input: current_df_mean after having been prepared for stats (output from prep_mean_data_for_stats)
-        Output: The same df as input, only now with the t test values and results appended
-        
+        Notes
+        -----
         Book and batch paths are the same.
-        
-        Target p value defaults to 0.95 unless other argument passed.
-        
     '''
 
     # Initialize Relevant t test Parameters
@@ -1022,18 +1108,22 @@ def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_
     
     Parameters
     ----------
-    mean_stats_df :
+    mean_stats_df : Pandas.DataFrame
+        Modified dataframe with t-test values and results appended (output from get_t_test_results).
     
-    replicates stats df :
+    replicates_stats_df : Pandas.DataFrame
+        Modified dataframe from prep_replicate_data_for_stats.
     
-    af_denominator : 
+    af_denominator : int
         The denominator for amp factor calculation.
         
     Returns
     -------
-    current_mean_stats_df :
-    
-    current_replicates_stats_df with the amp factor column 
+    current_mean_stats_df : Pandas.DataFrame
+        The mean_stats_df dataframe with the amp factor column appended.
+        
+    current_replicates_stats_df : Pandas.DataFrame
+        The replicates_stats_df dataframe with the amp factor column appended.
     
     Notes
     -----
@@ -1064,8 +1154,10 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     Parameters
     ----------
     current_df_mean : Pandas.DataFrame
+        Modifed dataframe from compute_amplification_factor.
     
-    current_df_replicates : Pandas.DataFrame
+    current_df_replicates : Pandas.DataFrame   
+        Modified dataframe from compute_amplification_factor.
     
     current_df_title : str
         Title of the dataframe of interest.
@@ -1208,15 +1300,19 @@ def y_hat_fit(t, a, b):
     
     Parameters
     ----------
-    t : 
+    t : NumPy.array
+        NumPy array representing all the variable saturation times for each unique proton.
     
     a : float
-     
+        Least-squares curve fitting parameter, represents STDmax. the asymptomic maximum of the build-up curve.
+        
     b : float
+        Least-squares curve fitting parameter, represents -k_sat, the negative of the rate constant related to the relaxation
+        properties of a given proton.
     
     Returns
     -------
-    np.array
+    NumPy.array
         NumPy array representing the output values of the fit model based on alpha and beta.
     
     Notes
@@ -1226,7 +1322,6 @@ def y_hat_fit(t, a, b):
     1) https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares
     2) https://lmfit.github.io/lmfit-py/model.html
     3) https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html 
-
     '''
     return a * (1 - np.exp(t * -b))
 
@@ -1240,8 +1335,10 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     Parameters
     ----------
     stats_df_mean : Pandas.DataFrame
+        Fully pre-processed dataframe.
     
     stats_df_replicates : Pandas.DataFrame
+        Fully pre-processed dataframe.
     
     output_directory2 : str
         File path to the output directory where the figures are saved.
@@ -1250,16 +1347,18 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
         File path to the output directory where the final Excel files are saved.
     
     current_df_title : str
+        Title of current dataframe.
     
     batch_or_book : str, {'book', 'batch'}
-    
-    Input: stats_df_mean, stats_df_replicates after all other pre processing activities have occurred/bad pts dropped
+        Default is book, but it will run the batch path if 'batch' is passed to function.
     
     Returns
     -------
     stats_df_mean : Pandas.DataFrame
+        The input stats_df_mean dataframe with results from curve fitting appended to table.
     
     stats_df_replicates : Pandas.DataFrame
+        The input stats_df_replicates dataframe with results from curve fitting appended to table.
 
     Notes
     -----
@@ -1558,67 +1657,3 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
         print('Export of all figures to file complete!')
         return stats_df_mean, stats_df_replicates      
 
-def clean_the_batch_tuple_list(list_of_clean_dfs):
-    '''This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently 
-    on inputs of batch or individual data formats.
-    
-    Parameters
-    ----------
-    list_of_clean_dfs : list
-        List of dataframes to be cleaned.
-    
-    Returns
-    -------
-    final_clean_polymer_df_list : list
-        List of clean polymer dataframes.    
-    '''
-    
-    print("Beginning batch data cleaning.")
-
-    final_clean_polymer_df_list = []
-    
-    # batch is a list of n batches provided as excel inputs
-    for batch in list_of_clean_dfs:
-
-        #batch[i][1] is the ith polymer dataframe within the batch 
-        for i in range(len(batch)):
-            
-            current_df = batch[i][1]
-            
-            #reset the index of the current df for easier cleaning/avoiding the setting with copy warning
-            current_df = current_df.reset_index()
-            
-            # drop NaN rows from the current df and the old index column
-            current_df = current_df.dropna(axis = 0, how = 'any', inplace = False)
-            current_df = current_df.drop(columns = 'index')
-
-            # remove brackets from polymer name if there are any            
-            clean_polymer_name = current_df['polymer_name'].apply(lambda x: x.split('(')[0])
-            current_df.loc[:,'polymer_name'] = clean_polymer_name
-
-            # change BSM and Control to 'sample' and 'control' 
-            sample_mask = current_df['sample_or_control'].str.contains('BSM')
-            control_mask = current_df['sample_or_control'].str.contains('ontrol') 
-            current_df.loc[sample_mask, 'sample_or_control'] = 'sample'
-            current_df.loc[control_mask, 'sample_or_control'] = 'control'
-
-            # change irrad bool On/Off flags to True and False if not already a bool list
-            if type(current_df['irrad_bool'].iloc[0]) != bool:
-                irrad_true_mask = current_df['irrad_bool'].str.contains('On')
-                irrad_false_mask = current_df['irrad_bool'].str.contains('Off')
-                current_df.loc[irrad_true_mask, 'irrad_bool'] = True
-                current_df.loc[irrad_false_mask, 'irrad_bool'] = False
-
-            # convert ppm range to mean value in a new column
-            ppm_content = current_df['ppm_range'].apply(lambda x: (float(x.split(' .. ')[0]) + float(x.split(' .. ')[1]))*(1/2) )
-            current_df.insert(4, 'ppm', ppm_content)
-            
-            # convert proton_peak_index values from floats into ints via numpy int method
-            ppi_content = current_df['proton_peak_index'].values.astype(int)
-            current_df.loc[:,'proton_peak_index'] = ppi_content
-            
-            # append cleaned df to clean polymer data list
-            final_clean_polymer_df_list.append(current_df)
-
-    print("Batch data cleaning completed.") 
-    return final_clean_polymer_df_list

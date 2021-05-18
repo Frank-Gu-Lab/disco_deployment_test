@@ -6,10 +6,11 @@
 
 # For Batch Format inputs, please ensure unique observations intended to be analyzed together follow the same naming format. For example, if there are 4 total CMC results, 3 from one day to be analyzed together, and 1 from a separate occasion, the sheet tabs should be named according to one format: CMC (1), CMC (2), CMC (3) {These 3 will be analyzed together. The 4th CMC tab should be named something different, such as CMC_other, and will be treated separately.
 
-# Your Input Folder Should Look Like:    
-# - disco-data-processing.py
-# - data_wrangling_functions.py
-# - input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
+# Your Directory Should Look Like:    
+# - src/disco-data-processing.py
+# - src/data_wrangling_functions.py
+# - src/data_merging.py
+# - data/input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
 
 # Then simply run this .py script. 
 # Part 1 : Reading and Cleaning Data  - prepare the data for statistical analysis
@@ -117,18 +118,18 @@ if len(clean_book_tuple_list) != 0:
             os.makedirs(output_directory_exploratory)
 
         # Define a output directory for the curve fit plots for the current df title
-        output_directory2 = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
+        output_directory_curve = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the curve_fit_plots
-        if not os.path.exists(output_directory2):
-            os.makedirs(output_directory2)  
+        if not os.path.exists(output_directory_curve):
+            os.makedirs(output_directory_curve)  
 
         # Define a output directory for the final data tables after curve fitting and stats
-        output_directory3 = "{}/data_tables_from_{}".format(output_directory, current_df_title)
+        output_directory_tables = "{}/data_tables_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the data tables
-        if not os.path.exists(output_directory3):
-            os.makedirs(output_directory3)    
+        if not os.path.exists(output_directory_tables):
+            os.makedirs(output_directory_tables)    
 
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
 
@@ -156,16 +157,16 @@ if len(clean_book_tuple_list) != 0:
         
         # export current dataframes to excel with no observations dropped, for future reference in ML -----
         output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
-        current_df_replicates.to_excel(os.path.join(output_directory3, output_file_name)) 
+        current_df_replicates.to_excel(os.path.join(output_directory_tables, output_file_name)) 
         output_file_name = "stats_analysis_output_mean_all_{}.xlsx".format(current_df_title) # mean
-        current_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
+        current_df_mean.to_excel(os.path.join(output_directory_tables, output_file_name))
         
         # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory)
 
         # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
         current_df_mean, current_df_replicates = execute_curvefit(
-            current_df_mean, current_df_replicates, output_directory2, output_directory3, current_df_title)
+            current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title)
         print("All activities are now completed for: {}".format(current_df_title))
 
     print("Hooray! All polymers in the input files have been processed.")
@@ -203,18 +204,18 @@ if len(clean_batch_tuple_list) != 0:
             os.makedirs(output_directory_exploratory)
 
         # Define an output directory for the curve fit plots for the current df title
-        output_directory2 = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
+        output_directory_curve = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the curve_fit_plots
-        if not os.path.exists(output_directory2):
-            os.makedirs(output_directory2)  
+        if not os.path.exists(output_directory_curve):
+            os.makedirs(output_directory_curve)  
 
         # Define an output directory for the final data tables after curve fitting and stats
-        output_directory3 = "{}/data_tables_from_{}".format(output_directory, current_df_title)
+        output_directory_tables = "{}/data_tables_from_{}".format(output_directory, current_df_title)
 
         # make this directory if there isn't already one for the data tables
-        if not os.path.exists(output_directory3):
-            os.makedirs(output_directory3)    
+        if not os.path.exists(output_directory_tables):
+            os.makedirs(output_directory_tables)    
 
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
 
@@ -243,16 +244,16 @@ if len(clean_batch_tuple_list) != 0:
         
         # export current dataframes to excel with no observations dropped, for future reference in ML -----
         output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
-        current_df_replicates.to_excel(os.path.join(output_directory3, output_file_name)) 
+        current_df_replicates.to_excel(os.path.join(output_directory_tables, output_file_name)) 
         output_file_name = "stats_analysis_output_mean_all_{}.xlsx".format(current_df_title) # mean
-        current_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
+        current_df_mean.to_excel(os.path.join(output_directory_tables, output_file_name))
         
         # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory, batch_or_book='batch')
 
         # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
         current_df_mean, current_df_replicates = execute_curvefit(
-            current_df_mean, current_df_replicates, output_directory2, output_directory3, current_df_title, batch_or_book='batch')
+            current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book='batch')
         print("All activities are now completed for: {}".format(current_df_title))
 
     print("Hooray! All polymers in the input files have been processed.")
