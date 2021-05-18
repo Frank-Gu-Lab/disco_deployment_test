@@ -132,14 +132,17 @@ def reformat(df_list, pos : bool):
         # 2) concat into one df
         df = pd.concat(df_list)
 
-        # 2) drop extra ppm column that gets created from combining multi indices
-        if 'ppm' in df.columns:
-            df = df.drop(columns = 'ppm')
+        # 2) drop extra ppm column that (sometimes) gets created from combining multi indices
+        
+        df = df.loc[:, :"significance"]
 
         # 2) drop sat time from index
         df.index = df.index.droplevel(1)
 
         # 2) reset and reformat index
+        
+        df.to_excel("~/Desktop/another.xlsx")
+        
         df = df.reset_index()
         df = df.rename_axis(columns = "index")
 
