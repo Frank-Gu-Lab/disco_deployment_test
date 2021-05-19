@@ -89,5 +89,3 @@ class TestMerge:
             assert os.path.exists(merge_path + "\\" + output_file_name), msg1
             
             os.remove(merge_path + "\\" + output_file_name)
-
-print(sys.path)

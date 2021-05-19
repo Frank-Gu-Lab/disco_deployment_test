@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>data_merging module &#8212; disco-data-processing 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="data_wrangling_functions module" href="data_wrangling_functions.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="data_wrangling_functions.html" title="data_wrangling_functions module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="src"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">disco-data-processing 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">src</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">data_merging module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-data_merging">
+<span id="data-merging-module"></span><h1>data_merging module<a class="headerlink" href="#module-data_merging" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="data_merging.clean">
+<span class="sig-prename descclassname"><span class="pre">data_merging.</span></span><span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polymer_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_merging.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column, 
+and drops the appropriate columns to the index level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df_list</strong><span class="classifier">list</span></dt><dd><p>List of Pandas DataFrames to be cleaned.</p>
+</dd>
+<dt><strong>polymer_list</strong><span class="classifier">list</span></dt><dd><p>List of polymer names contained in the passed DataFrames.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">bool</span></dt><dd><p>True for positive binding observations, False for negative binding observations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_merging.join">
+<span class="sig-prename descclassname"><span class="pre">data_merging.</span></span><span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_merging.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in two cleaned DataFrames and merges them in a way that makes sense.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df1, df2</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Cleaned dataframes containing positive and negative binding observations, respectively.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Final merged dataframe containing the merged dataset and positive and negative observations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_merging.merge">
+<span class="sig-prename descclassname"><span class="pre">data_merging.</span></span><span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_merging.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a merged machine learning ready dataset.</p>
+<p>It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>source_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.</p>
+</dd>
+<dt><strong>destination_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of destination directory.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Pandas.DataFrame</dt><dd><p>DataFrame containing the resulting merged datafiles from destination_path.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_merging.move">
+<span class="sig-prename descclassname"><span class="pre">data_merging.</span></span><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_merging.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
+where the merging of positive and negative observations into one dataset will occur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>source_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.</p>
+</dd>
+<dt><strong>destination_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of destination directory.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_merging.reformat">
+<span class="sig-prename descclassname"><span class="pre">data_merging.</span></span><span class="sig-name descname"><span class="pre">reformat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_merging.reformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df_list</strong><span class="classifier">list</span></dt><dd><p>List of Pandas DataFrames to be concatenated and reformatted.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">bool</span></dt><dd><p>True for positive binding observations, False for negative binding observations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">data_merging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_wrangling_functions.html">data_wrangling_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_wrangling_helpers.html">data_wrangling_helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="disco-data-processing.html">disco-data-processing module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">src</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="data_wrangling_functions.html"
+                        title="next chapter">data_wrangling_functions module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/data_merging.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="data_wrangling_functions.html" title="data_wrangling_functions module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="src"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">disco-data-processing 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >src</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">data_merging module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Jeffrey Watchorn, Samantha Stuart, Jennifer Tram Su.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
+    </div>
+  </body>
+</html>

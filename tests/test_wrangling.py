@@ -7,3 +7,5 @@ sys.path.append(os.getcwd() + '\\..\\src')
 
 from data_wrangling_functions import *
 
+class TestBatchToDataFrame:
+    
