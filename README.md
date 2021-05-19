@@ -18,12 +18,11 @@ If you have a feature you would like to request, or have observed a bug in the c
  
 <h3><b> Run Setup </b></h3>
 
-<b>Your Input Folder Should Look Like:</b>    
+<b>Your Source Folder Should Look Like:</b>    
 - disco-data-processing.py      (main program)
 - data_wrangling_functions.py   (pt 1/2)
-- move_wrangled_data.py         (pt 3)
 - data_merging.py               (pt 3)
-- input/"raw_book_with_a_title_you_like.xlsx" (i.e. "PAA.xlsx")
+- ../data/input/"raw_book_with_a_title_you_like.xlsx" (i.e. "PAA.xlsx")
 
 The other files in this hub are just exemplary outputs based on the inputs in the input folder.
 
