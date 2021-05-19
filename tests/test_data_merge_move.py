@@ -5,12 +5,14 @@ import shutil
 import glob
 import pandas as pd
 
+# appending current directory to path
+sys.path.append(os.getcwd())
 from helpers import compare_excel
 
-# modifying path to access sibling directory
-sys.path.append(os.getcwd() + '\\..')
+# appending path to access sibling directory
+sys.path.append(os.getcwd() + '\\..\\src')
 
-from src.data_merging import move, merge
+from data_merging import move, merge
 
 ################## TESTING MOVE ####################
 
@@ -87,3 +89,5 @@ class TestMerge:
             assert os.path.exists(merge_path + "\\" + output_file_name), msg1
             
             os.remove(merge_path + "\\" + output_file_name)
+
+print(sys.path)
