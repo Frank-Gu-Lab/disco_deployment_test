@@ -8,44 +8,34 @@
 
     <title>data_wrangling_functions module &#8212; disco-data-processing 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="data_wrangling_helpers module" href="data_wrangling_helpers.html" />
     <link rel="prev" title="data_merging module" href="data_merging.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="data_wrangling_helpers.html" title="data_wrangling_helpers module"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="data_merging.html" title="data_merging module"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">disco-data-processing 1.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">src</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">data_wrangling_functions module</a></li> 
-      </ul>
-    </div>  
+      <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
+          <span>disco-data-processing 1.0.0 documentation</span></a></h1>
+        <h2 class="heading"><span>data_wrangling_functions module</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="data_merging.html">data_merging module</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="data_wrangling_helpers.html">data_wrangling_helpers module</a>&#160;&#160;»
+        </p>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+      </div>
+      <div class="content" role="main">
+        
+        
   <section id="module-data_wrangling_functions">
 <span id="data-wrangling-functions-module"></span><h1>data_wrangling_functions module<a class="headerlink" href="#module-data_wrangling_functions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
@@ -165,7 +155,7 @@ is passed into this function as a variable.</p>
 <dt class="sig sig-object py" id="data_wrangling_functions.convert_excel_batch_to_dataframe">
 <span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">convert_excel_batch_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.convert_excel_batch_to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function converts and cleans excel books of type “Batch” (containing many polymers in one book) into dataframes for further analysis.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
@@ -173,16 +163,12 @@ is passed into this function as a variable.</p>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl>
+<dd class="field-even"><dl class="simple">
 <dt><strong>list_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
-Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:</p>
-<blockquote>
-<div><p>current_book_title, a string containing the title of the current excel input book</p>
-</div></blockquote>
-<dl class="simple">
-<dt>And the value (at index 1 of the tuple) is:</dt><dd><p>clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
-</dd>
-</dl>
+Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:
+current_book_title, a string containing the title of the current excel input book
+And the value (at index 1 of the tuple) is:
+clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
 </dd>
 </dl>
 </dd>
@@ -317,12 +303,10 @@ It calculates the nonlinear curve fit, then the SSE and AFo on a mean and replic
 <p>Figures are displayed and saved as a file in custom directory. Dataframes are also saved to Excel files with final results.</p>
 <p>Mean, average, and bar are used equivalently in this part of the code.</p>
 <p>ikj sub-scripts are used in this script to keep track of the fixed experimental variables pertinent to this analysis. 
-For clarity:</p>
-<blockquote>
-<div><p>i = NMR saturation time (sat_time) column
+For clarity:
+i = NMR saturation time (sat_time) column
 k = Sample proton peak index (proton_peak_index) column
 j = Sample concentration (concentration) column</p>
-</div></blockquote>
 <p>yikj = response model (Amp Factor x Corr % Attenuation) on a per replicate basis (not mean), fits with stats_df_replicates
 yikj_bar = response model (Amp Factor x Corr % Attenuation) on an average basis, fits with stats_df_mean
 yikj_hat = the fitted nonlinear model according to the levenburg marquadt minimization of least squares algorithm</p>
@@ -456,71 +440,19 @@ is appended.</p>
 </section>
 
 
-            <div class="clearer"></div>
-          </div>
-        </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h3><a href="../index.html">Table of Contents</a></h3>
-<p class="caption"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="data_merging.html">data_merging module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">data_wrangling_functions module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_wrangling_helpers.html">data_wrangling_helpers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="disco-data-processing.html">disco-data-processing module</a></li>
-</ul>
-</li>
-</ul>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="data_merging.html">data_merging module</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="data_wrangling_helpers.html">data_wrangling_helpers module</a>&#160;&#160;»
+        </p>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="data_merging.html"
-                        title="previous chapter">data_merging module</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="data_wrangling_helpers.html"
-                        title="next chapter">data_wrangling_helpers module</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/source/data_wrangling_functions.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="data_wrangling_helpers.html" title="data_wrangling_helpers module"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="data_merging.html" title="data_merging module"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">disco-data-processing 1.0.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >src</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">data_wrangling_functions module</a></li> 
-      </ul>
-    </div>
+
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Jeffrey Watchorn, Samantha Stuart, Jennifer Tram Su.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.

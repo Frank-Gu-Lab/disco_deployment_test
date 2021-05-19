@@ -30,9 +30,9 @@ def convert_excel_batch_to_dataframe(b):
     list_clean_dfs : list
         List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
         Tuples are in a "key-value pair format", where the key (at index 0 of the tuple) is:
-            current_book_title, a string containing the title of the current excel input book
+        current_book_title, a string containing the title of the current excel input book
         And the value (at index 1 of the tuple) is:
-            clean_df, the cleaned pandas dataframe corresponding to that book title!
+        clean_df, the cleaned pandas dataframe corresponding to that book title!
     '''
     # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
     current_polymer_df_list = []
@@ -1214,9 +1214,9 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
     ikj sub-scripts are used in this script to keep track of the fixed experimental variables pertinent to this analysis. 
     For clarity:
-     i = NMR saturation time (sat_time) column
-     k = Sample proton peak index (proton_peak_index) column
-     j = Sample concentration (concentration) column
+    i = NMR saturation time (sat_time) column
+    k = Sample proton peak index (proton_peak_index) column
+    j = Sample concentration (concentration) column
  
     yikj = response model (Amp Factor x Corr % Attenuation) on a per replicate basis (not mean), fits with stats_df_replicates
     yikj_bar = response model (Amp Factor x Corr % Attenuation) on an average basis, fits with stats_df_mean
