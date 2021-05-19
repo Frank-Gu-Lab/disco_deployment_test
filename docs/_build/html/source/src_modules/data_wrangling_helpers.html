@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>data_wrangling_helpers module &#8212; disco-data-processing 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/haiku.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="disco-data-processing module" href="disco-data-processing.html" />
+    <link rel="prev" title="data_wrangling_functions module" href="data_wrangling_functions.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="../../index.html">
+          <span>disco-data-processing 1.0.0 documentation</span></a></h1>
+        <h2 class="heading"><span>data_wrangling_helpers module</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="data_wrangling_functions.html">data_wrangling_functions module</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="disco-data-processing.html">disco-data-processing module</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="module-data_wrangling_helpers">
+<span id="data-wrangling-helpers-module"></span><h1>data_wrangling_helpers module<a class="headerlink" href="#module-data_wrangling_helpers" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_helpers.DropComplete">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">DropComplete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.DropComplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if [Cc]omplete is a substring of x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">str</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>True if [Cc]omplete is a substring, otherwise False.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_helpers.get_dofs">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">get_dofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_indices_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.get_dofs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the number of degrees of freedom (i.e. number of experimental replicates minus one) for statistical calculations 
+using the “indices array” of a given experimenal set as input.</p>
+<p>Input should be in the format: (in format: 11111 22222 3333 … (specifically, it should be the proton_peak_index column from the “regrouped_df” above)
+where the count of each repeated digit minus one represents the degrees of freedom for that peak (i.e. the number of replicates -1).
+With zero based indexing, the function below generates the DOFs for the input array of proton_peak_index directly, in a format
+that can be directly appended to the stats table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>peak_indices_array</strong><span class="classifier">NumPy.array</span></dt><dd><p>NumPy array representing the proton_peak_index column from the “regrouped_df” from prep_mean_data_for_stats.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dof_list</strong><span class="classifier">list</span></dt><dd><p>List containing the DOFs for peak_indices_array.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_helpers.initialize_excel_batch_replicates">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">initialize_excel_batch_replicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.initialize_excel_batch_replicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function determines the unique polymers contained in an excel book, the number of replicates of those polymers, 
+and also returns an iterable of the sheet names without Complete in them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>Path file to the Excel Batch file of interest.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>unique_polymers</strong><span class="classifier">list</span></dt><dd><p>List of unique polymer names contained in b.</p>
+</dd>
+<dt><strong>unique_polymer_replicates</strong><span class="classifier">list</span></dt><dd><p>List of number of replicates for each unique polymer.</p>
+</dd>
+<dt><strong>all_sheets_complete_removed</strong><span class="classifier">list</span></dt><dd><p>List of sheet names in b without Complete in them.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_helpers.y_hat_fit">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">y_hat_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.y_hat_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns y_ikj_hat as the fit model based on alpha and beta.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>t</strong><span class="classifier">NumPy.array</span></dt><dd><p>NumPy array representing all the variable saturation times for each unique proton.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Least-squares curve fitting parameter, represents STDmax. the asymptomic maximum of the build-up curve.</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">float</span></dt><dd><p>Least-squares curve fitting parameter, represents -k_sat, the negative of the rate constant related to the relaxation
+properties of a given proton.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>NumPy.array</dt><dd><p>NumPy array representing the output values of the fit model based on alpha and beta.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Some useful scipy example references for curve fitting:
+1) <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares">https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares</a>
+2) <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html">https://lmfit.github.io/lmfit-py/model.html</a>
+3) <a class="reference external" href="https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html">https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html</a></p>
+</dd></dl>
+
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="data_wrangling_functions.html">data_wrangling_functions module</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="disco-data-processing.html">disco-data-processing module</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Jeffrey Watchorn, Samantha Stuart, Jennifer Tram Su.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
+    </div>
+  </body>
+</html>

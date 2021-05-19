@@ -9,7 +9,8 @@ Welcome to disco-data-processing's documentation!
 .. toctree::
    :maxdepth: 2
 
-   source/modules.rst
+   source/src_modules/modules.rst
+   source/test_modules/modules.rst
 
 
 Indices and tables
