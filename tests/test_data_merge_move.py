@@ -39,7 +39,8 @@ class TestMove:
             for i in range(len(filenames)):
                 for file in filenames[i]: # file = absolute path
                     filename = os.path.basename(file)
-                    assert os.path.isfile(dst_path + "\\" + filename)
+                    msg = "{} could not be found in {}!".format(filename, dst_path)
+                    assert os.path.isfile(dst_path + "\\" + filename), msg
 
         finally:
             
@@ -51,6 +52,7 @@ class TestMove:
 # testing overall functionality
 
 class TestMerge:
+    
     def test_merge(self):
     
         src_path = ".\\test-files\\test_merge\\data\\KHA\\data_tables_from_KHA"
@@ -72,7 +74,6 @@ class TestMerge:
             actual = pd.read_excel(merge_path + "\\" + output_file_name)
             expected = pd.read_excel(".\\test-files\\test_merge\\expected\\merged_binding_dataset.xlsx")
 
-            
             # check if file is as expected
             msg2 = "{} does not contain all the expected information.".format(merge_path + "\\" + output_file_name)
             assert compare_excel(actual, expected), msg2

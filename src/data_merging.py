@@ -10,8 +10,7 @@ import shutil
 
 def move(source_path, destination_path):
 
-    ''' 
-    Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
+    ''' Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
     where the merging of positive and negative observations into one dataset will occur.
     
     Parameters
@@ -43,7 +42,8 @@ def move(source_path, destination_path):
     return print("Files for merging have been moved to the destination directory.")
 
 def clean(df_list, polymer_list, pos : bool):
-    """
+    """This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column, 
+    and drops the appropriate columns to the index level.
     
     Parameters
     ----------
@@ -113,12 +113,12 @@ def reformat(df_list, pos : bool):
     pos : bool
         True for positive binding observations, False for negative binding observations.
     """
+    
+    # concatenate
+    df = pd.concat(df_list)
 
     if pos:
         
-        # 1) concatenate complete df of the positive data   
-        df = pd.concat(df_list)
-
         # 1) drop sat time from index
         df.index = df.index.droplevel(1)
 
@@ -132,10 +132,7 @@ def reformat(df_list, pos : bool):
         df.loc[df['significance'] == False, ('AFo_bar')] = 0.0 # removes false associations, as these values weren't considered in curve fitting
     
     else:
-        
-        # 2) concat into one df
-        
-        df = pd.concat(df_list)
+    
 
         # 2) drop extra ppm column that (sometimes) gets created from combining multi indices
         
@@ -167,13 +164,13 @@ def join(df1, df2):
     
     Parameters
     ----------
-    df1 : Pandas.DataFrame
-    
-    df2 : Pandas.DataFrame
+    df1, df2 : Pandas.DataFrame
+        Cleaned dataframes containing positive and negative binding observations, respectively.
     
     Returns
     -------
     df : Pandas.DataFrame
+        Final merged dataframe containing the merged dataset and positive and negative observations.
     """
     
     # 3) now need to JOIN data from the two tables in a way that makes sense
