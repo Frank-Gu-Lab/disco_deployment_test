@@ -132,9 +132,10 @@ if len(clean_book_tuple_list) != 0:
             os.makedirs(output_directory_tables)    
 
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
-        current_df.to_excel("~/Desktop/att_book_input.xlsx")
-        current_df_attenuation = add_attenuation_and_corr_attenuation_to_dataframe(current_df)
-        current_df_attenuation.to_excel("~/Desktop/att_book_output.xlsx")
+
+        df_true, df_false = add_attenuation(current_df)
+        current_df_attenuation = add_corr_attenuation(df_true, df_false)
+        
         # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
 
         print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
@@ -220,9 +221,10 @@ if len(clean_batch_tuple_list) != 0:
             os.makedirs(output_directory_tables)    
 
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
-        current_df.to_excel("~/Desktop/att_batch_input.xlsx")
-        current_df_attenuation = add_attenuation_and_corr_attenuation_to_dataframe(current_df, 'batch')
-        current_df_attenuation.to_excel("~/Desktop/att_batch_output.xlsx")
+        
+        df_true, df_false = add_attenuation(current_df, 'batch')
+        current_df_attenuation = add_corr_attenuation(df_true, df_false, 'batch')
+       
         # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
 
         print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))

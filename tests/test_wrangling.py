@@ -3,7 +3,6 @@ import sys
 import os
 import glob
 import shutil
-import filecmp
 
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '\\..\\src')
@@ -13,69 +12,68 @@ from data_wrangling_functions import *
 #################### TESTING add_attenuation AND add_corr_attenuation ####################
 
 # weird, works in main script but not in unit test even though the inputs are the same
-@pytest.mark.xfail
+
 class TestAttenuation:
-    
+    '''
     def test_add_attenuation_batch(self):
         
-        df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx")
+        df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx", index_col=0)
            
         actual = add_attenuation(df, 'batch')
-        expected = pd.read_excel("./test-files/test_wrangling/expected/att_batch.xlsx")
+        expected = pd.read_excel("./test-files/test_wrangling/expected/att_batch.xlsx", index_col=0)
         
-        msg = "Output does not contain all of the expected attenuation data."
-        assert compare_excel(actual, expected), msg
-            
+        pd.testing.assert_frame_equal(actual, expected)
+    '''
     def test_add_attenuation_book(self):
         
-        df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx")
+        df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
            
-        actual = add_attenuation(df)
-        expected = pd.read_excel("./test-files/test_wrangling/expected/att_book.xlsx")
+        actual_true, actual_false = add_attenuation(df)
+        expected_true = pd.read_excel("./test-files/test_wrangling/expected/att_book_true.xlsx", index_col=0)
+        expected_false = pd.read_excel("./test-files/test_wrangling/expected/att_book_false.xlsx", index_col=0)
         
-        msg = "Output does not contain all of the expected attenuation data."
-        assert compare_excel(actual, expected), msg
-    
+        pd.testing.assert_frame_equal(actual_true, expected_true)
+        pd.testing.assert_frame_equal(actual_false, expected_false)
+    '''
     def test_add_both_att_batch(self):
         
-        df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx")
+        df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx", index_col=0)
            
         actual = add_attenuation_and_corr_attenuation_to_dataframe(df, 'batch')
-        expected = pd.read_excel("./test-files/test_wrangling/expected/att_batch_output.xlsx")
+        expected = pd.read_excel("./test-files/test_wrangling/expected/att_batch_output.xlsx", index_col=0)
         
-        msg = "Output does not contain all of the expected attenuation data."
-        assert compare_excel(actual, expected), msg
-    
+        pd.testing.assert_frame_equal(actual, expected)
+    '''
     def test_add_both_att_book(self):
         
-        df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx")
-           
-        actual = add_attenuation_and_corr_attenuation_to_dataframe(df)
-        expected = pd.read_excel("./test-files/test_wrangling/expected/att_book_output.xlsx")
+        df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
         
-        msg = "Output does not contain all of the expected attenuation data."
-        assert actual.equals(expected), msg
-    
+        actual_true, actual_false = add_attenuation(df)
+        actual = add_corr_attenuation(actual_true, actual_false)
+        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_book.xlsx", index_col=0)
+        
+        pd.testing.assert_frame_equal(actual, expected)
+
+    '''
     def test_add_corr_attenuation_batch(self):
                 
-        df = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_input.xlsx")
+        df = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_input.xlsx", index_col=0)
         
         actual = add_corr_attenuation(df, 'batch')
-        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_batch.xlsx")
+        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_batch.xlsx", index_col=0)
         
-        msg = "Output does not contain all of the expected attenuation data."
-        assert compare_excel(actual, expected), msg
-
+        pd.testing.assert_frame_equal(actual, expected)
+    '''
     def test_add_corr_attenuation_book(self):
         
-        df = pd.read_excel("./test-files/test_wrangling/input/corr_att_book_input.xlsx")
+        df_true = pd.read_excel("./test-files/test_wrangling/input/att_book_true.xlsx", index_col=0)
+        df_false = pd.read_excel("./test-files/test_wrangling/input/att_book_false.xlsx", index_col=0)
            
-        actual = add_corr_attenuation(df)
-        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_book.xlsx")
+        actual = add_corr_attenuation(df_true, df_false)
+        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_book.xlsx", index_col=0)
         
-        msg = "Output does not contain all of the expected attenuation data."
-        assert compare_excel(actual, expected), msg
-
+        pd.testing.assert_frame_equal(actual, expected)
+    
 class TestCurveFit:
     
     # testing overall functionality

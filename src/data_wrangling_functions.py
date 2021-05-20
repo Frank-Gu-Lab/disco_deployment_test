@@ -533,7 +533,7 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
 # def add_attenuation(current_book, batch_or_book = 'book'):
 # def add_corr_attenuation(current_book, batch_or_book = 'book'):
 
-def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_book = 'book'):
+def add_attenuation(current_book, batch_or_book = 'book'):
     '''This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
     
@@ -547,8 +547,11 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
     
     Returns
     -------
-    corr_p_attenuation_df : Pandas.DataFrame
-        An updated dataframe that includes the attenuation and corr_%_attenuation columns.
+    intensity_irrad_true : Pandas.DataFrame
+        An updated dataframe that includes the attenuation columns.
+    
+     intensity_irrad_false : Pandas.DataFrame
+
         
     Raises
     ------
@@ -578,11 +581,15 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         #Update irradiated dataframe to include the % attenuation of the irradiated samples and controls
         intensity_irrad_true['attenuation'] = p_attenuation_intensity
         print("Test 1 passed, attenuation has been calculated and appended to dataframe.")
-
-        #intensity_irrad_true.to_excel("~/Desktop/att_batch.xlsx")
+        intensity_irrad_true.to_excel("~/Desktop/att_book_true.xlsx")
+        intensity_irrad_false.to_excel("~/Desktop/att_book_false.xlsx")
     else:
         raise ValueError("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
 
+    return intensity_irrad_true, intensity_irrad_false
+
+def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_book = 'book'):
+    
     # Now check we are good to calculate the corrected % attenuation, and then calculate: ------------------------
 
     #subset the dataframe where irrad is true for samples only

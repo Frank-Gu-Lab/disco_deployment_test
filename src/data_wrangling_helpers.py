@@ -129,12 +129,8 @@ def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
             
             subset_compare_1 = df1.loc[:, "sample_or_control":"sat_time"]
             subset_compare_2 = df2.loc[:, "sample_or_control":"sat_time"]
-
-            subset_compare_1.to_excel("~/Desktop/sub1.xlsx", index=False)
-            subset_compare_2.to_excel("~/Desktop/sub2.xlsx", index=False)
             
             exactly_equal = subset_compare_2.equals(subset_compare_1)
-            print(exactly_equal)
             
             return exactly_equal
     
