@@ -17,7 +17,7 @@ idx = pd.IndexSlice
 
 # functions are ordered below in the order they are called in the disco-data-processing script
 
-def convert_excel_batch_to_dataframe(b):
+def batch_to_dataframe(b):
     '''This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
     
     Parameters
@@ -205,7 +205,7 @@ def convert_excel_batch_to_dataframe(b):
     
     return list_of_clean_dfs
 
-def convert_excel_to_dataframe(b, global_output_directory):
+def book_to_dataframe(b, global_output_directory):
     '''This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
     organized Pandas DataFrames for further processing.
     
@@ -529,14 +529,14 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
     print("Batch data cleaning completed.") 
     return final_clean_polymer_df_list
 
-def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book = 'book'):
+def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
     '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
     in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
     'sat_time' 
     
     Parameters
     ----------
-    compare_df_1, compare_df_2 : Pandas.DataFrame
+    df1, df2 : Pandas.DataFrame
         DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.
     
     batch_or_book : str, {'book', 'batch'}
@@ -554,11 +554,11 @@ def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book 
         If the passed dataframes do not have the same shape.
     '''
     
-    if (compare_df_1.shape == compare_df_2.shape):
+    if (df1.shape == df2.shape):
         
         if batch_or_book == 'book':
-            subset_compare_1 = compare_df_1[['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time']]
-            subset_compare_2 = compare_df_2[['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time']]
+            subset_compare_1 = df1[['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time']]
+            subset_compare_2 = df2[['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time']]
         
             exactly_equal = subset_compare_2.equals(subset_compare_1)
     
@@ -567,25 +567,25 @@ def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book 
         else:
             
             #check sample_or_control is the same
-            subset_compare_1 = compare_df_1.sample_or_control.values
-            subset_compare_2 = compare_df_2.sample_or_control.values
+            subset_compare_1 = df1.sample_or_control.values
+            subset_compare_2 = df2.sample_or_control.values
             exactly_equal_1 = np.array_equal(subset_compare_1, subset_compare_2)
             
             
             #check replicate is the same
-            subset_compare_1 = compare_df_1.replicate.values
-            subset_compare_2 = compare_df_2.replicate.values
+            subset_compare_1 = df1.replicate.values
+            subset_compare_2 = df2.replicate.values
             exactly_equal_2 = np.array_equal(subset_compare_1, subset_compare_2)
             #             exactly_equal_2 = subset_compare_2.equals(subset_compare_1)
             
             #check proton peak index is the same
-            subset_compare_1 = compare_df_1.proton_peak_index.values
-            subset_compare_2 = compare_df_2.proton_peak_index.values
+            subset_compare_1 = df1.proton_peak_index.values
+            subset_compare_2 = df2.proton_peak_index.values
             exactly_equal_3 = np.array_equal(subset_compare_1, subset_compare_2)
             
             #check sat time is the same
-            subset_compare_1 = compare_df_1.sat_time.values
-            subset_compare_2 = compare_df_2.sat_time.values
+            subset_compare_1 = df1.sat_time.values
+            subset_compare_2 = df2.sat_time.values
             exactly_equal_4 = np.array_equal(subset_compare_1, subset_compare_2)
             
             #if passes all 4 checks return true, if not false
@@ -597,14 +597,14 @@ def attenuation_calc_equality_checker(compare_df_1, compare_df_2, batch_or_book 
     else:
         raise ValueError("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
 
-def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, compare_df_3):  
+def corrected_attenuation_calc_equality_checker(df1, df2, df3):  
     '''This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
     are equal and in the same order in terms of their shared fixed experimental parameters: 'replicate', 'concentration', and
     'sat_time'
     
     Parameters
     ----------
-    compare_df_1, compare_df_2, compare_df_3 : Pandas.DataFrame
+    df1, df2, df3 : Pandas.DataFrame
         DataFrames involved in the corrected attenuation calculation.
     
     Returns
@@ -619,26 +619,26 @@ def corrected_attenuation_calc_equality_checker(compare_df_1, compare_df_2, comp
     '''
     
     #check if number of rows same in each df, number of columns not same as samples dfs contain attenuation data
-    if (compare_df_1.shape[0] == compare_df_2.shape[0] == compare_df_3.shape[0]):
+    if (df1.shape[0] == df2.shape[0] == df3.shape[0]):
         
         #check replicate is the same
-        subset_compare_1 = compare_df_1.replicate.values
-        subset_compare_2 = compare_df_2.replicate.values
-        subset_compare_3 = compare_df_3.replicate.values
+        subset_compare_1 = df1.replicate.values
+        subset_compare_2 = df2.replicate.values
+        subset_compare_3 = df3.replicate.values
         
         exactly_equal_1 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
         
         #check sat time is the same
-        subset_compare_1 = compare_df_1.sat_time.values
-        subset_compare_2 = compare_df_2.sat_time.values
-        subset_compare_3 = compare_df_3.sat_time.values
+        subset_compare_1 = df1.sat_time.values
+        subset_compare_2 = df2.sat_time.values
+        subset_compare_3 = df3.sat_time.values
         
         exactly_equal_2 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
         
         #check concentration is the same
-        subset_compare_1 = compare_df_1.concentration.values
-        subset_compare_2 = compare_df_2.concentration.values
-        subset_compare_3 = compare_df_3.concentration.values
+        subset_compare_1 = df1.concentration.values
+        subset_compare_2 = df2.concentration.values
+        subset_compare_3 = df3.concentration.values
         
         exactly_equal_3 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
         

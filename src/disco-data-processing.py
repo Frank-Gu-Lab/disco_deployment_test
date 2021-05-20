@@ -68,12 +68,12 @@ for book in list_of_raw_books:
         print("This should be cleaned via batch processing! Entering batch processing function.")
         
         #append tuples from the list output of the batch processing function, so that each unique polymer tuple is assigned to the clean_batch_tuple_list
-        batch_tuple_list.append([polymer for polymer in convert_excel_batch_to_dataframe(book)]) 
+        batch_tuple_list.append([polymer for polymer in batch_to_dataframe(book)]) 
         
     # indicates book is ok to be handled via the individual data cleaning function before appending to the clean data list    
     else: 
         print("Book contains individual polymer, entering individual processing function.")
-        clean_book_tuple_list.append(convert_excel_to_dataframe(book, global_output_directory))
+        clean_book_tuple_list.append(book_to_dataframe(book, global_output_directory))
 
 # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
 
