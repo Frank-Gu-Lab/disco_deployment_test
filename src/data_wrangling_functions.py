@@ -464,7 +464,7 @@ def book_to_dataframe(b, global_output_directory):
     
     return clean_tuple
 
-def clean_batch_tuple_list(list_of_clean_dfs):
+def clean_the_batch_tuple_list(list_of_clean_dfs):
     '''This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently 
     on inputs of batch or individual data formats.
     
@@ -529,6 +529,10 @@ def clean_batch_tuple_list(list_of_clean_dfs):
     print("Batch data cleaning completed.") 
     return final_clean_polymer_df_list
 
+# separate into attenuation and corrected attenuation -- UNIT TEST
+# def add_attenuation(current_book, batch_or_book = 'book'):
+# def add_corr_attenuation(current_book, batch_or_book = 'book'):
+
 def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_book = 'book'):
     '''This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
@@ -574,7 +578,7 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         #Update irradiated dataframe to include the % attenuation of the irradiated samples and controls
         intensity_irrad_true['attenuation'] = p_attenuation_intensity
         print("Test 1 passed, attenuation has been calculated and appended to dataframe.")
-        
+        #intensity_irrad_true.to_excel("~/Desktop/att_batch")
     else:
         raise ValueError("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
 
@@ -610,6 +614,8 @@ def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_boo
         #Calculate Corrected % Attentuation, as applies to
         corr_p_attenuation_df['corr_%_attenuation'] = ((1/intensity_irrad_false_sample_data)*(p_atten_intensity_sample_data - p_atten_intensity_control_data))
         print("Test 2 passed, corr_%_attenuation has been calculated and appended to dataframe.")
+        
+        #corr_p_attenuation_df.to_excel("~/Desktop/corr_att_batch")
         
         return corr_p_attenuation_df
 
@@ -686,7 +692,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
         
     return
 
-def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
+def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
     
@@ -756,7 +762,7 @@ def prep_mean_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
         
     return mean_corr_attenuation_ppm 
 
-def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book'):
+def prep_replicate(corr_p_attenuation_df, batch_or_book = 'book'):
     
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
@@ -797,7 +803,7 @@ def prep_replicate_data_for_stats(corr_p_attenuation_df, batch_or_book = 'book')
     
     return replicate_df_for_stats
 
-def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
+def t_test(mean_corr_attenuation_ppm, p=0.95):
 
     ''' Procedure followed from: https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/ 
 
@@ -853,7 +859,7 @@ def get_t_test_results(mean_corr_attenuation_ppm, p=0.95):
     #Return the dataframe with the new t test columns appended
     return mean_corr_attenuation_ppm
 
-def compute_amplification_factor(current_mean_stats_df, current_replicate_stats_df, af_denominator):
+def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator):
     '''This function computes an amplification factor for the mean stats df and the replicate stats df.
     Each polymer may have a different denominator to consider for the amp factor calculation, so it
     is passed into this function as a variable.

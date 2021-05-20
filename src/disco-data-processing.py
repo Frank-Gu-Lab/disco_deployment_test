@@ -79,7 +79,7 @@ for book in list_of_raw_books:
 
 #if there has been batch data processing, call the batch cleaning function
 if len(batch_tuple_list) != 0: 
-    clean_batch_list = clean_batch_tuple_list(batch_tuple_list)
+    clean_batch_list = clean_the_batch_tuple_list(batch_tuple_list)
 
 # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
     clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]
@@ -146,14 +146,14 @@ if len(clean_book_tuple_list) != 0:
         # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
 
         # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
-        current_df_mean = prep_mean_data_for_stats(current_df_attenuation)
-        current_df_replicates = prep_replicate_data_for_stats(current_df_attenuation)
+        current_df_mean = prep_mean(current_df_attenuation)
+        current_df_replicates = prep_replicate(current_df_attenuation)
 
         # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
-        current_df_mean = get_t_test_results(current_df_mean, p=0.95)
+        current_df_mean = t_test(current_df_mean, p=0.95)
 
         # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
-        current_df_mean, current_df_replicates = compute_amplification_factor(current_df_mean, current_df_replicates, af_denominator = 10)
+        current_df_mean, current_df_replicates = compute_af(current_df_mean, current_df_replicates, af_denominator = 10)
         
         # export current dataframes to excel with no observations dropped, for future reference in ML -----
         output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
@@ -232,15 +232,15 @@ if len(clean_batch_tuple_list) != 0:
         # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
 
         # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
-        current_df_mean = prep_mean_data_for_stats(current_df_attenuation, 'batch')
-        current_df_replicates = prep_replicate_data_for_stats(current_df_attenuation, 'batch')
+        current_df_mean = prep_mean(current_df_attenuation, 'batch')
+        current_df_replicates = prep_replicate(current_df_attenuation, 'batch')
 
         # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
-        current_df_mean = get_t_test_results(current_df_mean, p=0.95)
+        current_df_mean = t_test(current_df_mean, p=0.95)
 
         # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
         # note: if AF denominators are different for each polymer, should make a list of all values for all polymers, then pass list[i] to af_denominator here
-        current_df_mean, current_df_replicates = compute_amplification_factor(current_df_mean, current_df_replicates, af_denominator = 10)
+        current_df_mean, current_df_replicates = compute_af(current_df_mean, current_df_replicates, af_denominator = 10)
         
         # export current dataframes to excel with no observations dropped, for future reference in ML -----
         output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
