@@ -132,9 +132,9 @@ if len(clean_book_tuple_list) != 0:
             os.makedirs(output_directory_tables)    
 
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
-
+        current_df.to_excel("~/Desktop/att_book_input.xlsx")
         current_df_attenuation = add_attenuation_and_corr_attenuation_to_dataframe(current_df)
-
+        current_df_attenuation.to_excel("~/Desktop/att_book_output.xlsx")
         # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
 
         print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
@@ -165,8 +165,10 @@ if len(clean_book_tuple_list) != 0:
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory)
 
         # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
+        
         current_df_mean, current_df_replicates = execute_curvefit(
             current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title)
+        
         print("All activities are now completed for: {}".format(current_df_title))
 
     print("Hooray! All polymers in the input files have been processed.")
@@ -218,9 +220,9 @@ if len(clean_batch_tuple_list) != 0:
             os.makedirs(output_directory_tables)    
 
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
-
+        current_df.to_excel("~/Desktop/att_batch_input.xlsx")
         current_df_attenuation = add_attenuation_and_corr_attenuation_to_dataframe(current_df, 'batch')
-
+        current_df_attenuation.to_excel("~/Desktop/att_batch_output.xlsx")
         # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
 
         print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
