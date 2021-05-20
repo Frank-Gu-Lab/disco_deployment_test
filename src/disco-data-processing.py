@@ -79,7 +79,7 @@ for book in list_of_raw_books:
 
 #if there has been batch data processing, call the batch cleaning function
 if len(batch_tuple_list) != 0: 
-    clean_batch_list = clean_the_batch_tuple_list(batch_tuple_list)
+    clean_batch_list = clean_batch_tuple_list(batch_tuple_list)
 
 # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
     clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]

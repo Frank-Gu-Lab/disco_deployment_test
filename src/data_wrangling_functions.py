@@ -221,9 +221,9 @@ def book_to_dataframe(b, global_output_directory):
     -------
     clean_tuple : tuple
         Returned as a "key-value pair format", where the key (at index 0 of the tuple) is:
-            current_book_title, a string containing the title of the current excel input book
+        current_book_title, a string containing the title of the current excel input book
         And the value (at index 1 of the tuple) is:
-            clean_df, the cleaned pandas dataframe corresponding to that book title!
+        clean_df, the cleaned pandas dataframe corresponding to that book title!
     '''
     # PREPARE AND INITIALIZE REQUIRED VARIABLES FOR DATA WRANGLING --------------
     
@@ -464,7 +464,7 @@ def book_to_dataframe(b, global_output_directory):
     
     return clean_tuple
 
-def clean_the_batch_tuple_list(list_of_clean_dfs):
+def clean_batch_tuple_list(list_of_clean_dfs):
     '''This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently 
     on inputs of batch or individual data formats.
     
@@ -528,130 +528,6 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
 
     print("Batch data cleaning completed.") 
     return final_clean_polymer_df_list
-
-def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
-    '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
-    in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
-    'sat_time' 
-    
-    Parameters
-    ----------
-    df1, df2 : Pandas.DataFrame
-        DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.
-    
-    batch_or_book : str, {'book', 'batch'}
-        String indicating the DataFrame's format. The default runs the 'book' path, but will run the 'batch' path 
-        if indicated in the third argument.
-    
-    Returns
-    -------
-    bool
-        Returns True if the subset dataframes are equal, otherwise False.
-
-    Raises
-    ------
-    ValueError
-        If the passed dataframes do not have the same shape.
-    '''
-    
-    if (df1.shape == df2.shape):
-        
-        if batch_or_book == 'book':
-            subset_compare_1 = df1[['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time']]
-            subset_compare_2 = df2[['sample_or_control', 'replicate', 'title_string', 'concentration', 'sat_time']]
-        
-            exactly_equal = subset_compare_2.equals(subset_compare_1)
-    
-            return exactly_equal
-    
-        else:
-            
-            #check sample_or_control is the same
-            subset_compare_1 = df1.sample_or_control.values
-            subset_compare_2 = df2.sample_or_control.values
-            exactly_equal_1 = np.array_equal(subset_compare_1, subset_compare_2)
-            
-            
-            #check replicate is the same
-            subset_compare_1 = df1.replicate.values
-            subset_compare_2 = df2.replicate.values
-            exactly_equal_2 = np.array_equal(subset_compare_1, subset_compare_2)
-            #             exactly_equal_2 = subset_compare_2.equals(subset_compare_1)
-            
-            #check proton peak index is the same
-            subset_compare_1 = df1.proton_peak_index.values
-            subset_compare_2 = df2.proton_peak_index.values
-            exactly_equal_3 = np.array_equal(subset_compare_1, subset_compare_2)
-            
-            #check sat time is the same
-            subset_compare_1 = df1.sat_time.values
-            subset_compare_2 = df2.sat_time.values
-            exactly_equal_4 = np.array_equal(subset_compare_1, subset_compare_2)
-            
-            #if passes all 4 checks return true, if not false
-            if exactly_equal_1 == exactly_equal_2 == exactly_equal_3 == exactly_equal_4 == True:
-                return True
-            
-            else: return False
-        
-    else:
-        raise ValueError("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
-
-def corrected_attenuation_calc_equality_checker(df1, df2, df3):  
-    '''This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
-    are equal and in the same order in terms of their shared fixed experimental parameters: 'replicate', 'concentration', and
-    'sat_time'
-    
-    Parameters
-    ----------
-    df1, df2, df3 : Pandas.DataFrame
-        DataFrames involved in the corrected attenuation calculation.
-    
-    Returns
-    -------
-    bool
-        Returns True if the subset dataframes are equal, otherwise False.
-
-    Raises
-    ------
-    ValueError
-        If the passed dataframes do not have the same shape.
-    '''
-    
-    #check if number of rows same in each df, number of columns not same as samples dfs contain attenuation data
-    if (df1.shape[0] == df2.shape[0] == df3.shape[0]):
-        
-        #check replicate is the same
-        subset_compare_1 = df1.replicate.values
-        subset_compare_2 = df2.replicate.values
-        subset_compare_3 = df3.replicate.values
-        
-        exactly_equal_1 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
-        
-        #check sat time is the same
-        subset_compare_1 = df1.sat_time.values
-        subset_compare_2 = df2.sat_time.values
-        subset_compare_3 = df3.sat_time.values
-        
-        exactly_equal_2 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
-        
-        #check concentration is the same
-        subset_compare_1 = df1.concentration.values
-        subset_compare_2 = df2.concentration.values
-        subset_compare_3 = df3.concentration.values
-        
-        exactly_equal_3 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
-        
-
-        #if passes all 3 checks return true, if not false
-        if exactly_equal_1 == exactly_equal_2 == exactly_equal_3 == True:
-            return True
-            
-        else: return False
-        
-        
-    else:
-        raise ValueError("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
 def add_attenuation_and_corr_attenuation_to_dataframe(current_book, batch_or_book = 'book'):
     '''This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
