@@ -529,12 +529,8 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
     print("Batch data cleaning completed.") 
     return final_clean_polymer_df_list
 
-# separate into attenuation and corrected attenuation -- UNIT TEST
-# def add_attenuation(current_book, batch_or_book = 'book'):
-# def add_corr_attenuation(current_book, batch_or_book = 'book'):
-
 def add_attenuation(current_book, batch_or_book = 'book'):
-    '''This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
+    '''This function calculates the attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
     
     Parameters
@@ -548,11 +544,11 @@ def add_attenuation(current_book, batch_or_book = 'book'):
     Returns
     -------
     intensity_irrad_true : Pandas.DataFrame
-        An updated dataframe that includes the attenuation columns.
+        An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.
     
      intensity_irrad_false : Pandas.DataFrame
+        A dataframe containing the non-irradiated intensity datapoints.
 
-        
     Raises
     ------
     ValueError
@@ -589,7 +585,30 @@ def add_attenuation(current_book, batch_or_book = 'book'):
     return intensity_irrad_true, intensity_irrad_false
 
 def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_book = 'book'):
+    """This function calculates the corr_%_attenuation if the dataframe passes all checks
+    (based on the order of items) by means of simple arithmetic operations.
     
+    Parameters
+    ----------
+    intensity_irrad_true : Pandas.DataFrame
+        An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.
+    
+    intensity_irrad_false : Pandas.DataFrame
+        A dataframe containing the non-irradiated intensity datapoints
+    
+    batch_or_book : str, {'book', 'batch'}
+        Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
+    
+    Returns
+    -------
+    corr_p_attenuation_df : Pandas.DataFrame
+        An updated dataframe that includes the attenuation and corr_%_attenuation columns.
+        
+    Raises
+    ------
+    ValueError
+        If the subset dataframes ((corrected) true and false irrad dataframes) are not equal.  
+    """
     # Now check we are good to calculate the corrected % attenuation, and then calculate: ------------------------
 
     #subset the dataframe where irrad is true for samples only

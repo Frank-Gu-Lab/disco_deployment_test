@@ -58,6 +58,65 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_helpers.attenuation_calc_equality_checker">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">attenuation_calc_equality_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.attenuation_calc_equality_checker" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
+in terms of their fixed experimental parameters: ‘sample_or_control’, ‘replicate’, ‘title_string’, ‘concentration’, and
+‘sat_time’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df1, df2</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>String indicating the DataFrame’s format. The default runs the ‘book’ path, but will run the ‘batch’ path 
+if indicated in the third argument.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Returns True if the subset dataframes are equal, otherwise False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the passed dataframes do not have the same shape.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_helpers.corrected_attenuation_calc_equality_checker">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">corrected_attenuation_calc_equality_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.corrected_attenuation_calc_equality_checker" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
+are equal and in the same order in terms of their shared fixed experimental parameters: ‘replicate’, ‘concentration’, and
+‘sat_time’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df1, df2, df3</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>DataFrames involved in the corrected attenuation calculation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Returns True if the subset dataframes are equal, otherwise False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the passed dataframes do not have the same shape.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="data_wrangling_helpers.get_dofs">
 <span class="sig-prename descclassname"><span class="pre">data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">get_dofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_indices_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_helpers.get_dofs" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calculates the number of degrees of freedom (i.e. number of experimental replicates minus one) for statistical calculations 

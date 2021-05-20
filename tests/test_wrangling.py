@@ -14,6 +14,7 @@ from data_wrangling_functions import *
 # weird, works in main script but not in unit test even though the inputs are the same
 
 class TestAttenuation:
+    """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
     '''
     def test_add_attenuation_batch(self):
         
@@ -75,7 +76,7 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual, expected)
     
 class TestCurveFit:
-    
+    """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
     
     #def test_curvefit_batch(self):

@@ -39,14 +39,51 @@
   <section id="module-data_wrangling_functions">
 <span id="data-wrangling-functions-module"></span><h1>data_wrangling_functions module<a class="headerlink" href="#module-data_wrangling_functions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.add_attenuation_and_corr_attenuation_to_dataframe">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">add_attenuation_and_corr_attenuation_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_book</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.add_attenuation_and_corr_attenuation_to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function calculates the attenuation, and corr_%_attenuation if the dataframe passes all checks
+<dt class="sig sig-object py" id="data_wrangling_functions.add_attenuation">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">add_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_book</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.add_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the attenuation if the dataframe passes all checks
+(based on the order of items) by means of simple arithmetic operations.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_book</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The dataframe output from the convert_excel_to_dataframe() function. (Or batch processing equivalent)</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Default is book, but it will run the batch path if ‘batch’ is passed to function as the second arg.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>intensity_irrad_true</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><blockquote>
+<div><p>An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>intensity_irrad_false<span class="classifier">Pandas.DataFrame</span></dt><dd><p>A dataframe containing the non-irradiated intensity datapoints.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the subset dataframes ((corrected) true and false irrad dataframes) are not equal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_functions.add_corr_attenuation">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">add_corr_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensity_irrad_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_irrad_false</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.add_corr_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the corr_%_attenuation if the dataframe passes all checks
 (based on the order of items) by means of simple arithmetic operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>current_book</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The dataframe output from the convert_excel_to_dataframe() function. (Or batch processing equivalent)</p>
+<dt><strong>intensity_irrad_true</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.</p>
+</dd>
+<dt><strong>intensity_irrad_false</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>A dataframe containing the non-irradiated intensity datapoints</p>
 </dd>
 <dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Default is book, but it will run the batch path if ‘batch’ is passed to function as the second arg.</p>
 </dd>
@@ -68,30 +105,49 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.attenuation_calc_equality_checker">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">attenuation_calc_equality_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compare_df_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_df_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.attenuation_calc_equality_checker" title="Permalink to this definition">¶</a></dt>
-<dd><p>This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
-in terms of their fixed experimental parameters: ‘sample_or_control’, ‘replicate’, ‘title_string’, ‘concentration’, and
-‘sat_time’</p>
+<dt class="sig sig-object py" id="data_wrangling_functions.batch_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">batch_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.batch_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts and cleans excel books of type “Batch” (containing many polymers in one book) into dataframes for further analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>compare_df_1, compare_df_2</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.</p>
-</dd>
-<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>String indicating the DataFrame’s format. The default runs the ‘book’ path, but will run the ‘batch’ path 
-if indicated in the third argument.</p>
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>bool</dt><dd><p>Returns True if the subset dataframes are equal, otherwise False.</p>
+<dt><strong>list_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
+Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:
+current_book_title, a string containing the title of the current excel input book
+And the value (at index 1 of the tuple) is:
+clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-odd">Raises</dt>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_functions.book_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">book_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_output_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.book_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
+organized Pandas DataFrames for further processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>ValueError</dt><dd><p>If the passed dataframes do not have the same shape.</p>
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
+</dd>
+<dt><strong>global_output_directory</strong><span class="classifier">str</span></dt><dd><p>The file path to the directory containing all output cleaned dataframes.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>clean_tuple</strong><span class="classifier">tuple</span></dt><dd><p>Returned as a “key-value pair format”, where the key (at index 0 of the tuple) is:
+current_book_title, a string containing the title of the current excel input book
+And the value (at index 1 of the tuple) is:
+clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
 </dd>
 </dl>
 </dd>
@@ -120,8 +176,8 @@ on inputs of batch or individual data formats.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.compute_amplification_factor">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">compute_amplification_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_mean_stats_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_replicate_stats_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_denominator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.compute_amplification_factor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="data_wrangling_functions.compute_af">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">compute_af</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_mean_stats_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_replicate_stats_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_denominator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.compute_af" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes an amplification factor for the mean stats df and the replicate stats df.
 Each polymer may have a different denominator to consider for the amp factor calculation, so it
 is passed into this function as a variable.</p>
@@ -149,86 +205,6 @@ is passed into this function as a variable.</p>
 <p>For each concentration, compute the amplification factor AFconc = Cj/10.</p>
 <p>Defaults to book path but will take batch path if ‘batch’ is passed.</p>
 <p>Might need to do some further work with custom af_denominators</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.convert_excel_batch_to_dataframe">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">convert_excel_batch_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.convert_excel_batch_to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function converts and cleans excel books of type “Batch” (containing many polymers in one book) into dataframes for further analysis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>list_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
-Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:
-current_book_title, a string containing the title of the current excel input book
-And the value (at index 1 of the tuple) is:
-clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.convert_excel_to_dataframe">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">convert_excel_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_output_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.convert_excel_to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
-organized Pandas DataFrames for further processing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
-</dd>
-<dt><strong>global_output_directory</strong><span class="classifier">str</span></dt><dd><p>The file path to the directory containing all output cleaned dataframes.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>clean_tuple</strong><span class="classifier">tuple</span></dt><dd><dl class="simple">
-<dt>Returned as a “key-value pair format”, where the key (at index 0 of the tuple) is:</dt><dd><p>current_book_title, a string containing the title of the current excel input book</p>
-</dd>
-<dt>And the value (at index 1 of the tuple) is:</dt><dd><p>clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.corrected_attenuation_calc_equality_checker">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">corrected_attenuation_calc_equality_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compare_df_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_df_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_df_3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.corrected_attenuation_calc_equality_checker" title="Permalink to this definition">¶</a></dt>
-<dd><p>This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
-are equal and in the same order in terms of their shared fixed experimental parameters: ‘replicate’, ‘concentration’, and
-‘sat_time’</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>compare_df_1, compare_df_2, compare_df_3</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>DataFrames involved in the corrected attenuation calculation.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>bool</dt><dd><p>Returns True if the subset dataframes are equal, otherwise False.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>ValueError</dt><dd><p>If the passed dataframes do not have the same shape.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -353,8 +329,61 @@ ppm as a “hue” to differentiate points. This function also saves the plot to
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.get_t_test_results">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">get_t_test_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_corr_attenuation_ppm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.get_t_test_results" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="data_wrangling_functions.prep_mean">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">prep_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_p_attenuation_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.prep_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
+columns have been added.</p>
+<p>Statisical analysis is performed on a “mean” basis, across many experimental replicates.
+This code prepares the per-observation data accordingly, and outputs the mean_df_for_stats.</p>
+<p>It drops the columns and rows not required for stats, calculates the mean and std of parameters we do 
+care about, and also appends the degrees of freedom and sample size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
+(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
+</dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>mean_corr_attenuation_ppm</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of 
+interest are appended.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_functions.prep_replicate">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">prep_replicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_p_attenuation_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.prep_replicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
+columns have been added.</p>
+<p>This code prepares the per-observation data accordingly, and outputs the replicate_df_for_stats.</p>
+<p>It drops the columns and rows not required for stats, and adds the proton peak index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
+(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>replicate_df_for_stats</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe, where columns not required for statistical modelling are dropped and the column for proton peak index
+is appended.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_functions.t_test">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">t_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_corr_attenuation_ppm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.t_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Procedure followed from: <a class="reference external" href="https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/">https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/</a></p>
 <p>One sample t test: tests whether the mean of a population is significantly different than a sample mean.
 A proper t-test analysis performs calculations to help infer what the expected population mean (that 
@@ -382,59 +411,6 @@ Alpha = 0.1 for statistical significance.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>Book and batch paths are the same.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.prep_mean_data_for_stats">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">prep_mean_data_for_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_p_attenuation_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.prep_mean_data_for_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
-columns have been added.</p>
-<p>Statisical analysis is performed on a “mean” basis, across many experimental replicates.
-This code prepares the per-observation data accordingly, and outputs the mean_df_for_stats.</p>
-<p>It drops the columns and rows not required for stats, calculates the mean and std of parameters we do 
-care about, and also appends the degrees of freedom and sample size.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
-(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
-</dd>
-<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
-</dd>
-<dt><strong>——-</strong></dt><dd></dd>
-<dt><strong>mean_corr_attenuation_ppm</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of 
-interest are appended.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="data_wrangling_functions.prep_replicate_data_for_stats">
-<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">prep_replicate_data_for_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_p_attenuation_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.prep_replicate_data_for_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
-columns have been added.</p>
-<p>This code prepares the per-observation data accordingly, and outputs the replicate_df_for_stats.</p>
-<p>It drops the columns and rows not required for stats, and adds the proton peak index.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
-(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
-</dd>
-<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>replicate_df_for_stats</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe, where columns not required for statistical modelling are dropped and the column for proton peak index
-is appended.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
