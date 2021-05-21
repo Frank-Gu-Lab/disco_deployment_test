@@ -9,9 +9,66 @@ sys.path.append(os.getcwd() + '\\..\\src')
 
 from data_wrangling_functions import *
 
-#################### TESTING add_attenuation AND add_corr_attenuation ####################
+class TestDataFrameConversion:
+    """This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe."""
+    
+    def test_batch(self):
+        
+        path = "./test-files/test_wrangling"
 
-# weird, works in main script but not in unit test even though the inputs are the same
+        try:
+            
+            batch = path + "/input/batch_to_dataframe_input.xlsx"
+            
+            # loop through names and assert equality of dataframes
+            
+            actual = batch_to_dataframe(batch)
+            file = open(path + "/expected/batch_to_dataframe_output.txt")
+            
+            for i in range(len(actual)):
+                
+                # testing equality of sheet names
+                expected_name = file.readline()
+                assert actual[i][0] == expected_name
+                
+                # testing equality of dataframes
+                name = f"sheet_{i}"
+                expected_df = pd.read_excel(path + "/expected/" + name, index_col=0)
+                
+                assert actual[i][1].equals(expected_df)
+            
+        except:
+            
+            print("Program did not successfully execute!")
+        
+    def test_book(self):
+        
+        path = "./test-files/test_wrangling"
+        output_dir = path +"/output"
+
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        
+        try:
+            
+            book = path + "/input/KHA.xlsx"
+            
+            actual = book_to_dataframe(book, output_dir)
+            actual_title = actual[0]
+            actual_df = pd.read_excel(output_dir + "/KHA/KHA_clean_raw_df.xlsx", index_col=0)
+            
+            file = open("./test-files/test_wrangling/expected/book_to_dataframe_output.txt")
+            expected_title = file.read()
+            expected_df = pd.read_excel(path + "/expected/book_to_dataframe_output.xlsx", index_col=0)
+            
+            assert actual_title == expected_title 
+            assert actual_df.equals(expected_df)
+            
+        finally:
+            
+            # TEARDOWN
+            
+            shutil.rmtree(output_dir)
 
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
@@ -26,9 +83,9 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual, expected)
     '''
     def test_add_attenuation_book(self):
-        
+        """ MAKE NOTE OF PRECISION CHANGE """
         df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
-           
+        
         actual_true, actual_false = add_attenuation(df)
         expected_true = pd.read_excel("./test-files/test_wrangling/expected/att_book_true.xlsx", index_col=0)
         expected_false = pd.read_excel("./test-files/test_wrangling/expected/att_book_false.xlsx", index_col=0)
@@ -74,6 +131,48 @@ class TestAttenuation:
         expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_book.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
+    
+class TestDropBadPeaks:
+    """This class contains all the unit tests relating to the execute_curvefit function."""
+    # testing overall functionality
+    
+    def test_drop_peaks_book(self):
+        
+        path = "./test-files/test_wrangling"
+        output_dir = path + "/output"
+        df_title = "KHA"
+        
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        
+        try:
+   
+            df_mean = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            df_mean_other = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
+            df_replicates = pd.read_excel(path + "/input/drop_replicates_peaks_book_input.xlsx", index_col=0)
+            
+            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
+            
+            expected_mean_left = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            expected_mean_right = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+  
+            expected_replicates = pd.read_excel(path + "/expected/drop_replicates_peaks_book_output.xlsx", index_col=0)
+            
+            assert actual_mean.equals(expected_mean)
+            assert actual_replicates.equals(expected_replicates)
+        
+        finally:
+            
+            # TEARDOWN
+            
+            shutil.rmtree(output_dir)
+        
+    #def test_drop_peaks_batch(self):      
     
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
@@ -150,46 +249,3 @@ class TestCurveFit:
             # TEARDOWN
             
             shutil.rmtree(path + "/output")
-
-class TestDropBadPeaks:
-    """This class contains all the unit tests relating to the execute_curvefit function."""
-    # testing overall functionality
-    
-    def test_drop_peaks_book(self):
-        
-        path = "./test-files/test_wrangling"
-        output_dir = path + "/output"
-        df_title = "KHA"
-        
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-        
-        try:
-   
-            df_mean = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            df_mean_other = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-            df_replicates = pd.read_excel(path + "/input/drop_replicates_peaks_book_input.xlsx", index_col=0)
-            
-            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
-            
-            expected_mean_left = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            expected_mean_right = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-  
-            expected_replicates = pd.read_excel(path + "/expected/drop_replicates_peaks_book_output.xlsx", index_col=0)
-            
-            assert actual_mean.equals(expected_mean)
-            assert actual_replicates.equals(expected_replicates)
-        
-        finally:
-            
-            # TEARDOWN
-            
-            shutil.rmtree(output_dir)
-        
-    #def test_drop_peaks_batch(self):
-        

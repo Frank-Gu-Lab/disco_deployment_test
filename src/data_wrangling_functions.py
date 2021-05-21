@@ -203,7 +203,7 @@ def batch_to_dataframe(b):
     
     # After all is said and done, return a list of the clean dfs containing polymer tuples of format (polymer_name, polymer_df)
     print("Returning a list of tuples containing all polymer information from Batch: ", b)
-    
+        
     return list_of_clean_dfs
 
 # could split up
@@ -227,6 +227,7 @@ def book_to_dataframe(b, global_output_directory):
         And the value (at index 1 of the tuple) is:
         clean_df, the cleaned pandas dataframe corresponding to that book title!
     '''
+    
     # PREPARE AND INITIALIZE REQUIRED VARIABLES FOR DATA WRANGLING --------------
     
     # grab the current book title, and drop the file extension from current book title for easier file naming in the rest of the code
@@ -463,7 +464,7 @@ def book_to_dataframe(b, global_output_directory):
     # merge current_book_title and clean_df into a tuple, as "key value pairs" that can be generically indexed
     clean_tuple = (current_book_title, clean_df)
     print('Function has returned a tuple containing the title of the current book, and the cleaned dataframe for {}.\n'.format(current_book_title))
-    
+
     return clean_tuple
 
 def clean_the_batch_tuple_list(list_of_clean_dfs):

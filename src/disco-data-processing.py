@@ -164,13 +164,7 @@ if len(clean_book_tuple_list) != 0:
         
         # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
         
-        current_df_mean.to_excel("~/Desktop/drop_mean_peaks_book_input.xlsx")
-        current_df_replicates.to_excel("~/Desktop/drop_replicates_peaks_book_input.xlsx")
-        
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory)
-
-        current_df_mean.to_excel("~/Desktop/drop_mean_peaks_book_output.xlsx")
-        current_df_replicates.to_excel("~/Desktop/drop_replicates_peaks_book_output.xlsx")
 
         # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
         
@@ -269,7 +263,6 @@ if len(clean_batch_tuple_list) != 0:
         print("All activities are now completed for: {}".format(current_df_title))
 
     print("Hooray! All polymers in the input files have been processed.")
-
 
 # PART 3 - MERGE TRUE POSITIVE AND TRUE NEGATIVE BINDING OBSERVATIONS ---------------------
 
