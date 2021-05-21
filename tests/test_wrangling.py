@@ -84,15 +84,7 @@ class TestCurveFit:
     def test_curvefit_book(self):  
         
         path = "./test-files/test_wrangling"
-        df_mean = pd.read_excel(path + "/input/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-        df_mean_other = pd.read_excel(path + "/input/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-        df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-        mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-        
-        df_replicates = pd.read_excel(path + "/input/book_replicates_input.xlsx")
-        
         df_title = "KHA"
-        
         output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
         output_table = "{}/output/data_tables_from_{}".format(path, df_title)
         
@@ -104,7 +96,14 @@ class TestCurveFit:
             os.mkdir(output_table)
         
         try:
-        
+            
+            df_mean = pd.read_excel(path + "/input/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            df_mean_other = pd.read_excel(path + "/input/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+            
+            df_replicates = pd.read_excel(path + "/input/book_replicates_input.xlsx")
+            
             actual_mean, actual_replicates = execute_curvefit(mean, df_replicates, output_curve, output_table, df_title)
             
             expected_mean_left = pd.read_excel(path + "/expected/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
@@ -151,3 +150,46 @@ class TestCurveFit:
             # TEARDOWN
             
             shutil.rmtree(path + "/output")
+
+class TestDropBadPeaks:
+    """This class contains all the unit tests relating to the execute_curvefit function."""
+    # testing overall functionality
+    
+    def test_drop_peaks_book(self):
+        
+        path = "./test-files/test_wrangling"
+        output_dir = path + "/output"
+        df_title = "KHA"
+        
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        
+        try:
+   
+            df_mean = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            df_mean_other = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
+            df_replicates = pd.read_excel(path + "/input/drop_replicates_peaks_book_input.xlsx", index_col=0)
+            
+            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
+            
+            expected_mean_left = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            expected_mean_right = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+  
+            expected_replicates = pd.read_excel(path + "/expected/drop_replicates_peaks_book_output.xlsx", index_col=0)
+            
+            assert actual_mean.equals(expected_mean)
+            assert actual_replicates.equals(expected_replicates)
+        
+        finally:
+            
+            # TEARDOWN
+            
+            shutil.rmtree(output_dir)
+        
+    #def test_drop_peaks_batch(self):
+        

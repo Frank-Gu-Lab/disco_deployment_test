@@ -163,7 +163,14 @@ if len(clean_book_tuple_list) != 0:
         current_df_mean.to_excel(os.path.join(output_directory_tables, output_file_name))
         
         # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
+        
+        current_df_mean.to_excel("~/Desktop/drop_mean_peaks_book_input.xlsx")
+        current_df_replicates.to_excel("~/Desktop/drop_replicates_peaks_book_input.xlsx")
+        
         current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory)
+
+        current_df_mean.to_excel("~/Desktop/drop_mean_peaks_book_output.xlsx")
+        current_df_replicates.to_excel("~/Desktop/drop_replicates_peaks_book_output.xlsx")
 
         # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
         
@@ -236,6 +243,7 @@ if len(clean_batch_tuple_list) != 0:
         # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
 
         # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
+        
         current_df_mean = prep_mean(current_df_attenuation, 'batch')
         current_df_replicates = prep_replicate(current_df_attenuation, 'batch')
 

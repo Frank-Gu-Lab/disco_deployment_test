@@ -17,6 +17,7 @@ idx = pd.IndexSlice
 
 # functions are ordered below in the order they are called in the disco-data-processing script
 
+# could probably split up
 def batch_to_dataframe(b):
     '''This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
     
@@ -205,6 +206,7 @@ def batch_to_dataframe(b):
     
     return list_of_clean_dfs
 
+# could split up
 def book_to_dataframe(b, global_output_directory):
     '''This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
     organized Pandas DataFrames for further processing.
@@ -577,8 +579,7 @@ def add_attenuation(current_book, batch_or_book = 'book'):
         #Update irradiated dataframe to include the % attenuation of the irradiated samples and controls
         intensity_irrad_true['attenuation'] = p_attenuation_intensity
         print("Test 1 passed, attenuation has been calculated and appended to dataframe.")
-        intensity_irrad_true.to_excel("~/Desktop/att_book_true.xlsx")
-        intensity_irrad_false.to_excel("~/Desktop/att_book_false.xlsx")
+
     else:
         raise ValueError("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
 
@@ -758,9 +759,6 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
 
         # generate a table that includes the mean and std for ppm and corr_%_atten across the replicates, reset index
         mean_corr_attenuation_ppm = regrouped_df.groupby(by = ['concentration', 'sat_time', 'proton_peak_index']).agg({'ppm': ['mean', 'std'], 'corr_%_attenuation': ['mean', 'std']})
-        
-        # prepare input for dofs function
-        input_for_dofs = regrouped_df.index.get_level_values(2)
     
     # if data came from a batch, ppm value is static and 1 less DoF, so perform adjusted operations
     else: 
@@ -774,8 +772,8 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
         # generate a table that includes the mean and std for ppm and corr_%_atten across the replicates, reset index
         mean_corr_attenuation_ppm = regrouped_df.groupby(by = ['concentration', 'sat_time', 'proton_peak_index', 'ppm']).agg({'corr_%_attenuation': ['mean', 'std']})
         
-        # prepare input for dofs function
-        input_for_dofs = regrouped_df.index.get_level_values(2)
+    # prepare input for dofs function
+    input_for_dofs = regrouped_df.index.get_level_values(2)
         
     # Calculate degrees of freedom and sample size for each datapoint using function above
     peak_index_array = np.array(input_for_dofs)
@@ -788,7 +786,6 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
     return mean_corr_attenuation_ppm 
 
 def prep_replicate(corr_p_attenuation_df, batch_or_book = 'book'):
-    
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
     
@@ -829,7 +826,6 @@ def prep_replicate(corr_p_attenuation_df, batch_or_book = 'book'):
     return replicate_df_for_stats
 
 def t_test(mean_corr_attenuation_ppm, p=0.95):
-
     ''' Procedure followed from: https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/ 
 
         One sample t test: tests whether the mean of a population is significantly different than a sample mean.
@@ -976,6 +972,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     #initialize list to contain the points to remove 
     pts_to_remove = []
 
+    """
     if batch_or_book == 'book':
         for p in unique_protons:
             for c in unique_concentrations:
@@ -1018,7 +1015,6 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
         current_df_replicates_passed = current_df_replicates.reset_index()
 
         return current_df_mean_passed, current_df_replicates_passed
-
 
     else:
         
@@ -1077,7 +1073,83 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
         current_df_replicates_passed = current_df_replicates.reset_index()
 
         return current_df_mean_passed, current_df_replicates_passed
+        """
+    
+    for p in unique_protons:
+        for c in unique_concentrations:
+            
+            if batch_or_book == 'book':
+                
+                #subset the df via index slice based on the current peak and concentration
+                current_subset_df = significant_corr_attenuation.loc[idx[c, :, p]]
 
+            else:
+                
+                #subset the df via index slice based on the current peak and concentration, ppm is part of index here
+                current_subset_df = significant_corr_attenuation.loc[idx[c, :, p, :]]
+                
+
+            #subset further for where significance is false
+            subset_insignificant = current_subset_df.loc[(current_subset_df['significance'] == False)]
+
+            #if there's more than 2 datapoints where significance is False within the subset, drop p's proton peaks for c's concentration from the significant_corr_attenuation df
+                
+            if batch_or_book == 'book':
+                
+                if len(subset_insignificant) > 2:
+
+                    pts_to_remove.append(current_subset_df.index)
+                    significant_corr_attenuation = significant_corr_attenuation.drop(current_subset_df.index, inplace = False)  
+                    
+            else:
+                
+                if len(subset_insignificant) > 2:
+                    
+                    # recreate the corresponding parent multi index based on the identified points to drop to feed to parent dataframe
+                    index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(0))
+                    index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(1))
+                    index_to_drop_conc = np.full(len(index_to_drop_sat_time), c)
+                    index_to_drop_proton_peak = np.full(len(index_to_drop_sat_time), p)
+
+                    array_indexes_to_drop = [index_to_drop_conc, index_to_drop_sat_time, index_to_drop_proton_peak, index_to_drop_ppm]
+                    multi_index_to_drop_input = list(zip(*array_indexes_to_drop))
+                    multi_index_to_drop = pd.MultiIndex.from_tuples(multi_index_to_drop_input, names=['concentration', 'sat_time', 'proton_peak_index', 'ppm'])
+                    
+                    #append multi index to pts to remove
+                    pts_to_remove.append(multi_index_to_drop)
+                    print("points being dropped are:", multi_index_to_drop)
+                    
+                    # pass the multi index to drop to drop points from the parent dataframe
+                    significant_corr_attenuation = significant_corr_attenuation.drop(multi_index_to_drop, inplace = False)                               
+    
+    print('Removed insignificant points have been printed to the output folder for {}.'.format(current_df_title))
+
+    #create and print dropped points to a summary file
+    dropped_points_file = open("{}/dropped_insignificant_points.txt".format(output_directory), "w")
+    dropped_points_file.write("The datapoints dropped from consideration due to not meeting the criteria for significance are: \n{}".format(pts_to_remove))
+    dropped_points_file.close()
+
+    #define a mean df of the data that passed to return
+    current_df_mean_passed = significant_corr_attenuation
+
+    #The below code removes the same bad points from the replicate df ------------
+
+    # Reset index and drop the old index column, just getting the dataframe ready for this, not sure why this works
+    current_df_replicates = current_df_replicates.reset_index()
+    current_df_replicates = current_df_replicates.drop('index', axis = 1)
+
+    #drop the points
+    for num_pts in pts_to_remove:
+        for exp_parameters in num_pts:
+            
+            drop_subset = (current_df_replicates.loc[(current_df_replicates['concentration'] == exp_parameters[0]) & (current_df_replicates['sat_time'] == exp_parameters[1]) & (current_df_replicates['proton_peak_index'] == exp_parameters[2])])
+            current_df_replicates = current_df_replicates.drop(drop_subset.index)
+
+    #define a replicate df of the data that passed to return (reset index might not actually be needed? but I know this way works...) 
+    current_df_replicates_passed = current_df_replicates.reset_index()
+
+    return current_df_mean_passed, current_df_replicates_passed
+        
 def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, output_directory3, current_df_title, batch_or_book = 'book'):
     '''We are now ready to calculate the nonlinear curve fit models (or "hat" models), 
     for both individual replicate data (via stats_df_replicates), and on a mean (or "bar") basis (via stats_df_mean). 
