@@ -3,6 +3,7 @@ import sys
 import os
 import glob
 import shutil
+import numpy as np
 
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '\\..\\src')
@@ -13,6 +14,8 @@ class TestDataFrameConversion:
     """This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe."""
     
     def test_batch(self):
+        """Testing overall functionality. Takes in a batch Excel sheet and converts each sheet into a dataframe, returning a tuple of the form
+        (df_name, df)."""
         
         path = "./test-files/test_wrangling"
 
@@ -42,6 +45,8 @@ class TestDataFrameConversion:
             print("Program did not successfully execute!")
         
     def test_book(self):
+        """Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
+        excel sheet is removed during teardown."""
         
         path = "./test-files/test_wrangling"
         output_dir = path +"/output"
@@ -178,8 +183,72 @@ class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
     
-    #def test_curvefit_batch(self):
-      
+    def test_curvefit_batch(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        if not os.path.exists(path + "/output"):
+            os.mkdir(path + "/output")
+        
+        try:
+            
+            input_mean = glob.glob(path + "/input/batch_curve_input/mean/*")
+            input_replicates = glob.glob(path + "/input/batch_curve_input/replicates/*")
+            
+            names = open(path + "/input/batch_curve_input.txt")
+            names = names.readlines()
+            names = [name.rstrip() for name in names]
+            
+            empty = open(path + "/input/empty.txt")
+            empty = empty.readlines()
+            empty = [name.rstrip() for name in empty]
+            empty = [name.replace(".xlsx", "") for name in empty]
+            empty = [name.replace("sheet_", "") for name in empty]
+            
+            for i in range(len(names)):
+                
+                df_title = names[i]
+                
+                output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
+                output_table = "{}/output/data_tables_from_{}".format(path, df_title)
+                
+                if not os.path.exists(output_curve):
+                    os.mkdir(output_curve)
+                if not os.path.exists(output_table):
+                    os.mkdir(output_table)
+                
+                # create empty Excel if df_title in empty
+                
+                if df_title in empty: # this raises an error -- empty df not properly created? bc of the multi-index column I think
+                    continue
+                    #df_mean = pd.DataFrame(columns = [("corr_%_attenuation", "mean"), ("corr_%_attenuation", "std"), ("dofs", ""), ("sample_size", ""), ("t_results", ""), ("significance", ""), ("amp_factor", "")], index=[])
+                
+                else:
+                    df_mean_left = pd.read_excel(path + "/input/batch_curve_input/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                    df_mean_right = pd.read_excel(path + "/input/batch_curve_input/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                    df_mean_right.columns = pd.MultiIndex.from_product([df_mean_right.columns, ['']])
+                    df_mean = pd.merge(df_mean_left, df_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+                        
+                df_replicates = pd.read_excel(path + "/input/batch_curve_input/replicates/sheet_" + df_title +".xlsx", index_col=0)
+                
+                df_mean, df_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
+                
+                expected_mean_left = pd.read_excel(path + "/expected/batch_curve_output/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                expected_mean_right = pd.read_excel(path + "/expected/batch_curve_output/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+                expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+                expected_replicates = pd.read_excel(path + "/expected/batch_curve_output/replicates/sheet_" + df_title + ".xlsx", index_col=0)
+                
+                pd.testing.assert_frame_equal(df_mean, expected_mean, rtol=1e-3)
+                pd.testing.assert_frame_equal(df_replicates, expected_replicates, rtol=1e-3)
+            
+        finally:
+            
+            # TEARDOWN
+            
+            shutil.rmtree(path + "/output")
+         
     def test_curvefit_book(self):  
         
         path = "./test-files/test_wrangling"
@@ -226,26 +295,26 @@ class TestCurveFit:
             expected_curve = glob.glob(path + "/expected/curve_fit_plots_from_KHA/*")
             expected_table = glob.glob(path + "/expected/data_tables_from_KHA/*")
             
+            if len(actual_curve) != len(expected_curve):
+                assert len(actual_curve) == len(expected_curve)
+            
+            if len(actual_table) != len(expected_table):
+                assert len(actual_table) == len(expected_table)
+            
             for i in range(len(actual_curve)):
                 actual_curve[i] = os.path.basename(actual_curve[i])
+                expected_curve[i] = os.path.basename(expected_curve[i])
+                
+                assert actual_curve[i] == expected_curve[i]
             
             for i in range(len(actual_table)):
                 actual_table[i] = os.path.basename(actual_table[i])
-                
-            for i in range(len(expected_curve)):
-                expected_curve[i] = os.path.basename(expected_curve[i])
-            
-            for i in range(len(expected_table)):
                 expected_table[i] = os.path.basename(expected_table[i])
                 
-            for plot in actual_curve:
-                assert plot in expected_curve
-
-            for table in actual_table:
-                assert table in expected_table
-            
+                assert actual_table[i] == expected_table[i]
+                
         finally:
             
             # TEARDOWN
             
-            shutil.rmtree(path + "/output")
+            shutil.rmtree(path + "/output")        

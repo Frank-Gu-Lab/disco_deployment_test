@@ -34,6 +34,7 @@ idx = pd.IndexSlice
 # import all data wrangling functions for Pt. 1 & 2, and data merge function for Pt. 3
 from data_wrangling_functions import *
 from data_merging import merge
+from data_visualize import *
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
 
@@ -81,7 +82,7 @@ for book in list_of_raw_books:
 if len(batch_tuple_list) != 0: 
     clean_batch_list = clean_the_batch_tuple_list(batch_tuple_list)
 
-# convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
+    # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
     clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE POLYMER BOOK LIST GENERATED ABOVE, IF ANY ----------------------------------
@@ -103,34 +104,8 @@ if len(clean_book_tuple_list) != 0:
 
         # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
-        # Define a custom output directory for the current df in the list
-        output_directory = "{}/{}".format(global_output_directory, current_df_title)
-
-        # make directory if there isn't already one for overall output for current df
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
-
-        # Define a output exploratory directory for the exploratory plots 
-        output_directory_exploratory = "{}/exploratory_plots_from_{}".format(output_directory, current_df_title)
-
-        # make directory if there isn't already one for exploratory output 
-        if not os.path.exists(output_directory_exploratory):
-            os.makedirs(output_directory_exploratory)
-
-        # Define a output directory for the curve fit plots for the current df title
-        output_directory_curve = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
-
-        # make this directory if there isn't already one for the curve_fit_plots
-        if not os.path.exists(output_directory_curve):
-            os.makedirs(output_directory_curve)  
-
-        # Define a output directory for the final data tables after curve fitting and stats
-        output_directory_tables = "{}/data_tables_from_{}".format(output_directory, current_df_title)
-
-        # make this directory if there isn't already one for the data tables
-        if not os.path.exists(output_directory_tables):
-            os.makedirs(output_directory_tables)    
-
+        output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory = generate_directories(current_df_title, global_output_directory)
+                
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
 
         df_true, df_false = add_attenuation(current_df)
@@ -193,34 +168,8 @@ if len(clean_batch_tuple_list) != 0:
 
         # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
-        # Define a custom output directory for the current df in the list
-        output_directory = "{}/{}".format(global_output_directory, current_df_title)
-
-        # make directory if there isn't already one for overall output for current df
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
-
-        # Define an output exploratory directory for the exploratory plots 
-        output_directory_exploratory = "{}/exploratory_plots_from_{}".format(output_directory, current_df_title)
-
-        # make directory if there isn't already one for exploratory output 
-        if not os.path.exists(output_directory_exploratory):
-            os.makedirs(output_directory_exploratory)
-
-        # Define an output directory for the curve fit plots for the current df title
-        output_directory_curve = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
-
-        # make this directory if there isn't already one for the curve_fit_plots
-        if not os.path.exists(output_directory_curve):
-            os.makedirs(output_directory_curve)  
-
-        # Define an output directory for the final data tables after curve fitting and stats
-        output_directory_tables = "{}/data_tables_from_{}".format(output_directory, current_df_title)
-
-        # make this directory if there isn't already one for the data tables
-        if not os.path.exists(output_directory_tables):
-            os.makedirs(output_directory_tables)    
-
+        output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory = generate_directories(current_df_title, global_output_directory) 
+        
         # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
         
         df_true, df_false = add_attenuation(current_df, 'batch')
