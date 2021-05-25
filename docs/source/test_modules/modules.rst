@@ -6,3 +6,4 @@ tests
 
    test_data_merge_move
    test_wrangling
+   test_visualize

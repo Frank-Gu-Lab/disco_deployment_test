@@ -41,19 +41,27 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions.</p>
 <p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_attenuation_book" title="test_wrangling.TestAttenuation.test_add_attenuation_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_attenuation_book</span></code></a>()</p></td>
+<td><p>MAKE NOTE OF PRECISION CHANGE</p></td>
+</tr>
+</tbody>
+</table>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 77%" />
 <col style="width: 23%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>test_add_attenuation_book</strong></p></td>
+<tr class="row-odd"><td><p><strong>test_add_both_att_book</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>test_add_both_att_book</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>test_add_corr_attenuation_book</strong></p></td>
+<tr class="row-even"><td><p><strong>test_add_corr_attenuation_book</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -61,7 +69,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_attenuation_book">
 <span class="sig-name descname"><span class="pre">test_add_attenuation_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_attenuation_book" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>MAKE NOTE OF PRECISION CHANGE</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_both_att_book">
@@ -83,18 +92,86 @@
 <p class="rubric">Methods</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 69%" />
-<col style="width: 31%" />
+<col style="width: 70%" />
+<col style="width: 30%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>test_curvefit_book</strong></p></td>
+<tr class="row-odd"><td><p><strong>test_curvefit_batch</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>test_curvefit_book</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestCurveFit.test_curvefit_batch">
+<span class="sig-name descname"><span class="pre">test_curvefit_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestCurveFit.test_curvefit_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="test_wrangling.TestCurveFit.test_curvefit_book">
 <span class="sig-name descname"><span class="pre">test_curvefit_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestCurveFit.test_curvefit_book" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestDataFrameConversion</span></span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestDataFrameConversion.test_batch" title="test_wrangling.TestDataFrameConversion.test_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_batch</span></code></a>()</p></td>
+<td><p>Testing overall functionality.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestDataFrameConversion.test_book" title="test_wrangling.TestDataFrameConversion.test_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_book</span></code></a>()</p></td>
+<td><p>Testing overall functionality.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion.test_batch">
+<span class="sig-name descname"><span class="pre">test_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion.test_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Testing overall functionality. Takes in a batch Excel sheet and converts each sheet into a dataframe, returning a tuple of the form
+(df_name, df).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion.test_book">
+<span class="sig-name descname"><span class="pre">test_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion.test_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
+excel sheet is removed during teardown.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestDropBadPeaks">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestDropBadPeaks</span></span><a class="headerlink" href="#test_wrangling.TestDropBadPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the execute_curvefit function.</p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 71%" />
+<col style="width: 29%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>test_drop_peaks_book</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDropBadPeaks.test_drop_peaks_book">
+<span class="sig-name descname"><span class="pre">test_drop_peaks_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDropBadPeaks.test_drop_peaks_book" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

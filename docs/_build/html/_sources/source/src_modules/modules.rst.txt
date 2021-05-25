@@ -8,3 +8,4 @@ src
    data_wrangling_functions
    data_wrangling_helpers
    disco-data-processing
+   data_visualize
