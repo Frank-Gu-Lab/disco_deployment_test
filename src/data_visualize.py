@@ -1,5 +1,7 @@
 import os
 
+from data_wrangling_functions import *
+
 def generate_directories(current_df_title, global_output_directory):
     # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
@@ -32,3 +34,36 @@ def generate_directories(current_df_title, global_output_directory):
         os.makedirs(output_directory_tables)    
         
     return output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory
+
+def modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = 'book'):
+    """ Ideally, test should be independent of nested functions. Try to incorporate mocking."""
+    
+    # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
+    
+    current_df_mean = prep_mean(current_df_attenuation, batch_or_book)
+    current_df_replicates = prep_replicate(current_df_attenuation, batch_or_book)
+
+    # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
+    current_df_mean = t_test(current_df_mean, p=0.95)
+
+    # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
+    # note, for batch: if AF denominators are different for each polymer, should make a list of all values for all polymers, then pass list[i] to af_denominator here
+    
+    current_df_mean, current_df_replicates = compute_af(current_df_mean, current_df_replicates, af_denominator = 10)
+    
+    # export current dataframes to excel with no observations dropped, for future reference in ML -----
+    output_file_name = "stats_analysis_output_replicate_all_{}.xlsx".format(current_df_title) # replicates
+    current_df_replicates.to_excel(os.path.join(output_directory_tables, output_file_name)) 
+    output_file_name = "stats_analysis_output_mean_all_{}.xlsx".format(current_df_title) # mean
+    current_df_mean.to_excel(os.path.join(output_directory_tables, output_file_name))
+    
+    # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
+    
+    current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory, batch_or_book)
+
+    # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
+    
+    current_df_mean, current_df_replicates = execute_curvefit(
+        current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book)
+    
+    return current_df_mean, current_df_replicates
