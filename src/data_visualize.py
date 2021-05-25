@@ -3,6 +3,30 @@ import os
 from data_wrangling_functions import *
 
 def generate_directories(current_df_title, global_output_directory):
+    """ This function defines and creates custom output directories for the inputted dataframe.
+    
+    Parameters
+    ----------
+    current_df_title : str
+        Title of the dataframe being handled.
+        
+    global_output_directory : 
+        Output directory for the main program, where the custom output directories of the inputted dataframes will be stored.
+    
+    Returns
+    -------
+    output_directory_exploratory : str
+        Filepath to the directory where all exploratory plots for the inputted dataframe will be stored.
+        
+    output_directory_curve : str
+        Filepath to the directory where all the curve fit plots for the inputted dataframe will be stored.
+        
+    output_directory_tables : str
+        Filepath to the directory where the final fully-processed dataframe created from the input dataframe will be stored.
+    
+    output_directory : str
+        Filepath to the custom directory for the inputted dataframe, where the above directories will be located.
+    """
     # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
     # Define a custom output directory for the current df in the list
@@ -36,8 +60,33 @@ def generate_directories(current_df_title, global_output_directory):
     return output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory
 
 def modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = 'book'):
-    """ Ideally, test should be independent of nested functions. Try to incorporate mocking."""
+    """This function outlines the full data-modelling procedure for the inputted dataframe.
     
+    Parameters
+    ----------
+    current_df_attenuation : Pandas.DataFrame
+        An updated dataframe that includes the attenuation and corr_%_attenuation columns; the dataframe to be prepared for statistical analysis.
+        
+    current_df_title : str
+        Title of the dataframe being handled.
+        
+    output_directory : str
+        Filepath to the custom directory for the inputted dataframe, where the above directories will be located.
+    
+    output_directory_curve : str
+        Filepath to the directory where all the curve fit plots for the inputted dataframe will be stored.
+    
+    output_directory_tables : str
+        Filepath to the directory where the final fully-processed dataframe created from the input dataframe will be stored.
+        
+    batch_or_book : str, {'book', 'batch}
+        Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
+    
+    Returns
+    -------
+    current_df_mean, current_df_replicates : Pandas.DataFrame
+        The final fully-processed dataframes with curve fitting results appended to table.
+    """
     # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
     
     current_df_mean = prep_mean(current_df_attenuation, batch_or_book)
@@ -69,6 +118,20 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
     return current_df_mean, current_df_replicates
 
 def visualize(tuple_list, global_output_directory, batch_or_book = 'book'):
+        """This function outlines the full data visualization and modelling processing for a list of dataframes. 
+        
+        Parameters
+        ----------
+        tuple_list : list
+            List of tuples of the form (df_title, Pandas.DataFrame).
+            
+        global_output_directory : str
+            Output directory for the main program, where the custom output directories of the all the inputted dataframes will be stored.
+        
+        batch_or_book : str, {'book', 'batch'}
+            Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
+        """
+        
         for i in range(len(tuple_list)):
     
             # BEGINNING PART 1 -------- Reading in Data and Visualizing the Results ------------------------ 

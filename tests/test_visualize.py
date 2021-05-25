@@ -35,8 +35,10 @@ class TestGenerateDirectory:
             shutil.rmtree(global_output_directory + "/KHA")
 
 class TestModelling:
+    """This class contains all the unit tests relating to the function modelling()."""
     
     def test_modelling_book(self):
+        """ Ideally, test should be independent of nested functions. Try to incorporate mocking."""
         
         path = "./test-files/test_visualize"
         global_output_directory = path + "/output"
