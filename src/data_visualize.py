@@ -67,3 +67,40 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
         current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book)
     
     return current_df_mean, current_df_replicates
+
+def visualize(tuple_list, global_output_directory, batch_or_book = 'book'):
+        for i in range(len(tuple_list)):
+    
+            # BEGINNING PART 1 -------- Reading in Data and Visualizing the Results ------------------------ 
+
+            #define current dataframe to be analyzed and its title from the tuple output of the data cleaning code
+            current_df = tuple_list[i][1]
+            current_df_title = tuple_list[i][0]
+
+            # remove any spaces from title
+            current_df_title = current_df_title.replace(' ', '')
+
+            print("Beginning data analysis for {}...".format(current_df_title))
+
+            # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
+
+            output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory = generate_directories(current_df_title, global_output_directory) 
+            
+            # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
+            
+            df_true, df_false = add_attenuation(current_df, batch_or_book)
+            current_df_attenuation = add_corr_attenuation(df_true, df_false, batch_or_book)
+
+            # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
+
+            print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
+            generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
+            generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
+
+            # This completes Part 1 - Data Preprocessing and Visualizing the Results!
+
+            # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
+
+            current_df_mean, current_df_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book)
+            
+            print("All activities are now completed for: {}".format(current_df_title))
