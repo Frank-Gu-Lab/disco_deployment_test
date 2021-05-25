@@ -89,83 +89,17 @@ if len(batch_tuple_list) != 0:
 # custom processing functions default to the "book" path, so no additional parameters passed here
 
 if len(clean_book_tuple_list) != 0: 
-    for i in range(len(clean_book_tuple_list)):
-
-        # BEGINNING PART 1 -------- Reading in Data and Visualizing the Results ------------------------ 
-
-        #define current dataframe to be analyzed and its title from the tuple output of the data cleaning code
-        current_df = clean_book_tuple_list[i][1]
-        current_df_title = clean_book_tuple_list[i][0]
-        
-        # remove any spaces from title
-        current_df_title = current_df_title.replace(' ', '')
-
-        print("Beginning data analysis for {}...".format(current_df_title))
-
-        # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
-
-        output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory = generate_directories(current_df_title, global_output_directory)
-                
-        # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
-
-        df_true, df_false = add_attenuation(current_df)
-        current_df_attenuation = add_corr_attenuation(df_true, df_false)
-        
-        # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
-
-        print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
-        generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
-        generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
-
-        # This completes Part 1 - Data Preprocessing and Visualizing the Results!
-
-        # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
-        
-        current_df_mean, current_df_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
-        
-        print("All activities are now completed for: {}".format(current_df_title))
-
+    
+    visualize(clean_book_tuple_list, global_output_directory)
+    
     print("Hooray! All polymers in the input files have been processed.")
 
 # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
 
 if len(clean_batch_tuple_list) != 0: 
-    for i in range(len(clean_batch_tuple_list)):
-
-        # BEGINNING PART 1 -------- Reading in Data and Visualizing the Results ------------------------ 
-
-        #define current dataframe to be analyzed and its title from the tuple output of the data cleaning code
-        current_df = clean_batch_tuple_list[i][1]
-        current_df_title = clean_batch_tuple_list[i][0]
-
-        # remove any spaces from title
-        current_df_title = current_df_title.replace(' ', '')
-
-        print("Beginning data analysis for {}...".format(current_df_title))
-
-        # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
-
-        output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory = generate_directories(current_df_title, global_output_directory) 
-        
-        # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
-        
-        df_true, df_false = add_attenuation(current_df, 'batch')
-        current_df_attenuation = add_corr_attenuation(df_true, df_false, 'batch')
-
-        # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
-
-        print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
-        generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
-        generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
-
-        # This completes Part 1 - Data Preprocessing and Visualizing the Results!
-
-        # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
-
-        current_df_mean, current_df_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, 'batch')
-        
-        print("All activities are now completed for: {}".format(current_df_title))
-
+    
+    visualize(clean_batch_tuple_list, global_output_directory, 'batch')
+    
     print("Hooray! All polymers in the input files have been processed.")
 
 # PART 3 - MERGE TRUE POSITIVE AND TRUE NEGATIVE BINDING OBSERVATIONS ---------------------
