@@ -80,6 +80,7 @@ for book in list_of_raw_books:
 
 #if there has been batch data processing, call the batch cleaning function
 if len(batch_tuple_list) != 0: 
+    
     clean_batch_list = clean_the_batch_tuple_list(batch_tuple_list)
 
     # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
@@ -89,6 +90,12 @@ if len(batch_tuple_list) != 0:
 # custom processing functions default to the "book" path, so no additional parameters passed here
 
 if len(clean_book_tuple_list) != 0: 
+    
+    # export the cleaned dataframe of the book to excel in a custom output folder
+    print("Beginning excel export for all books processed via book processing.\n")
+    
+    for current_book_title, clean_df in clean_book_tuple_list:
+        export_clean_books(current_book_title, clean_df, global_output_directory)
     
     visualize(clean_book_tuple_list, global_output_directory)
     

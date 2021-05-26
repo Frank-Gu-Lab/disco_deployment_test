@@ -182,7 +182,7 @@ class TestDropBadPeaks:
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
-    
+    '''
     def test_curvefit_batch(self):
         
         path = "./test-files/test_wrangling"
@@ -248,7 +248,7 @@ class TestCurveFit:
             # TEARDOWN
             
             shutil.rmtree(path + "/output")
-         
+    '''
     def test_curvefit_book(self):  
         
         path = "./test-files/test_wrangling"
