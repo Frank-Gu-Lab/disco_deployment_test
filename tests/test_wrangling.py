@@ -60,14 +60,13 @@ class TestDataFrameConversion:
             
             actual = book_to_dataframe(book, output_dir)
             actual_title = actual[0]
-            actual_df = pd.read_excel(output_dir + "/KHA/KHA_clean_raw_df.xlsx", index_col=0)
+            actual_df = actual[1]
             
-            file = open("./test-files/test_wrangling/expected/book_to_dataframe_output.txt")
-            expected_title = file.read()
+            expected_title = "KHA"
             expected_df = pd.read_excel(path + "/expected/book_to_dataframe_output.xlsx", index_col=0)
             
             assert actual_title == expected_title 
-            assert actual_df.equals(expected_df)
+            pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
             
         finally:
             

@@ -98,7 +98,33 @@ def initialize_excel_batch_replicates(b):
     return unique_polymers, unique_polymer_replicates, all_sheets_complete_removed    
 
 # helper for batch_to_dataframe
-def wrangle_batch(b, name_sheets, current_polymer_name, current_polymer_df, current_polymer_df_list, replicate_index, list_of_clean_dfs):
+def wrangle_batch(b, name_sheets, replicate_index):
+    """This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.
+    
+    Parameters
+    ----------
+    b : str
+        Path file to the Excel Batch file of interest.
+        
+    name_sheets : list
+        List of sheet names in b without Complete in them.
+        
+    replicate_index : list
+        List of integers representing the replicate index of the Excel sheets in name_sheets.
+    
+    Returns
+    -------
+    list_of_clean_dfs : list
+        List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
+        Tuples are in a "key-value pair format", where the key (at index 0 of the tuple) is:
+        current_book_title, a string containing the title of the current excel input book
+        And the value (at index 1 of the tuple) is:
+        clean_df, the cleaned pandas dataframe corresponding to that book title!
+    """
+    # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
+    current_polymer_df_list = []
+    list_of_clean_dfs = []
+    current_polymer_df = pd.DataFrame([],[])
     
     # loop once through every sheet in the book containing raw data, and execute actions along the way
     for i in range(len(name_sheets)):
@@ -241,7 +267,30 @@ def wrangle_batch(b, name_sheets, current_polymer_name, current_polymer_df, curr
 
 # helper for book_to_dataframe
 def count_sheets(name_sheets):
+    """This function counts the number of sample and control datasheets from which data will be extracted for further processing.
     
+    Parameters
+    ----------
+    name_sheets : list
+        List of sheet names.
+        
+    Returns
+    -------
+    num_samples : int
+        Number of sheets containing sample data.
+    
+    num_controls : int
+        Number of sheets containing control data.
+    
+    sample_control_initializer : list
+        List of Excel sheets containing all sample and control data.
+    
+    sample_replicate_initializer : list
+        List of integers containing the replicate number of each sample sheet in sample_control_initializer.
+    
+    control_replicate_initializer : list
+        List of integers containing the replicate number of each control sheet in sample_control_initializer.
+    """
     # initialize number of samples and controls to zero, then initialize the "list initializers" which will hold book-level data to eventually add to the book-level dataframe.
 
     num_samples = 0
@@ -272,7 +321,27 @@ def count_sheets(name_sheets):
 
 # helper for book_to_dataframe
 def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_index):
-              
+    """This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.
+    
+    Parameters
+    ----------
+    b : str
+        Path file to the Excel Batch file of interest.
+        
+    name_sheets : list
+        List of sheet names in b without Complete in them.
+        
+    sample_control_initializer : list
+        List of sheets with control data to be initialized into a Pandas.DataFrame.
+    
+    total_replicate_index : list
+        List of integers representing the replicate index of each sheet in sample_control_initializer.
+    
+    Returns
+    -------
+    df_list : list
+
+    """
     # initialize a list to contain the mini experimental dataframes collected from within the current book, which will be concatenated at the end to create one dataframe "organized_df" that represents this book
     df_list = []
               

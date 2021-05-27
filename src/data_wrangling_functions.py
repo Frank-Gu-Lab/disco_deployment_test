@@ -27,23 +27,13 @@ def batch_to_dataframe(b):
     
     Returns
     -------
-    list_clean_dfs : list
+    list_of_clean_dfs : list
         List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
         Tuples are in a "key-value pair format", where the key (at index 0 of the tuple) is:
         current_book_title, a string containing the title of the current excel input book
         And the value (at index 1 of the tuple) is:
         clean_df, the cleaned pandas dataframe corresponding to that book title!
     '''
-    # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
-    current_polymer_df_list = []
-    list_of_clean_dfs = []
-    current_polymer_df = pd.DataFrame([],[])
-    replicate_index = []
-    
-    # initialize current_polymer_name and last_polymer_sheet to empty strings
-    current_polymer_name = ' '
-    last_polymer_sheet = ' '
-    
     #load excel book into Pandas
     current_book_title = os.path.basename(str(b))
     
@@ -53,6 +43,8 @@ def batch_to_dataframe(b):
     unique_polymers, unique_polymer_replicates, name_sheets = initialize_excel_batch_replicates(b)
     
     # generate a new replicate index list that holds the nth replicate associated with each raw data sheet in book
+    replicate_index = []
+    
     for i in range(len(unique_polymer_replicates)):
         current_replicate_range = range(1,int(unique_polymer_replicates[i]+1),1)
         for j in current_replicate_range:
@@ -60,7 +52,7 @@ def batch_to_dataframe(b):
     
     # BEGIN WRANGLING DATA FROM THE EXCEL FILE, AND TRANSLATING INTO ORGANIZED DATAFRAME ----------------
     
-    list_of_clean_dfs = wrangle_batch(b, name_sheets, current_polymer_name, current_polymer_df, current_polymer_df_list, replicate_index, list_of_clean_dfs)
+    list_of_clean_dfs = wrangle_batch(b, name_sheets, replicate_index)
     
     # After all is said and done, return a list of the clean dfs containing polymer tuples of format (polymer_name, polymer_df)
     print("Returning a list of tuples containing all polymer information from Batch: ", b)
@@ -215,7 +207,17 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
     return final_clean_polymer_df_list
 
 def export_clean_books(current_book_title, clean_df, global_output_directory):
-
+    """If there were Excel files passed as 'Book' format, this function will take those cleaned dataframes and export it to
+    a custom directory.
+    
+    Parameters
+    ----------
+    current_book_title : str
+        Title of the dataframe being handled.
+    
+    clean_df : Pandas.Dataframe
+        Cleaned dataframe to be exported.    
+    """
     print("Beginning excel export for {}.".format(current_book_title))
 
     output_directory = "{}/{}".format(global_output_directory, current_book_title)
