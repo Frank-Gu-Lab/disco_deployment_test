@@ -74,6 +74,41 @@ class TestDataFrameConversion:
             
             shutil.rmtree(output_dir)
 
+class TestClean:
+    
+    def test_clean_batch_list(self):
+             
+        path = "./test-files/test_wrangling"
+        
+        input_list = glob.glob(path + "/input/clean_batch_input/*")
+        
+        # recreating input list
+        clean_dfs = []
+        
+        for file in input_list:
+            
+            name = os.path.basename(file)
+            name = name.split(sep=".")
+            name = name[0]       
+            
+            df = pd.read_excel(file, index_col=0)
+            
+            clean_dfs.append((name, df))
+            
+        clean_dfs = [clean_dfs]
+        
+        actual = clean_the_batch_tuple_list(clean_dfs)
+        
+        output_list = glob.glob(path + "/expected/clean_batch_output/*")
+        
+        assert len(actual) == len(output_list)
+        
+        for i in range(len(actual)):
+            actual_df = actual[i]
+            expected_df = pd.read_excel(output_list[i], index_col=0)
+            
+            pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
+        
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
     '''
@@ -136,6 +171,113 @@ class TestAttenuation:
         
         pd.testing.assert_frame_equal(actual, expected)
     
+#class TestPlots:
+    
+    #def test_concentration(self):
+        
+    #def test_ppm(self):
+        
+class TestPrep:
+    
+    def test_prep_mean_book(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        input_mean = pd.read_excel(path + "/input/prep_mean_book_input.xlsx", index_col=0)
+        
+        actual = prep_mean(input_mean)
+        
+        expected_mean_left = pd.read_excel(path + "/expected/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        expected_mean_right = pd.read_excel(path + "/expected/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
+        pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
+    
+    def test_prep_mean_batch(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        input_mean = pd.read_excel(path + "/input/prep_mean_batch_input.xlsx", index_col=0)
+        
+        actual = prep_mean(input_mean, 'batch')
+        
+        expected_mean_left = pd.read_excel(path + "/expected/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+        expected_mean_right = pd.read_excel(path + "/expected/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+        pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
+    
+    def test_prep_replicates_book(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        input_replicate = pd.read_excel(path + "/input/prep_replicate_book_input.xlsx", index_col=0)
+        
+        actual = prep_replicate(input_replicate)
+        
+        expected = pd.read_excel(path + "/expected/prep_replicate_book_output.xlsx", index_col=0)
+
+        pd.testing.assert_frame_equal(actual, expected)
+    
+    def test_prep_replicates_batch(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        input_replicate = pd.read_excel(path + "/input/prep_replicate_batch_input.xlsx", index_col=0)
+        
+        actual = prep_replicate(input_replicate, 'batch')
+        
+        expected = pd.read_excel(path + "/expected/prep_replicate_batch_output.xlsx", index_col=0)
+
+        pd.testing.assert_frame_equal(actual, expected)
+
+class TestT:
+    
+    def test_t(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        df = pd.read_excel(path + "/input/t_test_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        df_other = pd.read_excel(path + "/input/t_test_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+        input_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        
+        actual = t_test(input_df)
+
+        expected_left = pd.read_excel(path + "/expected/t_test_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        expected_right = pd.read_excel(path + "/expected/t_test_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        expected_right.columns = pd.MultiIndex.from_product([expected_right.columns, ['']])
+        expected = pd.merge(expected_left, expected_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
+        pd.testing.assert_frame_equal(actual, expected)
+    
+class TestAF:
+    
+    def test_af(self):
+        
+        path = "./test-files/test_wrangling"
+        
+        df_mean = pd.read_excel(path + "/input/af_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        df_mean_other = pd.read_excel(path + "/input/af_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+        mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        
+        df_replicate = pd.read_excel(path + "/input/af_replicates_input.xlsx", index_col=0)
+        
+        actual_mean, actual_replicates = compute_af(mean, df_replicate, 10)
+        
+        expected_mean_left = pd.read_excel(path + "/expected/af_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        expected_mean_right = pd.read_excel(path + "/expected/af_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
+        expected_replicates = pd.read_excel(path + "/expected/af_replicates_output.xlsx", index_col=0)
+
+        assert actual_mean.equals(expected_mean)
+        assert actual_replicates.equals(expected_replicates)
+        
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
@@ -181,7 +323,7 @@ class TestDropBadPeaks:
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
-    '''
+    
     def test_curvefit_batch(self):
         
         path = "./test-files/test_wrangling"
@@ -247,7 +389,7 @@ class TestCurveFit:
             # TEARDOWN
             
             shutil.rmtree(path + "/output")
-    '''
+    
     def test_curvefit_book(self):  
         
         path = "./test-files/test_wrangling"

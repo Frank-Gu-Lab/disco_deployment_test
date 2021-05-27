@@ -158,6 +158,7 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
     
     print("Beginning batch data cleaning.")
 
+    # initializing list of clean polymer dataframes to return
     final_clean_polymer_df_list = []
     
     # batch is a list of n batches provided as excel inputs
@@ -373,7 +374,6 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     plt.ylabel("Corrected Signal Intensity Attenuation (%)")
     plt.xlabel("NMR Pulse Saturation Time (s)")
     
-        
     # define file name for the concentration plot
     output_file_name_conc = "{}/exploratory_concentration_plot_from_{}.png".format(output_directory_exploratory, current_df_title)
     
@@ -442,6 +442,7 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
         Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of 
         interest are appended. 
     '''
+
     # follow this path if data is from a single polymer book
     if batch_or_book == 'book':
         
@@ -483,7 +484,7 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
     # append a new column with the calculated degrees of freedom to the table for each proton peak index
     mean_corr_attenuation_ppm['dofs'] = dofs
     mean_corr_attenuation_ppm['sample_size'] = np.asarray(dofs) + 1
-        
+
     return mean_corr_attenuation_ppm 
 
 def prep_replicate(corr_p_attenuation_df, batch_or_book = 'book'):
@@ -558,7 +559,6 @@ def t_test(mean_corr_attenuation_ppm, p=0.95):
         -----
         Book and batch paths are the same.
     '''
-
     # Initialize Relevant t test Parameters
     dof = mean_corr_attenuation_ppm['dofs']
     mean_t = mean_corr_attenuation_ppm['corr_%_attenuation']['mean'].abs()
@@ -613,7 +613,7 @@ def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator
     
     Might need to do some further work with custom af_denominators
     '''
-    
+    print(af_denominator)
     amp_factor_denominator = af_denominator
     amp_factor = np.array(current_mean_stats_df.index.get_level_values(0))/amp_factor_denominator
     current_mean_stats_df['amp_factor'] = amp_factor
@@ -650,17 +650,16 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     
     Returns
     -------
-    current_df_mean_passed :
+    current_df_mean_passed : Pandas.DataFrame
         The current_df_mean dataframe with the insignificant proton peaks removed.
     
-    current_df_replicates_passed :
+    current_df_replicates_passed : Pandas.DataFrame
         The current_df_replicates dataframe with the insignificant proton peaks removed.
         
     Notes
     -----
     Function also saves a text file of which points have been dropped.
     '''
-
     #initialize a df that will keep data from the current mean df that meet the criterion above
     significant_corr_attenuation = current_df_mean
 
@@ -672,109 +671,6 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
 
     #initialize list to contain the points to remove 
     pts_to_remove = []
-
-    """
-    if batch_or_book == 'book':
-        for p in unique_protons:
-            for c in unique_concentrations:
-
-                #subset the df via index slice based on the current peak and concentration
-                current_subset_df = significant_corr_attenuation.loc[idx[c, :, p]]
-
-                #subset further for where significance is false
-                subset_insignificant = current_subset_df.loc[(current_subset_df['significance'] == False)]
-
-                #if there's more than 2 datapoints where significance is False within the subset, drop p's proton peaks for c's concentration from the significant_corr_attenuation df
-                if len(subset_insignificant) > 2:
-
-                    pts_to_remove.append(current_subset_df.index)
-                    significant_corr_attenuation = significant_corr_attenuation.drop(current_subset_df.index, inplace = False)  
-
-        print('Removed insignificant points have been printed to the output folder for {}.'.format(current_df_title))
-
-        #create and print dropped points to a summary file
-        dropped_points_file = open("{}/dropped_insignificant_points.txt".format(output_directory), "w")
-        dropped_points_file.write("The datapoints dropped from consideration due to not meeting the criteria for significance are: \n{}".format(pts_to_remove))
-        dropped_points_file.close()
-
-        #define a mean df of the data that passed to return
-        current_df_mean_passed = significant_corr_attenuation
-
-        #The below code removes the same bad points from the replicate df ------------
-
-        # Reset index and drop the old index column, just getting the dataframe ready for this, not sure why this works
-        current_df_replicates = current_df_replicates.reset_index()
-        current_df_replicates = current_df_replicates.drop('index', axis = 1)
-
-        #drop the points
-        for num_pts in pts_to_remove:
-            for exp_parameters in num_pts:
-                drop_subset = (current_df_replicates.loc[(current_df_replicates['concentration'] == exp_parameters[0]) & (current_df_replicates['sat_time'] == exp_parameters[1]) & (current_df_replicates['proton_peak_index'] == exp_parameters[2])])
-                current_df_replicates = current_df_replicates.drop(drop_subset.index)
-
-        #define a replicate df of the data that passed to return (reset index might not actually be needed? but I know this way works...) 
-        current_df_replicates_passed = current_df_replicates.reset_index()
-
-        return current_df_mean_passed, current_df_replicates_passed
-
-    else:
-        
-        for p in unique_protons:
-            for c in unique_concentrations:
-                    
-                #subset the df via index slice based on the current peak and concentration, ppm is part of index here
-                current_subset_df = significant_corr_attenuation.loc[idx[c, :, p, :]]
-                
-                #subset further for where significance is false
-                subset_insignificant = current_subset_df.loc[(current_subset_df['significance'] == False)]
-
-                #if there's more than 2 datapoints where significance is False within the subset, drop p's proton peaks for c's concentration from the significant_corr_attenuation df
-                if len(subset_insignificant) > 2:
-                    
-                    # recreate the corresponding parent multi index based on the identified points to drop to feed to parent dataframe
-                    index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(0))
-                    index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(1))
-                    index_to_drop_conc = np.full(len(index_to_drop_sat_time), c)
-                    index_to_drop_proton_peak = np.full(len(index_to_drop_sat_time), p)
-
-                    array_indexes_to_drop = [index_to_drop_conc, index_to_drop_sat_time, index_to_drop_proton_peak, index_to_drop_ppm]
-                    multi_index_to_drop_input = list(zip(*array_indexes_to_drop))
-                    multi_index_to_drop = pd.MultiIndex.from_tuples(multi_index_to_drop_input, names=['concentration', 'sat_time', 'proton_peak_index', 'ppm'])
-                    
-                    #append multi index to pts to remove
-                    pts_to_remove.append(multi_index_to_drop)
-                    print("points being dropped are:", multi_index_to_drop)
-                    
-                    # pass the multi index to drop to drop points from the parent dataframe
-                    significant_corr_attenuation = significant_corr_attenuation.drop(multi_index_to_drop, inplace = False)                     
-        print('Removed insignificant points have been printed to the output folder for {}.'.format(current_df_title))
-
-        #create and print dropped points to a summary file
-        dropped_points_file = open("{}/dropped_insignificant_points.txt".format(output_directory), "w")
-        dropped_points_file.write("The datapoints dropped from consideration due to not meeting the criteria for significance are: \n{}".format(pts_to_remove))
-        dropped_points_file.close()
-
-        #define a mean df of the data that passed to return
-        current_df_mean_passed = significant_corr_attenuation
-
-        #The below code removes the same bad points from the replicate df ------------
-
-        # Reset index and drop the old index column, just getting the dataframe ready for this, not sure why this works
-        current_df_replicates = current_df_replicates.reset_index()
-        current_df_replicates = current_df_replicates.drop('index', axis = 1)
-
-        #drop the points
-        for num_pts in pts_to_remove:
-            for exp_parameters in num_pts:
-                
-                drop_subset = (current_df_replicates.loc[(current_df_replicates['concentration'] == exp_parameters[0]) & (current_df_replicates['sat_time'] == exp_parameters[1]) & (current_df_replicates['proton_peak_index'] == exp_parameters[2])])
-                current_df_replicates = current_df_replicates.drop(drop_subset.index)
-
-        #define a replicate df of the data that passed to return (reset index might not actually be needed? but I know this way works...) 
-        current_df_replicates_passed = current_df_replicates.reset_index()
-
-        return current_df_mean_passed, current_df_replicates_passed
-        """
     
     for p in unique_protons:
         for c in unique_concentrations:
@@ -830,10 +726,10 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     dropped_points_file.write("The datapoints dropped from consideration due to not meeting the criteria for significance are: \n{}".format(pts_to_remove))
     dropped_points_file.close()
 
-    #define a mean df of the data that passed to return
+    # define a mean df of the data that passed to return
     current_df_mean_passed = significant_corr_attenuation
 
-    #The below code removes the same bad points from the replicate df ------------
+    # The below code removes the same bad points from the replicate df ------------
 
     # Reset index and drop the old index column, just getting the dataframe ready for this, not sure why this works
     current_df_replicates = current_df_replicates.reset_index()
