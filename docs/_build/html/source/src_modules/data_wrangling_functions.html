@@ -117,7 +117,7 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>list_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
+<dt><strong>list_of_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
 Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:
 current_book_title, a string containing the title of the current excel input book
 And the value (at index 1 of the tuple) is:
@@ -286,6 +286,23 @@ j = Sample concentration (concentration) column</p>
 <p>yikj = response model (Amp Factor x Corr % Attenuation) on a per replicate basis (not mean), fits with stats_df_replicates
 yikj_bar = response model (Amp Factor x Corr % Attenuation) on an average basis, fits with stats_df_mean
 yikj_hat = the fitted nonlinear model according to the levenburg marquadt minimization of least squares algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_wrangling_functions.export_clean_books">
+<span class="sig-prename descclassname"><span class="pre">data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">export_clean_books</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_book_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_output_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_wrangling_functions.export_clean_books" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there were Excel files passed as ‘Book’ format, this function will take those cleaned dataframes and export it to
+a custom directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_book_title</strong><span class="classifier">str</span></dt><dd><p>Title of the dataframe being handled.</p>
+</dd>
+<dt><strong>clean_df</strong><span class="classifier">Pandas.Dataframe</span></dt><dd><p>Cleaned dataframe to be exported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
