@@ -3,7 +3,9 @@ import sys
 import os
 import glob
 import shutil
-import numpy as np
+import matplotlib.pyplot as plt
+
+from matplotlib.testing.compare import compare_images
 
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '\\..\\src')
@@ -170,13 +172,38 @@ class TestAttenuation:
         expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_book.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
+
+# issues
+class TestPlots:
     
-#class TestPlots:
-    
-    #def test_concentration(self):
+    def test_concentration(self):
         
+        path = "./test-files/test_wrangling"
+        output_dir = path + "/output"
+        
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+            
+        current_df_title = "KHA"
+        
+        try:
+        
+            df = pd.read_excel(path + "/input/plot_input.xlsx", index_col=0)
+            generate_concentration_plot(df, output_dir, current_df_title)
+            
+            actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
+            expected = path +"/expected/expected_plots/exploratory_ppm_plot_from_KHA.png"
+
+            assert compare_images(expected, actual) is None
+            
+        except:
+            
+            # TEARDOWN
+
+            shutil.rmtree(output_dir)
+            
     #def test_ppm(self):
-        
+ 
 class TestPrep:
     
     def test_prep_mean_book(self):

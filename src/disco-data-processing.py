@@ -34,7 +34,7 @@ idx = pd.IndexSlice
 # import all data wrangling functions for Pt. 1 & 2, and data merge function for Pt. 3
 from data_wrangling_functions import *
 from data_merging import merge
-from data_visualize import *
+from data_analyze import *
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
 
@@ -97,7 +97,7 @@ if len(clean_book_tuple_list) != 0:
     for current_book_title, clean_df in clean_book_tuple_list:
         export_clean_books(current_book_title, clean_df, global_output_directory)
     
-    visualize(clean_book_tuple_list, global_output_directory)
+    analyze_data(clean_book_tuple_list, global_output_directory)
     
     print("Hooray! All polymers in the input files have been processed.")
 
@@ -105,7 +105,7 @@ if len(clean_book_tuple_list) != 0:
 
 if len(clean_batch_tuple_list) != 0: 
     
-    visualize(clean_batch_tuple_list, global_output_directory, 'batch')
+    analyze_data(clean_batch_tuple_list, global_output_directory, 'batch')
     
     print("Hooray! All polymers in the input files have been processed.")
 
