@@ -117,7 +117,7 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
     
     return current_df_mean, current_df_replicates
 
-def visualize(tuple_list, global_output_directory, batch_or_book = 'book'):
+def analyze_data(tuple_list, global_output_directory, batch_or_book = 'book'):
         """This function outlines the full data visualization and modelling processing for a list of dataframes. 
         
         Parameters
