@@ -13,7 +13,7 @@ def DropComplete(x):
     Returns
     -------
     bool
-        True if [Cc]omplete is a substring, otherwise False.
+        False if [Cc]omplete is a substring, otherwise True.
     """
     
     if "omplete" in x: 
@@ -291,8 +291,7 @@ def count_sheets(name_sheets):
     control_replicate_initializer : list
         List of integers containing the replicate number of each control sheet in sample_control_initializer.
     """
-    # initialize number of samples and controls to zero, then initialize the "list initializers" which will hold book-level data to eventually add to the book-level dataframe.
-
+    # initialize number of samples and controls to zero, then initialize the "list initializers" which will hold book-level data to eventually add to the book-level dataframe.    
     num_samples = 0
     num_controls = 0
 
@@ -513,7 +512,6 @@ def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
     ValueError
         If the passed dataframes do not have the same shape.
     '''
-    
     if (df1.shape == df2.shape):
         
         if batch_or_book == 'book':
@@ -579,7 +577,6 @@ def corrected_attenuation_calc_equality_checker(df1, df2, df3):
     ValueError
         If the passed dataframes do not have the same shape.
     '''
-    
     #check if number of rows same in each df, number of columns not same as samples dfs contain attenuation data
     if (df1.shape[0] == df2.shape[0] == df3.shape[0]):
         

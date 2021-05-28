@@ -6,7 +6,7 @@ import shutil
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '\\..\\src')
 
-from data_visualize import *
+from data_analyze import *
 
 class TestGenerateDirectory:
     """ This class contains all the unit tests relating to the function generate_directories()"""
@@ -84,4 +84,6 @@ class TestModelling:
         
     #def test_modelling_batch(self):
 
-#class TestVisualize:
+#class TestAnalyze:
+    
+    #def test_analyze(self):
