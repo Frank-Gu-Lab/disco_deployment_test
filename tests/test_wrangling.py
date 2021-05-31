@@ -110,19 +110,24 @@ class TestClean:
             expected_df = pd.read_excel(output_list[i], index_col=0)
             
             pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
-        
+
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
-    '''
+    
     def test_add_attenuation_batch(self):
         
-        df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx", index_col=0)
-           
-        actual = add_attenuation(df, 'batch')
-        expected = pd.read_excel("./test-files/test_wrangling/expected/att_batch.xlsx", index_col=0)
+        path = "./test-files/test_wrangling"
         
-        pd.testing.assert_frame_equal(actual, expected)
-    '''
+        df = pd.read_excel(path + "/input/att_batch_input.xlsx", index_col=0)
+           
+        actual_true, actual_false = add_attenuation(df, 'batch')
+        
+        expected_true = pd.read_excel(path + "/expected/att_batch_true_output.xlsx", index_col=0)
+        expected_false = pd.read_excel(path + "/expected/att_batch_false_output.xlsx", index_col=0)
+        
+        pd.testing.assert_frame_equal(actual_true, expected_true)
+        pd.testing.assert_frame_equal(actual_false, expected_false)
+    
     def test_add_attenuation_book(self):
         """ MAKE NOTE OF PRECISION CHANGE """
         df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
@@ -133,36 +138,39 @@ class TestAttenuation:
         
         pd.testing.assert_frame_equal(actual_true, expected_true)
         pd.testing.assert_frame_equal(actual_false, expected_false)
-    '''
+    
     def test_add_both_att_batch(self):
         
         df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx", index_col=0)
            
-        actual = add_attenuation_and_corr_attenuation_to_dataframe(df, 'batch')
-        expected = pd.read_excel("./test-files/test_wrangling/expected/att_batch_output.xlsx", index_col=0)
+        actual_true, actual_false = add_attenuation(df, 'batch')
+        actual = add_corr_attenuation(actual_true, actual_false, 'batch')
+        
+        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_batch_output.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
-    '''
+    
     def test_add_both_att_book(self):
         
         df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
         
         actual_true, actual_false = add_attenuation(df)
         actual = add_corr_attenuation(actual_true, actual_false)
+        
         expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_book.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
 
-    '''
     def test_add_corr_attenuation_batch(self):
                 
-        df = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_input.xlsx", index_col=0)
+        df_true = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_true_input.xlsx", index_col=0)
+        df_false = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_false_input.xlsx", index_col=0)
         
-        actual = add_corr_attenuation(df, 'batch')
-        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_batch.xlsx", index_col=0)
+        actual = add_corr_attenuation(df_true, df_false, 'batch')
+        expected = pd.read_excel("./test-files/test_wrangling/expected/corr_att_batch_output.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
-    '''
+    
     def test_add_corr_attenuation_book(self):
         
         df_true = pd.read_excel("./test-files/test_wrangling/input/att_book_true.xlsx", index_col=0)
@@ -192,15 +200,15 @@ class TestPlots:
             generate_concentration_plot(df, output_dir, current_df_title)
             
             actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
-            expected = path +"/expected/expected_plots/exploratory_ppm_plot_from_KHA.png"
+            expected = path +"/expected/expected_plots/exploratory_concentration_plot_from_KHA.png"
 
-            assert compare_images(expected, actual) is None
+            assert compare_images(expected, actual, 0.0001) is None
             
         except:
             
             # TEARDOWN
-
-            shutil.rmtree(output_dir)
+            print("dsa")
+            #shutil.rmtree(output_dir)
             
     #def test_ppm(self):
  
@@ -304,7 +312,7 @@ class TestAF:
 
         assert actual_mean.equals(expected_mean)
         assert actual_replicates.equals(expected_replicates)
-        
+
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
@@ -345,12 +353,47 @@ class TestDropBadPeaks:
             
             shutil.rmtree(output_dir)
         
-    #def test_drop_peaks_batch(self):      
-    
+    def test_drop_peaks_batch(self):     
+        
+        path = "./test-files/test_wrangling"
+        output_dir = path + "/output" 
+        
+        df_title = "CMC"
+        
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+            
+        try:
+   
+            df_mean = pd.read_excel(path + "/input/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            df_mean_other = pd.read_excel(path + "/input/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+            df_replicates = pd.read_excel(path + "/input/drop_replicates_peaks_batch_input.xlsx", index_col=0)
+            
+            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir, 'batch')
+            
+            expected_mean_left = pd.read_excel(path + "/expected/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            expected_mean_right = pd.read_excel(path + "/expected/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+  
+            expected_replicates = pd.read_excel(path + "/expected/drop_replicates_peaks_batch_output.xlsx", index_col=0)
+            
+            assert actual_mean.equals(expected_mean)
+            assert actual_replicates.equals(expected_replicates)
+        
+        finally:
+            
+            # TEARDOWN
+            
+            shutil.rmtree(output_dir)
+
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality
-    
+
     def test_curvefit_batch(self):
         
         path = "./test-files/test_wrangling"
@@ -360,57 +403,34 @@ class TestCurveFit:
         
         try:
             
-            input_mean = glob.glob(path + "/input/batch_curve_input/mean/*")
-            input_replicates = glob.glob(path + "/input/batch_curve_input/replicates/*")
+            df_title = "CMC"
+            output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
+            output_table = "{}/output/data_tables_from_{}".format(path, df_title)
             
-            names = open(path + "/input/batch_curve_input.txt")
-            names = names.readlines()
-            names = [name.rstrip() for name in names]
-            
-            empty = open(path + "/input/empty.txt")
-            empty = empty.readlines()
-            empty = [name.rstrip() for name in empty]
-            empty = [name.replace(".xlsx", "") for name in empty]
-            empty = [name.replace("sheet_", "") for name in empty]
-            
-            for i in range(len(names)):
-                
-                df_title = names[i]
-                
-                output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
-                output_table = "{}/output/data_tables_from_{}".format(path, df_title)
-                
-                if not os.path.exists(output_curve):
-                    os.mkdir(output_curve)
-                if not os.path.exists(output_table):
-                    os.mkdir(output_table)
-                
-                # create empty Excel if df_title in empty
-                
-                if df_title in empty: # this raises an error -- empty df not properly created? bc of the multi-index column I think
-                    continue
-                    #df_mean = pd.DataFrame(columns = [("corr_%_attenuation", "mean"), ("corr_%_attenuation", "std"), ("dofs", ""), ("sample_size", ""), ("t_results", ""), ("significance", ""), ("amp_factor", "")], index=[])
-                
-                else:
-                    df_mean_left = pd.read_excel(path + "/input/batch_curve_input/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-                    df_mean_right = pd.read_excel(path + "/input/batch_curve_input/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-                    df_mean_right.columns = pd.MultiIndex.from_product([df_mean_right.columns, ['']])
-                    df_mean = pd.merge(df_mean_left, df_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-                        
-                df_replicates = pd.read_excel(path + "/input/batch_curve_input/replicates/sheet_" + df_title +".xlsx", index_col=0)
-                
-                df_mean, df_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
-                
-                expected_mean_left = pd.read_excel(path + "/expected/batch_curve_output/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-                expected_mean_right = pd.read_excel(path + "/expected/batch_curve_output/mean/sheet_" + df_title + ".xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-                expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-                expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+            if not os.path.exists(output_curve):
+                os.mkdir(output_curve)
+            if not os.path.exists(output_table):
+                os.mkdir(output_table)
 
-                expected_replicates = pd.read_excel(path + "/expected/batch_curve_output/replicates/sheet_" + df_title + ".xlsx", index_col=0)
-                
-                pd.testing.assert_frame_equal(df_mean, expected_mean, rtol=1e-3)
-                pd.testing.assert_frame_equal(df_replicates, expected_replicates, rtol=1e-3)
+            df_mean_left = pd.read_excel(path + "/input/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            df_mean_right = pd.read_excel(path + "/input/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            df_mean_right.columns = pd.MultiIndex.from_product([df_mean_right.columns, ['']])
+            df_mean = pd.merge(df_mean_left, df_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+                    
+            df_replicates = pd.read_excel(path + "/input/batch_curve_replicate_input.xlsx", index_col=0)
             
+            actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
+            
+            expected_mean_left = pd.read_excel(path + "/expected/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            expected_mean_right = pd.read_excel(path + "/expected/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+            expected_replicates = pd.read_excel(path + "/expected/batch_curve_replicate_output.xlsx", index_col=0)
+        
+            pd.testing.assert_frame_equal(df_mean, expected_mean, rtol=1e-3)
+            pd.testing.assert_frame_equal(df_replicates, expected_replicates, rtol=1e-3)
+
         finally:
             
             # TEARDOWN
