@@ -25,8 +25,30 @@ class TestDrop:
         
         assert DropComplete(u)
 
-#class TestInitialize:
+class TestInitialize:
+        
+    def test_batch_initialize(self):
+        
+        path = "./test-files/test_helpers/"
 
+        b = path + "/input/batch_initialize_input.xlsx"
+        
+        actual_polymers, actual_replicates, actual_sheets = initialize_excel_batch_replicates(b)
+        
+        expected_polymers = open(path + "/expected/unique_polymer_output.txt").readlines()
+        expected_polymers = [l.rstrip() for l in expected_polymers]
+        
+        expected_replicates = open(path + "/expected/unique_polymer_replicate_output.txt").readlines()
+        expected_replicates = np.array([float(word) for word in expected_replicates])
+        
+        expected_sheets = open(path + "/expected/all_sheets_output.txt").readlines()
+        expected_sheets = [l.rstrip() for l in expected_sheets]
+        
+        assert actual_polymers == expected_polymers
+        assert np.array_equal(actual_replicates, expected_replicates)
+        assert actual_sheets == expected_sheets
+    
+# incomplete
 #class TestWrangle:
 
     #def test_wrangle_batch(self):
@@ -105,6 +127,20 @@ class TestEqualityChecker:
         
         assert corrected_attenuation_calc_equality_checker(df1, df2, df3)
     
-#class TestDofs:
+class TestDofs:
+    
+    def test_getdofs(self):
+        
+        path = "./test-files/test_helpers"
 
-#class TestYHat:
+        peak_list = open(path + "/input/dof_input.txt").readlines()    
+        peak_list = [int(word.rstrip()) for word in peak_list]
+        
+        peak_input = np.array(peak_list)
+        
+        actual = get_dofs(peak_input)
+        
+        expected = open(path + "/expected/dof_output.txt").readlines()    
+        expected = [int(word.rstrip()) for word in expected]
+        
+        assert actual == expected

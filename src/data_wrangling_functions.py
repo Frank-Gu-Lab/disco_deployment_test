@@ -344,9 +344,9 @@ def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_b
         #Calculate Corrected % Attentuation, as applies to
         corr_p_attenuation_df['corr_%_attenuation'] = ((1/intensity_irrad_false_sample_data)*(p_atten_intensity_sample_data - p_atten_intensity_control_data))
         print("Test 2 passed, corr_%_attenuation has been calculated and appended to dataframe.")
-        
-        return corr_p_attenuation_df
 
+        return corr_p_attenuation_df
+    
     else:
         raise ValueError("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
         
@@ -613,7 +613,7 @@ def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator
     
     Might need to do some further work with custom af_denominators
     '''
-    print(af_denominator)
+    
     amp_factor_denominator = af_denominator
     amp_factor = np.array(current_mean_stats_df.index.get_level_values(0))/amp_factor_denominator
     current_mean_stats_df['amp_factor'] = amp_factor
@@ -660,6 +660,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     -----
     Function also saves a text file of which points have been dropped.
     '''
+
     #initialize a df that will keep data from the current mean df that meet the criterion above
     significant_corr_attenuation = current_df_mean
 
@@ -814,269 +815,6 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     # Now preparing to curve fit, export the curve fit plots to a file, and tabulate the final results ------------------------------
 
     print('Exporting all mean and individual curve fit figures to an output directory... this may take a moment.')    
-    """
-    # book path
-    if batch_or_book == 'book':
-    
-        for c in unique_concentrations:
-            for p in unique_protons:        
-
-                #COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
-
-                # subset the df into the data for one graph, via index slice based on the current peak and concentration
-                one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)) , :]
-
-                #Make a boolean significance mask based on the one graph subset, for calculating parameters based on only significant pts
-                boolean_sig_mask = one_graph_data_mean.significance == True
-
-                #assign ALL datapoints and ALL data times to test_data variables for this ONE GRAPH
-                all_yikj_bar = one_graph_data_mean['yikj_bar']
-                all_sat_time = np.asarray(all_yikj_bar.index.get_level_values(1))
-
-                #apply boolean significance mask to create the data to be used for actual curve fitting/parameter generation
-                significant_yikj_bar = all_yikj_bar[boolean_sig_mask]
-                significant_sat_time = all_sat_time[boolean_sig_mask]
-
-                # grab the current mean ppm for this graph to use in naming and plotting
-                ppm_bar = one_graph_data_mean['ppm']['mean'].values.mean().astype(float).round(4)
-
-                # this will skip the graphing and analysis for cases where an insignificant proton peak has been removed from consideration PREVIOUSLY due to cutoff
-                if all_yikj_bar.size == 0: continue
-
-                # initial guess for alpha and beta (applies equally to replicate operations below)
-                initial_guess = np.asarray([1, 1])
-
-                # Generate best alpha & beta parameters for data based on only significant pts, for the current proton and concentration, optimizing for minimization of square error via least squares levenburg marquadt algorithm
-                best_param_vals_bar, covar_bar = curve_fit(y_hat_fit, significant_sat_time, significant_yikj_bar, p0 = initial_guess, method = 'lm', maxfev=5000)
-
-                # calculate ultimate sum of square errors after minimization for each time point
-                sse_bar = np.square(y_hat_fit(significant_sat_time, *best_param_vals_bar) - significant_yikj_bar)
-
-                #append sum of square error calculated for this graph to the PARENT mean dataframe at this c and p
-                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('SSE_bar')] = sse_bar.sum()
-                
-                # append best parameters to variables, and then generate the instantaneous amplification factor 
-                a_kj_bar = best_param_vals_bar[0]
-                b_kj_bar = best_param_vals_bar[1]
-
-                amp_factor_instantaneous_bar = a_kj_bar * b_kj_bar
-                
-                #append instantaneous amplification factor calculated to the PARENT mean dataframe, for all datapoints in this graph
-                # stats_df_mean.loc[idx[c, :, p], ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
-                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
-                # define file name for curve fits by mean
-                output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
-
-                # PLOT MEAN DF CURVE FITS with the original data and save to file
-                fig1, (ax1) = plt.subplots(1, figsize = (8, 4))
-                ax1.plot(all_sat_time, y_hat_fit(all_sat_time, a_kj_bar, b_kj_bar), 'g-', label='model_w_significant_params')
-                ax1.plot(all_sat_time, all_yikj_bar, 'g*', label='all_raw_data')
-                ax1.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c,ppm_bar))
-                ax1.set_xlabel('NMR Saturation Time (s)')
-                ax1.set_ylabel('I/Io')
-                plt.rcParams.update({'figure.max_open_warning': 0})
-                fig1.tight_layout()
-
-                # export to file
-                fig1.savefig(output_file_name_figsmean, dpi=300)
-
-                for r in unique_replicates:
-
-                    #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
-                    one_graph_data = stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r)]
-
-                    # define the experimental data to compare square error with (amp_factor * atten_corr_int), for y_ikj
-                    y_ikj = one_graph_data['yikj']
-
-                    #this will skip the graphing and analysis for cases where a proton peak has been removed from consideration 
-                    if y_ikj.size == 0: 
-                        continue
-
-                    # define sat_time to be used for the x_data 
-                    sat_time = one_graph_data[['sat_time']].values.ravel()
-
-                    #Fit Curve for curren proton, concentration and replicate, optimizing for minimization of square error via least squares levenburg marquadt algorithm
-                    best_param_vals, covar = curve_fit(y_hat_fit, sat_time, y_ikj, p0 = initial_guess, method = 'lm', maxfev=5000)
-
-                    #calculate ultimate sum of square errors after minimization for each time point, and append to list
-                    sse = np.square(y_hat_fit(sat_time, *best_param_vals) - y_ikj)
-
-                    #appends sum of square error calculated to the PARENT stats replicate dataframe, summed for all datapoints in this graph
-                    stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('SSE')] = sse.sum()    
-
-                    # solve for the instantaneous amplification factor
-                    a_kj = best_param_vals[0]
-                    b_kj = best_param_vals[1]
-                    amp_factor_instantaneous = a_kj * b_kj
-
-                    #appends instantaneous amplification factor calculated to the PARENT stats replicate dataframe, for all datapoints in this graph
-                    stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('AFo')] = [amp_factor_instantaneous]*(len(y_ikj))
-
-                    #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name
-                    mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].mean().astype(float).round(4)    
-
-                    # file name for curve fits by replicate 
-                    output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
-                    
-                    # PLOT CURVE FITS with original data per Replicate and save to file
-                    fig2, (ax2) = plt.subplots(1, figsize = (8, 4))
-                    ax2.plot(sat_time, y_hat_fit(sat_time, *best_param_vals), 'b-', label='data')
-                    ax2.plot(sat_time, y_ikj, 'b*', label='data')
-                    ax2.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, mean_current_ppm))
-                    ax2.set_xlabel('NMR Saturation Time (s)')
-                    ax2.set_ylabel('I/Io')
-                    plt.rcParams.update({'figure.max_open_warning': 0})
-                    fig2.tight_layout()
-
-                    #export to file
-                    fig2.savefig(output_file_name_figsrep, dpi=300)
-
-        print('Export of all figures to file complete!')
-
-        #export tabulated results to file and return updated dataframes
-        output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title) 
-
-        #export replicates final results table to a summary file in Excel
-        stats_df_replicates.to_excel(os.path.join(output_directory3, output_file_name))
-
-        #export mean final results table to a summary file in Excel
-        output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
-        stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
-
-        return stats_df_mean, stats_df_replicates
-    
-    #batch path
-    else:
-        for c in unique_concentrations:
-            for p in unique_protons:        
-
-                #COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
-
-                # subset the df into the data for one graph, via index slice based on the current peak and concentration
-                # one_graph_data_mean = stats_df_mean.loc[idx[c, :, p], :]
-                one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)), :]
-
-                #Make a boolean significance mask based on the one graph subset, for calculating parameters based on only significant pts
-                boolean_sig_mask = one_graph_data_mean.significance == True
-
-                #assign ALL datapoints and ALL data times to test_data variables for this ONE GRAPH
-                all_yikj_bar = one_graph_data_mean['yikj_bar']
-                all_sat_time = np.asarray(all_yikj_bar.index.get_level_values(0))
-
-                #apply boolean significance mask to create the data to be used for actual curve fitting/parameter generation
-                significant_yikj_bar = all_yikj_bar[boolean_sig_mask]
-                significant_sat_time = all_sat_time[boolean_sig_mask]
-
-                # grab the current ppm for this graph to use in naming and plotting
-                ppm_bar = one_graph_data_mean.index.get_level_values(1)[0].astype(float).round(4)
-
-                # this will skip the graphing and analysis for cases where an insignificant proton peak has been removed from consideration PREVIOUSLY due to cutoff
-                if all_yikj_bar.size == 0: continue
-
-                # initial guess for alpha and beta (applies equally to replicate operations below)
-                initial_guess = np.asarray([1, 1])
-
-                # Generate best alpha & beta parameters for data based on only significant pts, for the current proton and concentration, optimizing for minimization of square error via least squares levenburg marquadt algorithm
-                best_param_vals_bar, covar_bar = curve_fit(y_hat_fit, significant_sat_time, significant_yikj_bar, p0 = initial_guess, method = 'lm', maxfev=5000)
-
-                # calculate ultimate sum of square errors after minimization for each time point
-                sse_bar = np.square(y_hat_fit(significant_sat_time, *best_param_vals_bar) - significant_yikj_bar)
-
-                #append sum of square error calculated for this graph to the PARENT mean dataframe at this c and p
-                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('SSE_bar')] = sse_bar.sum()
-
-                # append best parameters to variables, and then generate the instantaneous amplification factor 
-                a_kj_bar = best_param_vals_bar[0]
-                b_kj_bar = best_param_vals_bar[1]
-
-                amp_factor_instantaneous_bar = a_kj_bar * b_kj_bar
-
-                #append instantaneous amplification factor calculated to the PARENT mean dataframe, for all datapoints in this graph
-                stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
-                
-                # define file name for curve fits by mean
-                output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
-
-                # PLOT MEAN DF CURVE FITS with the original data and save to file
-                fig1, (ax1) = plt.subplots(1, figsize = (8, 4))
-                ax1.plot(all_sat_time, y_hat_fit(all_sat_time, a_kj_bar, b_kj_bar), 'g-', label='model_w_significant_params')
-                ax1.plot(all_sat_time, all_yikj_bar, 'g*', label='all_raw_data')
-                ax1.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c,ppm_bar))
-                ax1.set_xlabel('NMR Saturation Time (s)')
-                ax1.set_ylabel('I/Io')
-                plt.rcParams.update({'figure.max_open_warning': 0})
-                fig1.tight_layout()
-
-                # export to file
-                fig1.savefig(output_file_name_figsmean, dpi=300)
-
-                for r in unique_replicates:
-
-                    #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
-                    one_graph_data = stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r)]
-
-                    # define the experimental data to compare square error with (amp_factor * atten_corr_int), for y_ikj
-                    y_ikj = one_graph_data['yikj']
-
-                    #this will skip the graphing and analysis for cases where a proton peak has been removed from consideration 
-                    if y_ikj.size == 0: continue
-
-                    # define sat_time to be used for the x_data 
-                    sat_time = one_graph_data[['sat_time']].values.ravel()
-
-                    #Fit Curve for curren proton, concentration and replicate, optimizing for minimization of square error via least squares levenburg marquadt algorithm
-                    best_param_vals, covar = curve_fit(y_hat_fit, sat_time, y_ikj, p0 = initial_guess, method = 'lm', maxfev=5000)
-
-                    #calculate ultimate sum of square errors after minimization for each time point, and append to list
-                    sse = np.square(y_hat_fit(sat_time, *best_param_vals) - y_ikj)
-
-                    #appends sum of square error calculated to the PARENT stats replicate dataframe, summed for all datapoints in this graph
-                    stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('SSE')] = sse.sum()    
-
-                    # solve for the instantaneous amplification factor
-                    a_kj = best_param_vals[0]
-                    b_kj = best_param_vals[1]
-                    amp_factor_instantaneous = a_kj * b_kj
-
-                    #appends instantaneous amplification factor calculated to the PARENT stats replicate dataframe, for all datapoints in this graph
-                    stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('AFo')] = [amp_factor_instantaneous]*(len(y_ikj))
-
-                    #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name
-                    mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)    
-    
-                    # file name for curve fits by replicate 
-                    output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
-                    
-                    # PLOT CURVE FITS with original data per Replicate and save to file
-                    fig2, (ax2) = plt.subplots(1, figsize = (8, 4))
-                    ax2.plot(sat_time, y_hat_fit(sat_time, *best_param_vals), 'b-', label='data')
-                    ax2.plot(sat_time, y_ikj, 'b*', label='data')
-                    ax2.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, mean_current_ppm))
-                    ax2.set_xlabel('NMR Saturation Time (s)')
-                    ax2.set_ylabel('I/Io')
-                    plt.rcParams.update({'figure.max_open_warning': 0})
-                    fig2.tight_layout()
-
-                    #export to file
-                    fig2.savefig(output_file_name_figsrep, dpi=300)
-        
-
-        #export tabulated results to file and return updated dataframes
-        output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title) 
-
-        #export replicates final results table to a summary file in Excel
-        stats_df_replicates.to_excel(os.path.join(output_directory3, output_file_name))
-        
-        #if there are replicates, and mean data was created, export the final mean data to excel as well
-        if stats_df_mean.shape[0] != 0:
-
-            #export mean final results table to a summary file in Excel
-            output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
-            stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
-        
-        print('Export of all figures to file complete!')
-        return stats_df_mean, stats_df_replicates   
-        """
         
     for c in unique_concentrations:
         for p in unique_protons:        
