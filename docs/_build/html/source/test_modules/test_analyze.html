@@ -39,23 +39,25 @@
 <dt class="sig sig-object py" id="test_analyze.TestGenerateDirectory">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_analyze.</span></span><span class="sig-name descname"><span class="pre">TestGenerateDirectory</span></span><a class="headerlink" href="#test_analyze.TestGenerateDirectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class contains all the unit tests relating to the function generate_directories()</p>
+<p>This class contains all the unit tests relating to the function generate_directories.</p>
 <p class="rubric">Methods</p>
-<table class="docutils align-default">
+<table class="longtable docutils align-default">
 <colgroup>
-<col style="width: 74%" />
-<col style="width: 26%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>test_generate_directories</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_analyze.TestGenerateDirectory.test_generate_directories" title="test_analyze.TestGenerateDirectory.test_generate_directories"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_generate_directories</span></code></a>()</p></td>
+<td><p>This function tests for overall functionality.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="test_analyze.TestGenerateDirectory.test_generate_directories">
 <span class="sig-name descname"><span class="pre">test_generate_directories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_analyze.TestGenerateDirectory.test_generate_directories" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function tests for overall functionality. Takes in a dataframe title (polymer)
+and a global output directory, and returns custom directories for the specific polymer. Removes all generated directories in teardown.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -71,15 +73,34 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#test_analyze.TestModelling.test_modelling_book" title="test_analyze.TestModelling.test_modelling_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_modelling_book</span></code></a>()</p></td>
-<td><p>Ideally, test should be independent of nested functions.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_analyze.TestModelling.test_modelling_batch" title="test_analyze.TestModelling.test_modelling_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_modelling_batch</span></code></a>()</p></td>
+<td><p>This function tests for overall functionality.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_analyze.TestModelling.test_modelling_book" title="test_analyze.TestModelling.test_modelling_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_modelling_book</span></code></a>()</p></td>
+<td><p>This function tests for overall functionality.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
+<dt class="sig sig-object py" id="test_analyze.TestModelling.test_modelling_batch">
+<span class="sig-name descname"><span class="pre">test_modelling_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_analyze.TestModelling.test_modelling_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function tests for overall functionality. Taking in a dataframe, its title, and associated custom directories, this function
+implements a non-linear curve-fitting process on the dataframe and appends it as a new column, returned as the output. All created directories, plots, and 
+intermediate dataframes are removed upon teardown. Tests for ‘batch’ path.</p>
+<p class="rubric">Notes</p>
+<p>Ideally, test should be independent of nested functions. Try to incorporate mocking.
+Equality checking uses a relative tolerance of 1e-3, and ignores datatype matching.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="test_analyze.TestModelling.test_modelling_book">
 <span class="sig-name descname"><span class="pre">test_modelling_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_analyze.TestModelling.test_modelling_book" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ideally, test should be independent of nested functions. Try to incorporate mocking.</p>
+<dd><p>This function tests for overall functionality. Taking in a dataframe, its title, and associated custom directories, this function
+implements a non-linear curve-fitting process on the dataframe and appends it as a new column, returned as the output. All created directories, plots, and 
+intermediate dataframes are removed upon teardown. Tests for ‘book’ path.</p>
+<p class="rubric">Notes</p>
+<p>Ideally, test should be independent of nested functions. Try to incorporate mocking.
+Equality checking uses a relative tolerance of 1e-3, and ignores datatype matching.</p>
 </dd></dl>
 
 </dd></dl>
