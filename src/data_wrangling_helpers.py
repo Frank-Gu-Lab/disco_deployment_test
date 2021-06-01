@@ -262,7 +262,7 @@ def wrangle_batch(b, name_sheets, replicate_index):
             
             # reset the current_polymer_df_list to empty so that the next polymer can be appended to it
             current_polymer_df_list = []
-    
+
     return list_of_clean_dfs
 
 # helper for book_to_dataframe
@@ -340,7 +340,7 @@ def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_ind
     -------
     df_list : list
 
-    """
+    """            
     # initialize a list to contain the mini experimental dataframes collected from within the current book, which will be concatenated at the end to create one dataframe "organized_df" that represents this book
     df_list = []
               

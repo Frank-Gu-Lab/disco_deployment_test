@@ -88,7 +88,7 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
         The final fully-processed dataframes with curve fitting results appended to table.
     """
     # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
-    
+
     current_df_mean = prep_mean(current_df_attenuation, batch_or_book)
     current_df_replicates = prep_replicate(current_df_attenuation, batch_or_book)
 
@@ -114,7 +114,7 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
     
     current_df_mean, current_df_replicates = execute_curvefit(
         current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book)
-    
+
     return current_df_mean, current_df_replicates
 
 def analyze_data(tuple_list, global_output_directory, batch_or_book = 'book'):

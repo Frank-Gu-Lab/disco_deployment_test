@@ -5,12 +5,12 @@ import glob
 import shutil
 import matplotlib.pyplot as plt
 
-from matplotlib.testing.compare import compare_images
-
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '\\..\\src')
 
 from data_wrangling_functions import *
+
+from matplotlib.testing.compare import compare_images
 
 class TestDataFrameConversion:
     """This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe."""
@@ -181,7 +181,6 @@ class TestAttenuation:
         
         pd.testing.assert_frame_equal(actual, expected)
 
-# issues
 class TestPlots:
     
     def test_concentration(self):
@@ -200,17 +199,39 @@ class TestPlots:
             generate_concentration_plot(df, output_dir, current_df_title)
             
             actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
-            expected = path +"/expected/expected_plots/exploratory_concentration_plot_from_KHA.png"
 
-            assert compare_images(expected, actual, 0.0001) is None
+            assert os.path.exists(actual)
             
-        except:
+        finally:
             
             # TEARDOWN
-            print("dsa")
-            #shutil.rmtree(output_dir)
+
+            shutil.rmtree(output_dir)
             
-    #def test_ppm(self):
+    def test_ppm(self):
+        
+        path = "./test-files/test_wrangling"
+        output_dir = path + "/output"
+        
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+            
+        current_df_title = "KHA"
+        
+        try:
+        
+            df = pd.read_excel(path + "/input/plot_input.xlsx", index_col=0)
+            generate_ppm_plot(df, output_dir, current_df_title)
+            
+            actual = path + "/output/exploratory_ppm_plot_from_KHA.png"
+
+            assert os.path.exists(actual)
+            
+        finally:
+            
+            # TEARDOWN
+
+            shutil.rmtree(output_dir)
  
 class TestPrep:
     
@@ -390,6 +411,7 @@ class TestDropBadPeaks:
             
             shutil.rmtree(output_dir)
 
+# compare plots?
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     # testing overall functionality

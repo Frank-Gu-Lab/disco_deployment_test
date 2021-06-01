@@ -10,15 +10,14 @@ sys.path.append(os.getcwd() + '\\..\\src')
 
 from data_merging import move, merge
 
-################## TESTING MOVE ####################
-
-# testing overall functionality
-
+# check over
 class TestMove:
     """This class contains all the unit tests relating to the move function."""
+    
     def test_move(self):
         """Testing overall functionality. Takes files from src_path and moves them to dst_path. The function then asserts whether
         the files exist in dst_path, subsequently removing the files after as part of teardown."""
+        
         # SETUP
     
         src_path = ".\\test-files\\test_move\\*"
@@ -46,14 +45,13 @@ class TestMove:
             # TEARDOWN
             shutil.rmtree(dst_path)
 
-################## TESTING MERGE ####################
-      
-# testing overall functionality
-
+# check over
 class TestMerge:
     """This class contains all the unit tests relating to the merge function and its helpers."""
+    
     def test_merge(self):
-        """Testing overall functionality.
+        """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
+        sheets together into one Dataframe.
         """
         src_path = ".\\test-files\\test_merge\\data\\KHA\\data_tables_from_KHA"
         dst_path = ".\\test-files\\test_merge\\output"
