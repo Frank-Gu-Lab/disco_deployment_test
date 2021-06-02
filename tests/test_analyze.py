@@ -15,11 +15,11 @@ class TestGenerateDirectory:
         """This function tests for overall functionality. Takes in a dataframe title (polymer)
         and a global output directory, and returns custom directories for the specific polymer. Removes all generated directories in teardown. """
         
+        #SETUP
         current_df_title = "KHA"
         global_output_directory = "./test-files/test_analyze/output"
         
-        if not os.path.exists(global_output_directory):
-            os.mkdir(global_output_directory)
+        os.mkdir(global_output_directory)
         
         try:
         
@@ -33,8 +33,7 @@ class TestGenerateDirectory:
         finally:
             
             # TEARDOWN
-
-            shutil.rmtree(global_output_directory + "/KHA")
+            shutil.rmtree(global_output_directory)
 
 class TestModelling:
     """This class contains all the unit tests relating to the function modelling()."""
@@ -50,6 +49,7 @@ class TestModelling:
         Equality checking uses a relative tolerance of 1e-3, and ignores datatype matching.
         """
         
+        # SETUP
         path = "./test-files/test_analyze"
         global_output_directory = path + "/output"
         current_df_title = "KHA"
@@ -57,17 +57,10 @@ class TestModelling:
         output_directory_curve = output_directory + "/curve_fit_plots_from_KHA"
         output_directory_tables = output_directory + "/exploratory_plots_from_KHA"
         
-        if not os.path.exists(global_output_directory):
-            os.mkdir(global_output_directory)
-            
-        if not os.path.exists(output_directory):
-            os.mkdir(output_directory)
-
-        if not os.path.exists(output_directory_curve):
-            os.mkdir(output_directory_curve)
-            
-        if not os.path.exists(output_directory_tables):
-            os.mkdir(output_directory_tables)
+        os.mkdir(global_output_directory)
+        os.mkdir(output_directory)
+        os.mkdir(output_directory_curve)
+        os.mkdir(output_directory_tables)
         
         try:
             
@@ -75,6 +68,7 @@ class TestModelling:
 
             actual_mean, actual_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
         
+            # preserve multi-index when reading in Excel file
             expected_mean_left = pd.read_excel(path + "/expected/book_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
             expected_mean_right = pd.read_excel(path + "/expected/book_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -88,7 +82,6 @@ class TestModelling:
         finally:
             
             # TEARDOWN
-            
             shutil.rmtree(global_output_directory)
      
     def test_modelling_batch(self):
@@ -102,6 +95,7 @@ class TestModelling:
         Equality checking uses a relative tolerance of 1e-3, and ignores datatype matching.
         """
 
+        # SETUP
         path = "./test-files/test_analyze"
         global_output_directory = path + "/output"
         current_df_title = "CMC"
@@ -109,23 +103,18 @@ class TestModelling:
         output_directory_curve = output_directory + "/curve_fit_plots_from_" + current_df_title
         output_directory_tables = output_directory + "/exploratory_plots_from_" + current_df_title
         
-        if not os.path.exists(global_output_directory):
-            os.mkdir(global_output_directory)
-            
-        if not os.path.exists(output_directory):
-            os.mkdir(output_directory)
-
-        if not os.path.exists(output_directory_curve):
-            os.mkdir(output_directory_curve)
-            
-        if not os.path.exists(output_directory_tables):
-            os.mkdir(output_directory_tables)
+        os.mkdir(global_output_directory)
+        os.mkdir(output_directory)
+        os.mkdir(output_directory_curve)
+        os.mkdir(output_directory_tables)
         
         try:
+            
             current_df_attenuation = pd.read_excel(path + "/input/batch_modelling_input.xlsx", index_col=0)
             
             actual_mean, actual_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, 'batch')
             
+            # preserve multi-index when reading in Excel file
             expected_mean_left = pd.read_excel(path + "/expected/batch_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
             expected_mean_right = pd.read_excel(path + "/expected/batch_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -139,5 +128,4 @@ class TestModelling:
         finally:
         
             # TEARDOWN
-            
             shutil.rmtree(global_output_directory)

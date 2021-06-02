@@ -36,51 +36,41 @@ class TestMove:
                     filename = os.path.basename(file)
                     msg = "{} could not be found in {}!".format(filename, dst_path)
                     assert os.path.isfile(dst_path + "\\" + filename), msg
-
+            
         finally:
             
             # TEARDOWN
             shutil.rmtree(dst_path)
 
-# check over
 class TestMerge:
-    """This class contains all the unit tests relating to the merge function and its helpers."""
+    """This class contains all the unit tests relating to the merge function."""
     
     def test_merge(self):
         """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
         sheets together into one Dataframe.
+        
+        Notes
+        -----
+        Equality checking ignores datatype matching.
         """
         
         #SETUP
-        src_path = ".\\test-files\\test_merge\\data\\KHA\\data_tables_from_KHA"
-        dst_path = ".\\test-files\\test_merge\\output"
-        merge_path = ".\\test-files\\test_merge\\actual"
-        output_file_name = "merged_binding_dataset.xlsx"
-        
-        if not os.path.exists(merge_path):
-            os.mkdir(merge_path)
+        path = "./test-files/test_merge"
+        src_path = path + "/data/KHA/data_tables_from_KHA"
+        dst_path = path + "/output"
 
-        if not os.path.exists(dst_path):
-            os.mkdir(dst_path)
+        os.mkdir(dst_path)
 
         try:
 
-            output = merge(src_path, dst_path)
-            output.to_excel(os.path.join(merge_path, output_file_name))
-            
-            actual = pd.read_excel(merge_path + "\\" + output_file_name)
-            expected = pd.read_excel(".\\test-files\\test_merge\\expected\\merged_binding_dataset.xlsx")
+            actual = merge(src_path, dst_path)
 
-            # check if file is as expected
-            msg2 = "{} does not contain all the expected information.".format(merge_path + "\\" + output_file_name)
-            assert actual.equals(expected), msg2
+            expected = pd.read_excel(path + "/expected/merged_binding_dataset.xlsx", index_col=0)
+            expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
+
+            pd.testing.assert_frame_equal(actual, expected, check_dtype=False, check_exact=True)
         
         finally:
             
             # TEARDOWN
-            
-            # check if file exists
-            msg1 = "{} was not successfully created.".format(merge_path + "\\" + output_file_name)
-            assert os.path.exists(merge_path + "\\" + output_file_name), msg1
-            
-            os.remove(merge_path + "\\" + output_file_name)
+            shutil.rmtree(dst_path)

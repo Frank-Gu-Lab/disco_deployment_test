@@ -17,63 +17,55 @@ class TestDataFrameConversion:
     
     def test_batch(self):
         """Testing overall functionality. Takes in a batch Excel sheet and converts each sheet into a dataframe, returning a tuple of the form
-        (df_name, df)."""
+        (df_name, df).
+        
+        Notes
+        -----
+        Equality checking ignores datatype matching.
+        """
         
         path = "./test-files/test_wrangling"
-
-        try:
-            
-            batch = path + "/input/batch_to_dataframe_input.xlsx"
-            
-            # loop through names and assert equality of dataframes
-            
-            actual = batch_to_dataframe(batch)
-            file = open(path + "/expected/batch_to_dataframe_output.txt")
-            
-            for i in range(len(actual)):
-                
-                # testing equality of sheet names
-                expected_name = file.readline()
-                assert actual[i][0] == expected_name
-                
-                # testing equality of dataframes
-                name = f"sheet_{i}"
-                expected_df = pd.read_excel(path + "/expected/" + name, index_col=0)
-                
-                assert actual[i][1].equals(expected_df)
-            
-        except:
-            
-            print("Program did not successfully execute!")
+        batch = path + "/input/batch_to_dataframe_input.xlsx"
         
+        # loop through names and assert equality of dataframes
+        
+        actual = batch_to_dataframe(batch)
+        file = open(path + "/expected/batch_to_dataframe_output.txt")
+        
+        for i in range(len(actual)):
+            
+            # testing equality of sheet names
+            expected_name = file.readline().rstrip()
+            msg1 = "Actual name of sheet: {}, Expected name of sheet: {}".format(actual[i][0], expected_name)
+            assert actual[i][0] == expected_name, msg1
+            
+            # testing equality of dataframes
+            name = f"sheet_{i}"
+            expected_df = pd.read_excel(path + "/expected/batch_to_dataframe/" + name + ".xlsx", index_col=0)
+            pd.testing.assert_frame_equal(actual[i][1], expected_df, check_dtype=False, check_exact=True)
+            
     def test_book(self):
         """ Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
         excel sheet is removed during teardown.
         
         Notes
         -----
-        The equality check uses a relative tolerance of 1e-5 and ignores datatype matching.
+        The equality check ignores datatype matching.
         """
         
         path = "./test-files/test_wrangling"
-
-        try:
-            
-            book = path + "/input/KHA.xlsx"
-            
-            actual = book_to_dataframe(book)
-            actual_title = actual[0]
-            actual_df = actual[1]
-            
-            expected_title = "KHA"
-            expected_df = pd.read_excel(path + "/expected/book_to_dataframe_output.xlsx", index_col=0)
-            
-            assert actual_title == expected_title 
-            pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
-            
-        except:
-
-            print("Program did not successfully execute!")
+        book = path + "/input/KHA.xlsx"
+        
+        actual = book_to_dataframe(book)
+        actual_title = actual[0]
+        actual_df = actual[1]
+        
+        expected_title = "KHA"
+        expected_df = pd.read_excel(path + "/expected/book_to_dataframe_output.xlsx", index_col=0)
+        
+        msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
+        assert actual_title == expected_title, msg
+        pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
             
 class TestClean:
     """ This class contains all the unit tests relating ti the function test_clean_batch_list. """
@@ -87,7 +79,6 @@ class TestClean:
         """
         
         path = "./test-files/test_wrangling"
-        
         input_list = glob.glob(path + "/input/clean_batch_input/*")
         
         # recreating input list
@@ -109,12 +100,13 @@ class TestClean:
         
         output_list = glob.glob(path + "/expected/clean_batch_output/*")
         
+        msg1 = "Too many or too few dataframes were cleaned and exported."
         assert len(actual) == len(output_list)
         
+        # loop through and check dataframe equality
         for i in range(len(actual)):
             actual_df = actual[i]
             expected_df = pd.read_excel(output_list[i], index_col=0)
-            
             pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
 
 class TestAttenuation:
@@ -229,11 +221,11 @@ class TestPlots:
         Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.
         """
         
+        # SETUP
         path = "./test-files/test_wrangling"
         output_dir = path + "/output"
         
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
+        os.mkdir(output_dir)
             
         current_df_title = "KHA"
         
@@ -244,12 +236,12 @@ class TestPlots:
             
             actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
 
-            assert os.path.exists(actual)
+            msg = "The generated plot could not be found."
+            assert os.path.exists(actual), msg
             
         finally:
             
             # TEARDOWN
-
             shutil.rmtree(output_dir)
             
     def test_ppm(self):
@@ -260,11 +252,11 @@ class TestPlots:
         Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.
         """
          
+        # SETUP
         path = "./test-files/test_wrangling"
         output_dir = path + "/output"
         
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
+        os.mkdir(output_dir)
             
         current_df_title = "KHA"
         
@@ -275,12 +267,12 @@ class TestPlots:
             
             actual = path + "/output/exploratory_ppm_plot_from_KHA.png"
 
-            assert os.path.exists(actual)
+            msg = "The generated plot could not be found."
+            assert os.path.exists(actual), msg
             
         finally:
             
             # TEARDOWN
-
             shutil.rmtree(output_dir)
  
 class TestPrep:
@@ -293,12 +285,14 @@ class TestPrep:
         -----
         Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.
         """
+        
         path = "./test-files/test_wrangling"
         
         input_mean = pd.read_excel(path + "/input/prep_mean_book_input.xlsx", index_col=0)
         
         actual = prep_mean(input_mean)
         
+        # preserve multi-index when reading in Excel file
         expected_mean_left = pd.read_excel(path + "/expected/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
         expected_mean_right = pd.read_excel(path + "/expected/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
         expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -320,6 +314,7 @@ class TestPrep:
         
         actual = prep_mean(input_mean, 'batch')
         
+        # preserve multi-index when reading in Excel file
         expected_mean_left = pd.read_excel(path + "/expected/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
         expected_mean_right = pd.read_excel(path + "/expected/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
         expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -371,8 +366,10 @@ class TestT:
         -----
         Equality checking uses a relative tolerance of 1e-5. 
         """
+        
         path = "./test-files/test_wrangling"
         
+        # preserve multi-index when reading in Excel file
         df = pd.read_excel(path + "/input/t_test_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
         df_other = pd.read_excel(path + "/input/t_test_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
         df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
@@ -380,6 +377,7 @@ class TestT:
         
         actual = t_test(input_df)
 
+        # preserve multi-index when reading in Excel file
         expected_left = pd.read_excel(path + "/expected/t_test_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
         expected_right = pd.read_excel(path + "/expected/t_test_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
         expected_right.columns = pd.MultiIndex.from_product([expected_right.columns, ['']])
@@ -395,6 +393,7 @@ class TestAF:
         
         path = "./test-files/test_wrangling"
         
+        # preserve multi-index when reading in Excel file
         df_mean = pd.read_excel(path + "/input/af_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
         df_mean_other = pd.read_excel(path + "/input/af_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
         df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
@@ -404,6 +403,7 @@ class TestAF:
         
         actual_mean, actual_replicates = compute_af(mean, df_replicate, 10)
         
+        # preserve multi-index when reading in Excel file
         expected_mean_left = pd.read_excel(path + "/expected/af_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
         expected_mean_right = pd.read_excel(path + "/expected/af_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
         expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -411,8 +411,11 @@ class TestAF:
 
         expected_replicates = pd.read_excel(path + "/expected/af_replicates_output.xlsx", index_col=0)
 
-        assert actual_mean.equals(expected_mean)
-        assert actual_replicates.equals(expected_replicates)
+        msg1 = "Amplification factors were not calculated as expected the for statistical analyses done on a 'mean' basis."
+        assert actual_mean.equals(expected_mean), msg1
+
+        msg2 = "Amplification factors were not calculated as expected per replicate."
+        assert actual_replicates.equals(expected_replicates), msg2
 
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
@@ -420,15 +423,16 @@ class TestDropBadPeaks:
     def test_drop_peaks_book(self):
         """ Checks whether the expected peaks were dropped and removes any generated files upon teardown. """
         
+        # SETUP
         path = "./test-files/test_wrangling"
         output_dir = path + "/output"
         df_title = "KHA"
         
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
+        os.mkdir(output_dir)
         
         try:
-   
+            
+            # Preserve multi-index when reading in Excel file
             df_mean = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
             df_mean_other = pd.read_excel(path + "/input/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
@@ -438,6 +442,7 @@ class TestDropBadPeaks:
             
             actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
             
+            # Preserve multi-index when reading in Excel file
             expected_mean_left = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
             expected_mean_right = pd.read_excel(path + "/expected/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -445,27 +450,30 @@ class TestDropBadPeaks:
   
             expected_replicates = pd.read_excel(path + "/expected/drop_replicates_peaks_book_output.xlsx", index_col=0)
             
-            assert actual_mean.equals(expected_mean)
-            assert actual_replicates.equals(expected_replicates)
+            msg1 = "Not all expected peaks were dropped for the statistical analyses done on a 'mean' basis.""
+            assert actual_mean.equals(expected_mean), msg1
+            
+            msg2 = "Not all expected peaks were dropped per replicate."
+            assert actual_replicates.equals(expected_replicates), msg2
         
         finally:
             
             # TEARDOWN
-            
             shutil.rmtree(output_dir)
         
     def test_drop_peaks_batch(self):     
         
+        # SETUP
         path = "./test-files/test_wrangling"
         output_dir = path + "/output" 
         
         df_title = "CMC"
         
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
+        os.mkdir(output_dir)
             
         try:
    
+            # Preserve multi-index when reading in Excel file
             df_mean = pd.read_excel(path + "/input/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
             df_mean_other = pd.read_excel(path + "/input/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
@@ -475,6 +483,7 @@ class TestDropBadPeaks:
             
             actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir, 'batch')
             
+            # Preserve multi-index when reading in Excel file
             expected_mean_left = pd.read_excel(path + "/expected/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
             expected_mean_right = pd.read_excel(path + "/expected/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -482,13 +491,15 @@ class TestDropBadPeaks:
   
             expected_replicates = pd.read_excel(path + "/expected/drop_replicates_peaks_batch_output.xlsx", index_col=0)
             
-            assert actual_mean.equals(expected_mean)
-            assert actual_replicates.equals(expected_replicates)
+            msg1 = "Not all expected peaks were dropped for the statistical analyses done on a 'mean' basis.""
+            assert actual_mean.equals(expected_mean), msg1
+            
+            msg2 = "Not all expected peaks were dropped per replicate."
+            assert actual_replicates.equals(expected_replicates), msg2
         
         finally:
             
             # TEARDOWN
-            
             shutil.rmtree(output_dir)
 
 # compare plots?
@@ -502,22 +513,20 @@ class TestCurveFit:
         -----
         Equality checking uses a relative tolerance of 1e-3.
         """
-        path = "./test-files/test_wrangling"
         
-        if not os.path.exists(path + "/output"):
-            os.mkdir(path + "/output")
+        # SETUP
+        path = "./test-files/test_wrangling"
+        df_title = "CMC"
+        output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
+        output_table = "{}/output/data_tables_from_{}".format(path, df_title)
+        
+        os.mkdir(path + "/output")
+        os.mkdir(output_curve)
+        os.mkdir(output_table)
         
         try:
-            
-            df_title = "CMC"
-            output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
-            output_table = "{}/output/data_tables_from_{}".format(path, df_title)
-            
-            if not os.path.exists(output_curve):
-                os.mkdir(output_curve)
-            if not os.path.exists(output_table):
-                os.mkdir(output_table)
 
+            # Preserve multi-index when reading in Excel file
             df_mean_left = pd.read_excel(path + "/input/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
             df_mean_right = pd.read_excel(path + "/input/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             df_mean_right.columns = pd.MultiIndex.from_product([df_mean_right.columns, ['']])
@@ -527,6 +536,7 @@ class TestCurveFit:
             
             actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
             
+            # Preserve multi-index when reading in Excel file
             expected_mean_left = pd.read_excel(path + "/expected/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
             expected_mean_right = pd.read_excel(path + "/expected/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -540,7 +550,6 @@ class TestCurveFit:
         finally:
             
             # TEARDOWN
-            
             shutil.rmtree(path + "/output")
     
     def test_curvefit_book(self):  
@@ -552,20 +561,19 @@ class TestCurveFit:
         Simply checks for filepath existence. 
         """
         
+        # SETUP
         path = "./test-files/test_wrangling"
         df_title = "KHA"
         output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
         output_table = "{}/output/data_tables_from_{}".format(path, df_title)
         
-        if not os.path.exists(path + "/output"):
-            os.mkdir(path + "/output")
-        if not os.path.exists(output_curve):
-            os.mkdir(output_curve)
-        if not os.path.exists(output_table):
-            os.mkdir(output_table)
+        os.mkdir(path + "/output")
+        os.mkdir(output_curve)
+        os.mkdir(output_table)
         
         try:
             
+            # Preserve multi-index when reading in Excel file
             df_mean = pd.read_excel(path + "/input/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
             df_mean_other = pd.read_excel(path + "/input/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
@@ -575,6 +583,7 @@ class TestCurveFit:
             
             actual_mean, actual_replicates = execute_curvefit(mean, df_replicates, output_curve, output_table, df_title)
             
+            # Preserve multi-index when reading in Excel file
             expected_mean_left = pd.read_excel(path + "/expected/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
             expected_mean_right = pd.read_excel(path + "/expected/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
@@ -582,9 +591,6 @@ class TestCurveFit:
 
             expected_replicates = pd.read_excel(path + "/expected/book_replicatescurve.xlsx")
 
-            msg1 = "Curve fits for mean do not match."
-            msg2 = "Curve fits for replicates do not match."
-            
             pd.testing.assert_frame_equal(actual_mean, expected_mean, rtol=1e-3)
             pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
             
@@ -617,5 +623,4 @@ class TestCurveFit:
         finally:
             
             # TEARDOWN
-            
             shutil.rmtree(path + "/output")        

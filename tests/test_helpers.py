@@ -33,8 +33,7 @@ class TestInitialize:
     def test_batch_initialize(self):
         """ Taking in a filepath to an Excel batch, this function checks for whether the expected polymer names, replicates indices, and sheets are returned."""
         
-        path = "./test-files/test_helpers/"
-
+        path = "./test-files/test_helpers"
         b = path + "/input/batch_initialize_input.xlsx"
         
         actual_polymers, actual_replicates, actual_sheets = initialize_excel_batch_replicates(b)
@@ -48,18 +47,27 @@ class TestInitialize:
         expected_sheets = open(path + "/expected/all_sheets_output.txt").readlines()
         expected_sheets = [l.rstrip() for l in expected_sheets]
         
-        assert actual_polymers == expected_polymers
-        assert np.array_equal(actual_replicates, expected_replicates)
-        assert actual_sheets == expected_sheets
+        msg1 = "Polymer names were not extracted as expected."
+        assert actual_polymers == expected_polymers, msg1
+        
+        msg2 = "Replicate indices were not extracted as expected."
+        assert np.array_equal(actual_replicates, expected_replicates), msg2
+        
+        msg3 = "Excel sheets were not extracted as expected."
+        assert actual_sheets == expected_sheets, msg3
     
 class TestWrangle:
     """ This class contains all the unit tests relating to the wrangle functions."""
     
     def test_wrangle_batch(self):
-        """ As part of batch initialization, checks for whether the expected polymers and its associated dataframes are returned in a list format."""
+        """ As part of batch initialization, checks for whether the expected polymers and its associated dataframes are returned in a list format.
+        
+        Notes
+        -----
+        Equality checking ignores datatype matching.
+        """
         
         path = "./test-files/test_helpers"
-        
         b = path + "/input/wrangle_batch_input.xlsx"
         
         name_sheets = open(path + "/input/wrangle_batch_names.txt").readlines()
@@ -81,17 +89,23 @@ class TestWrangle:
         for i in range(len(df_names)):
             actual.append((df_names[i], dfs[i]))
             
-        assert len(df_list) == len(actual)
+        msg1 = "Too many or too few dataframes appended to output list."
+        assert len(df_list) == len(actual), msg1
         
         for i in range(len(df_list)):
-            assert df_list[i][0] == actual[i][0]
-            pd.testing.assert_frame_equal(df_list[i][1], actual[i][1], check_dtype=False)
+            msg2 = "Actual title of dataframe: {}\nExpected title of dataframe: {}".format(df_list[i][0], actual[i][0])
+            assert df_list[i][0] == actual[i][0], msg2
+            pd.testing.assert_frame_equal(df_list[i][1], actual[i][1], check_dtype=False, check_exact=True)
         
     def test_wrangle_book(self):
-        """ As part of book initialization, checks for whether the expected dataframes from an Excel book are returned in list format."""
+        """ As part of book initialization, checks for whether the expected dataframes from an Excel book are returned in list format.
+        
+        Notes
+        -----
+        Equality checking ignores datatype matching.
+        """
         
         path = "./test-files/test_helpers"
-        
         b = path + "/input/wrangle_book_input.xlsx"
         
         name_sheets = open(path + "/input/wrangle_book_names.txt").readlines()
@@ -108,9 +122,11 @@ class TestWrangle:
         dfs = sorted(glob.glob(path + "/expected/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
         
-        assert len(df_list) == len(dfs)
+        msg1 = "Too many or too few dataframes appended to output list."
+        assert len(df_list) == len(dfs), msg1
+        
         for i in range(len(df_list)):
-            pd.testing.assert_frame_equal(df_list[i], dfs[i], check_dtype=False)
+            pd.testing.assert_frame_equal(df_list[i], dfs[i], check_dtype=False, check_exact=True)
 
 class TestCount:
     """ This class contains all the unit tests related to the helper function count_sheets."""
@@ -122,39 +138,49 @@ class TestCount:
         
         input_list = []
         
+        # recreating input list
         with open(path + "/input/count_input.txt") as file:
-            
             for line in file.readlines():
                 input_list.append(line.rstrip())
                 
         num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer = count_sheets(input_list)
 
-        assert num_samples == 3
-        assert num_controls == 3
+        # CHECKING SAMPLE AND CONTROL COUNTS
+        msg1 = "Actual number of samples counted: {}\nExpected number of samples counted: {}".format(num_samples, 3)
+        assert num_samples == 3, msg1
         
+        msg2 = "Actual number of controls counted: {}\nExpected number of controls counted: {}".format(num_controls, 3)
+        assert num_controls == 3, msg2
+        
+        # CHECKING SAMPLE AND CONTROL INITIALIZER
         expected_sample_control = []
         
         with open(path + "/input/sample_control.txt") as file:
             for line in file.readlines():
                 expected_sample_control.append(line.rstrip())
                 
-        assert sample_control_initializer == expected_sample_control
+        msg3 = "Sample control initializer list does not contain expected sequence."
+        assert sample_control_initializer == expected_sample_control, msg3
 
+        # CHECKING SAMPLE REPLICATE INDICES
         expected_sample_replicate = []
 
         with open(path + "/input/sample_replicate.txt") as file:
             for line in file.readlines():
                 expected_sample_replicate.append(int(line.rstrip()))
                 
-        assert sample_replicate_initializer == expected_sample_replicate
+        msg4 = "Sample replicate indices are not ordered as expected."
+        assert sample_replicate_initializer == expected_sample_replicate, msg4
         
+        # CHECKING CONTROL REPLICATE INDICES
         expected_control_replicate = []
         
         with open(path + "/input/control_replicate.txt") as file:
             for line in file.readlines():
                 expected_control_replicate.append(int(line.rstrip()))
                 
-        assert control_replicate_initializer == expected_control_replicate
+        msg5 = "Control replicate indices are not ordered as expected."
+        assert control_replicate_initializer == expected_control_replicate, msg5
 
 class TestEqualityChecker:
     """ This class contains all the unit tests related to the attenuation equality checkers."""
@@ -167,16 +193,19 @@ class TestEqualityChecker:
         df1 = pd.read_excel(path + "/checker1_book.xlsx", index_col=0)
         df2 = pd.read_excel(path + "/checker2_book.xlsx", index_col=0)    
         
-        assert attenuation_calc_equality_checker(df1, df2)
+        msg = "Equality checker did not correctly identify the dataframes as equal."
+        assert attenuation_calc_equality_checker(df1, df2), msg
         
     def test_checker_batch(self):
         """ Checks whether two dataframes are equal according to the specifications of attenuation calculations; batch path."""      
+        
         path = "./test-files/test_helpers/input"
         
         df1 = pd.read_excel(path + "/checker1_batch.xlsx", index_col=0)
         df2 = pd.read_excel(path + "/checker2_batch.xlsx", index_col=0)    
         
-        assert attenuation_calc_equality_checker(df1, df2, 'batch')
+        msg = "Equality checker did not correctly identify the dataframes as equal."
+        assert attenuation_calc_equality_checker(df1, df2, 'batch'), msg
     
     def test_corrected_checker(self):
         """ Checks whether the conditions for the corrected attenuation calculations are met between three dataframes."""
@@ -187,13 +216,14 @@ class TestEqualityChecker:
         df2 = pd.read_excel(path + "/corr_checker2.xlsx", index_col=0)
         df3 = pd.read_excel(path + "/corr_checker3.xlsx", index_col=0)
         
-        assert corrected_attenuation_calc_equality_checker(df1, df2, df3)
+        msg = "Equality checker did not correct identify the dataframes as equal."
+        assert corrected_attenuation_calc_equality_checker(df1, df2, df3), msg
     
 class TestDofs:
     """ This class contains all the unit tests related to the function get_dofs."""
     
     def test_getdofs(self):
-        """ Checks for whether the expected dofs are returned, given a list of peaks."""
+        """ Given a list of peaks, checks for whether the expected dofs are returned."""
         
         path = "./test-files/test_helpers"
 
@@ -207,4 +237,5 @@ class TestDofs:
         expected = open(path + "/expected/dof_output.txt").readlines()    
         expected = [int(word.rstrip()) for word in expected]
         
-        assert actual == expected
+        msg = "Dofs were not identifed as expected."
+        assert actual == expected, msg
