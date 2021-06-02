@@ -47,20 +47,21 @@ class TestDataFrameConversion:
             print("Program did not successfully execute!")
         
     def test_book(self):
-        """Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
-        excel sheet is removed during teardown."""
+        """ Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
+        excel sheet is removed during teardown.
+        
+        Notes
+        -----
+        The equality check uses a relative tolerance of 1e-5 and ignores datatype matching.
+        """
         
         path = "./test-files/test_wrangling"
-        output_dir = path +"/output"
 
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-        
         try:
             
             book = path + "/input/KHA.xlsx"
             
-            actual = book_to_dataframe(book, output_dir)
+            actual = book_to_dataframe(book)
             actual_title = actual[0]
             actual_df = actual[1]
             
@@ -70,16 +71,21 @@ class TestDataFrameConversion:
             assert actual_title == expected_title 
             pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
             
-        finally:
-            
-            # TEARDOWN
-            
-            shutil.rmtree(output_dir)
+        except:
 
+            print("Program did not successfully execute!")
+            
 class TestClean:
+    """ This class contains all the unit tests relating ti the function test_clean_batch_list. """
     
     def test_clean_batch_list(self):
-             
+        """ This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results. 
+        
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.
+        """
+        
         path = "./test-files/test_wrangling"
         
         input_list = glob.glob(path + "/input/clean_batch_input/*")
@@ -115,6 +121,12 @@ class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
     
     def test_add_attenuation_batch(self):
+        """ Checks for expected attenuation calculations applied in the batch path.
+        
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         
         path = "./test-files/test_wrangling"
         
@@ -129,7 +141,12 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual_false, expected_false)
     
     def test_add_attenuation_book(self):
-        """ MAKE NOTE OF PRECISION CHANGE """
+        """ Checks for expected attenuation calculations applied in the book path.
+        
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
         
         actual_true, actual_false = add_attenuation(df)
@@ -140,7 +157,12 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual_false, expected_false)
     
     def test_add_both_att_batch(self):
+        """ Checks for expected attenuation and corrected attenuation calculations applied in the batch path.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         df = pd.read_excel("./test-files/test_wrangling/input/att_batch_input.xlsx", index_col=0)
            
         actual_true, actual_false = add_attenuation(df, 'batch')
@@ -151,7 +173,12 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual, expected)
     
     def test_add_both_att_book(self):
+        """ Checks for expected attenuation and corrected attenuation calculations applied in the book path.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         df = pd.read_excel("./test-files/test_wrangling/input/att_book_input.xlsx", index_col=0)
         
         actual_true, actual_false = add_attenuation(df)
@@ -162,7 +189,12 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual, expected)
 
     def test_add_corr_attenuation_batch(self):
-                
+        """ Checks for expected corrected attenuation calculations applied in the batch path.
+        
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """  
         df_true = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_true_input.xlsx", index_col=0)
         df_false = pd.read_excel("./test-files/test_wrangling/input/corr_att_batch_false_input.xlsx", index_col=0)
         
@@ -172,7 +204,12 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual, expected)
     
     def test_add_corr_attenuation_book(self):
+        """ Checks for expected corrected attenuation calculations applied in the book path.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         df_true = pd.read_excel("./test-files/test_wrangling/input/att_book_true.xlsx", index_col=0)
         df_false = pd.read_excel("./test-files/test_wrangling/input/att_book_false.xlsx", index_col=0)
            
@@ -182,8 +219,15 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual, expected)
 
 class TestPlots:
+    """ This class contains all the unit tests relating to the plot generation functions."""
     
     def test_concentration(self):
+        """ Checks for whether the expected concentration plot is generated and removes the plot upon teardown.
+        
+        Notes
+        -----
+        Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.
+        """
         
         path = "./test-files/test_wrangling"
         output_dir = path + "/output"
@@ -209,7 +253,13 @@ class TestPlots:
             shutil.rmtree(output_dir)
             
     def test_ppm(self):
+        """ Checks for whether the expected ppm plot is generated and removes the plot upon teardown.
         
+        Notes
+        -----
+        Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.
+        """
+         
         path = "./test-files/test_wrangling"
         output_dir = path + "/output"
         
@@ -234,9 +284,15 @@ class TestPlots:
             shutil.rmtree(output_dir)
  
 class TestPrep:
+    """ This class contains all the unit tests relating to the prep functions. """
     
     def test_prep_mean_book(self):
+        """ Checks whether an Excel book is prepped for statistical analysis on a "mean" basis.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.
+        """
         path = "./test-files/test_wrangling"
         
         input_mean = pd.read_excel(path + "/input/prep_mean_book_input.xlsx", index_col=0)
@@ -251,7 +307,13 @@ class TestPrep:
         pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
     
     def test_prep_mean_batch(self):
+        """ Checks whether an Excel batch is prepped for statistical analysis on a "mean" basis.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.
+        """
+         
         path = "./test-files/test_wrangling"
         
         input_mean = pd.read_excel(path + "/input/prep_mean_batch_input.xlsx", index_col=0)
@@ -266,7 +328,12 @@ class TestPrep:
         pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
     
     def test_prep_replicates_book(self):
+        """ Checks whether an Excel book is prepped for statistical analysis per replicate.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         path = "./test-files/test_wrangling"
         
         input_replicate = pd.read_excel(path + "/input/prep_replicate_book_input.xlsx", index_col=0)
@@ -278,7 +345,12 @@ class TestPrep:
         pd.testing.assert_frame_equal(actual, expected)
     
     def test_prep_replicates_batch(self):
+        """ Checks whether an Excel batch is prepped for statistical analysis per replicate.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5.
+        """
         path = "./test-files/test_wrangling"
         
         input_replicate = pd.read_excel(path + "/input/prep_replicate_batch_input.xlsx", index_col=0)
@@ -290,9 +362,15 @@ class TestPrep:
         pd.testing.assert_frame_equal(actual, expected)
 
 class TestT:
+    """ This class contains all the unit tests relating to the t-test analysis function. """
     
     def test_t(self):
+        """ Performa a sample t-test and checks whether the expected results were appended to the inputted dataframe.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-5. 
+        """
         path = "./test-files/test_wrangling"
         
         df = pd.read_excel(path + "/input/t_test_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
@@ -310,8 +388,10 @@ class TestT:
         pd.testing.assert_frame_equal(actual, expected)
     
 class TestAF:
+    """ This class contains all the unit tests relating to the function compute_af. """
     
     def test_af(self):
+        """ Checks whether the expected amplication factor was calculated and appended to the dataframe. """
         
         path = "./test-files/test_wrangling"
         
@@ -336,9 +416,9 @@ class TestAF:
 
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
-    # testing overall functionality
     
     def test_drop_peaks_book(self):
+        """ Checks whether the expected peaks were dropped and removes any generated files upon teardown. """
         
         path = "./test-files/test_wrangling"
         output_dir = path + "/output"
@@ -414,10 +494,14 @@ class TestDropBadPeaks:
 # compare plots?
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
-    # testing overall functionality
-
+    
     def test_curvefit_batch(self):
+        """ Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.
         
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-3.
+        """
         path = "./test-files/test_wrangling"
         
         if not os.path.exists(path + "/output"):
@@ -460,6 +544,13 @@ class TestCurveFit:
             shutil.rmtree(path + "/output")
     
     def test_curvefit_book(self):  
+        """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
+        
+        Notes
+        -----
+        Equality checking uses a relative tolerance of 1e-3. 
+        Simply checks for filepath existence. 
+        """
         
         path = "./test-files/test_wrangling"
         df_title = "KHA"

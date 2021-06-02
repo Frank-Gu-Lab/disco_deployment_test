@@ -59,7 +59,7 @@ def batch_to_dataframe(b):
         
     return list_of_clean_dfs
 
-def book_to_dataframe(b, global_output_directory):
+def book_to_dataframe(b):
     '''This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
     organized Pandas DataFrames for further processing.
     
