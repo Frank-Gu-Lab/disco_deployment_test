@@ -70,14 +70,14 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#test_helpers.TestDofs.test_getdofs" title="test_helpers.TestDofs.test_getdofs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_getdofs</span></code></a>()</p></td>
-<td><p>Checks for whether the expected dofs are returned, given a list of peaks.</p></td>
+<td><p>Given a list of peaks, checks for whether the expected dofs are returned.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="test_helpers.TestDofs.test_getdofs">
 <span class="sig-name descname"><span class="pre">test_getdofs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_helpers.TestDofs.test_getdofs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks for whether the expected dofs are returned, given a list of peaks.</p>
+<dd><p>Given a list of peaks, checks for whether the expected dofs are returned.</p>
 </dd></dl>
 
 </dd></dl>
@@ -199,12 +199,16 @@
 <dt class="sig sig-object py" id="test_helpers.TestWrangle.test_wrangle_batch">
 <span class="sig-name descname"><span class="pre">test_wrangle_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_helpers.TestWrangle.test_wrangle_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>As part of batch initialization, checks for whether the expected polymers and its associated dataframes are returned in a list format.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking ignores datatype matching.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="test_helpers.TestWrangle.test_wrangle_book">
 <span class="sig-name descname"><span class="pre">test_wrangle_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_helpers.TestWrangle.test_wrangle_book" title="Permalink to this definition">¶</a></dt>
 <dd><p>As part of book initialization, checks for whether the expected dataframes from an Excel book are returned in list format.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking ignores datatype matching.</p>
 </dd></dl>
 
 </dd></dl>
