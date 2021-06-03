@@ -81,7 +81,7 @@ class TestWrangle:
         df_names = open(path + "/expected/wrangle_batch_output.txt").readlines()
         df_names = [l.rstrip() for l in df_names]
         
-        dfs = sorted(glob.glob(path + "/expected/wrangle_batch_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
+        dfs = sorted(glob.glob(path + "/expected/wrangle_batch_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order 
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
         
         actual = []
@@ -119,7 +119,7 @@ class TestWrangle:
         
         df_list = wrangle_book(b, name_sheets, sample_control, replicate_index)
         
-        dfs = sorted(glob.glob(path + "/expected/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
+        dfs = sorted(glob.glob(path + "/expected/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
         
         msg1 = "Too many or too few dataframes appended to output list."

@@ -41,7 +41,13 @@ class TestMove:
             
             # TEARDOWN
             shutil.rmtree(dst_path)
+'''
+class TestClean:
 
+class TestReformat:
+    
+class TestJoin:
+'''
 class TestMerge:
     """This class contains all the unit tests relating to the merge function."""
     
