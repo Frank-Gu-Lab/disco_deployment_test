@@ -8,7 +8,7 @@ import pandas as pd
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '\\..\\src')
 
-from data_merging import move, merge
+from data_merging import *
 
 class TestMove:
     """This class contains all the unit tests relating to the move function."""
@@ -41,17 +41,117 @@ class TestMove:
             
             # TEARDOWN
             shutil.rmtree(dst_path)
-'''
-class TestClean:
 
-class TestReformat:
+class TestClean:
+    """ This class contains all unit tests relating to the clean function. """
     
+    def test_clean_pos(self):
+        
+        # recreate input list
+        path = "./test-files/test_merge"
+        
+        dfs = glob.glob(path + "/input/clean_pos_input/*")
+        
+        for i in range(len(dfs)):
+            
+            try: # ppm in index
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+        
+            except: # ppm in column
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        
+        polymer_list = open(path + "/input/clean_pos_polymer.txt").readlines()
+        polymer_list = [l.rstrip() for l in polymer_list]
+        
+        # call function --> original list is modified (mutable)
+        clean(dfs, polymer_list, True)        
+        
+        # recreate output list
+        expected_dfspaths = glob.glob(path + "/expected/clean_pos_output/*")
+        expected_dfs = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in expected_dfspaths]
+        
+        for i in range(len(expected_dfs)):
+            if None in expected_dfs[i].index.names:
+                expected_dfs[i] = pd.read_excel(expected_dfspaths[i], index_col=[0, 1, 2])
+                expected_dfs[i] = expected_dfs[i].iloc[:, 1:] # removing extra column
+        
+        # compare
+        assert len(dfs) == len(expected_dfs)
+        
+        for i in range(len(dfs)):
+            pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
+    
+    @pytest.mark.xfail
+    def test_clean_neg(self):
+
+        # recreate input list
+        path = "./test-files/test_merge"
+        
+        dfs = sorted(glob.glob(path + "/input/clean_neg_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
+                
+        for i in range(len(dfs)):
+            
+            try: # ppm in index
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+        
+            except: # ppm in column
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        
+        polymer_list = open(path + "/input/clean_neg_polymer.txt").readlines()
+        polymer_list = [l.rstrip() for l in polymer_list]
+        
+        # call function --> original list is modified (mutable)
+        clean(dfs, polymer_list, False)        
+        
+        # recreate output list
+        expected_dfspaths = sorted(glob.glob(path + "/expected/clean_neg_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
+        expected_dfs = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in expected_dfspaths]
+
+        for i in range(len(expected_dfs)):
+            if None in expected_dfs[i].index.names:
+                expected_dfs[i] = pd.read_excel(expected_dfspaths[i], index_col=[0, 1, 2])
+                expected_dfs[i] = expected_dfs[i].iloc[:, 1:] # removing extra column
+                
+        # compare
+        assert len(dfs) == len(expected_dfs)
+        
+        for i in range(len(dfs)):
+            print(dfs[i].columns)
+            print(expected_dfs[i].columns)
+            pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
+
+'''        
+class TestReformat:
+
+    def test_reformat_pos(self):
+        
+    def test_reformat_neg(self):
+        
+
 class TestJoin:
+    
+    def test_join(self):
 '''
 class TestMerge:
     """This class contains all the unit tests relating to the merge function."""
     
-    def test_merge(self):
+    def test_merge_book(self):
         """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
         sheets together into one Dataframe.
         
@@ -62,7 +162,7 @@ class TestMerge:
         
         #SETUP
         path = "./test-files/test_merge"
-        src_path = path + "/data/KHA/data_tables_from_KHA"
+        src_path = path + "/input/KHA/data_tables_from_KHA"
         dst_path = path + "/output"
 
         os.mkdir(dst_path)
@@ -80,3 +180,6 @@ class TestMerge:
             
             # TEARDOWN
             shutil.rmtree(dst_path)
+        
+    def test_merge_batch(self):
+            

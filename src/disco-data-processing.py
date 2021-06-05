@@ -74,7 +74,7 @@ for book in list_of_raw_books:
     # indicates book is ok to be handled via the individual data cleaning function before appending to the clean data list    
     else: 
         print("Book contains individual polymer, entering individual processing function.")
-        clean_book_tuple_list.append(book_to_dataframe(book, global_output_directory))
+        clean_book_tuple_list.append(book_to_dataframe(book))
 
 # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
 
