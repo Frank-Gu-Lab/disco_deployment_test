@@ -112,8 +112,12 @@ def reformat(df_list, pos : bool):
     
     pos : bool
         True for positive binding observations, False for negative binding observations.
+        
+    Returns
+    -------
+    df : Pandas.DataFrame
+        Final reformatted DataFrame.
     """
-    
     # concatenate
     df = pd.concat(df_list)
 
@@ -130,10 +134,9 @@ def reformat(df_list, pos : bool):
         # 1) round ppm values to 4 sig figs
         df['ppm'] = np.round(df.ppm.values, 4)
         df.loc[df['significance'] == False, ('AFo_bar')] = 0.0 # removes false associations, as these values weren't considered in curve fitting
-    
+        
     else:
     
-
         # 2) drop extra ppm column that (sometimes) gets created from combining multi indices
         
         df = df.loc[:, :"significance"]
@@ -156,7 +159,7 @@ def reformat(df_list, pos : bool):
 
         # 1 & 2) assign AFo to zero in both dataframes if significance is FALSE
         df.loc[df['significance'] == False, ('AFo_bar')] = 0.0 # assigns true negatives
-        
+
     return df
 
 def join(df1, df2):
@@ -172,7 +175,6 @@ def join(df1, df2):
     df : Pandas.DataFrame
         Final merged dataframe containing the merged dataset and positive and negative observations.
     """
-    
     # 3) now need to JOIN data from the two tables in a way that makes sense
 
     key = ['concentration','proton_peak_index','ppm','polymer_name','sample_size','t_results','significance'] # combo of values that define a unique observation in each table
@@ -195,7 +197,7 @@ def join(df1, df2):
 
     # 3) now can drop the extra columns AFo_bar_a, AFo_bar_b, _merge
     df = df.drop(columns = ["AFo_bar_a", "AFo_bar_b", "_merge"])
-    
+
     return df
 
 def merge(source_path, destination_path):

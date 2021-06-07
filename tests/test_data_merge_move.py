@@ -136,18 +136,58 @@ class TestClean:
             print(expected_dfs[i].columns)
             pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
 
-'''        
 class TestReformat:
 
     def test_reformat_pos(self):
         
-    def test_reformat_neg(self):
+        path = "./test-files/test_merge"
         
+        # recreating input list
+        df_list = glob.glob(path + "/input/reformat_pos_input/*")
+        df_list = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in df_list]
+        
+        actual = reformat(df_list, True)
+        
+        expected = pd.read_excel(path + "/expected/reformat_pos_output.xlsx", index_col=0)
+        
+        assert actual.equals(expected)
+        
+    def test_reformat_neg(self):  
 
+        path = "./test-files/test_merge"
+        
+        # recreating input list
+        df_list = sorted(glob.glob(path + "/input/reformat_neg_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
+        df_list = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in df_list]
+
+        actual = reformat(df_list, False)
+
+        expected = pd.read_excel(path + "/expected/reformat_neg_output.xlsx", index_col=0)
+        expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
+
+        assert actual.equals(expected)
+        
 class TestJoin:
     
     def test_join(self):
-'''
+        """ Takes in two dataframes and joins them together. 
+        
+        Notes
+        -----
+        Equality checking ignores datatype matching.
+        """
+        
+        path = "./test-files/test_merge"
+        
+        df1 = pd.read_excel(path + "/input/join_input1.xlsx", index_col=0)
+        df2 = pd.read_excel(path + "/input/join_input2.xlsx", index_col=0)
+        
+        actual = join(df1, df2)
+        
+        expected = pd.read_excel(path + "/expected/join_output.xlsx", index_col=0)
+
+        pd.testing.assert_frame_equal(actual, expected, check_exact=True, check_dtype=False)
+        
 class TestMerge:
     """This class contains all the unit tests relating to the merge function."""
     
@@ -170,7 +210,7 @@ class TestMerge:
         try:
 
             actual = merge(src_path, dst_path)
-
+            
             expected = pd.read_excel(path + "/expected/merged_binding_dataset.xlsx", index_col=0)
             expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
 
@@ -182,4 +222,33 @@ class TestMerge:
             shutil.rmtree(dst_path)
         
     def test_merge_batch(self):
+        """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
+        sheets together into one Dataframe.
+        
+        Notes
+        -----
+        Equality checking ignores datatype matching.
+        """
+        
+        #SETUP
+        path = "./test-files/test_merge"
+        src_path = path + "/input/merge_batch/*/data_tables_from_*"
+        dst_path = path + "/output"
+
+        os.mkdir(dst_path)
+
+        try:
+
+            actual = merge(src_path, dst_path)
+
+            expected = pd.read_excel(path + "/expected/merge_batch_output.xlsx", index_col=0)
+            expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
+
+            pd.testing.assert_frame_equal(actual, expected, check_dtype=False, check_exact=True)
+        
+        finally:
+            
+            # TEARDOWN
+            shutil.rmtree(dst_path)  
+        
             
