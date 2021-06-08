@@ -8,6 +8,10 @@ sys.path.append(os.getcwd() + '\\..\\src')
 
 from data_analyze import *
 
+# global testng directories
+path = "./test-files/test_analyze"
+global_output_directory = path + "/output"
+
 class TestGenerateDirectory:
     """ This class contains all the unit tests relating to the function generate_directories."""
     
@@ -17,7 +21,6 @@ class TestGenerateDirectory:
         
         #SETUP
         current_df_title = "KHA"
-        global_output_directory = "./test-files/test_analyze/output"
         
         os.mkdir(global_output_directory)
         
@@ -50,8 +53,6 @@ class TestModelling:
         """
         
         # SETUP
-        path = "./test-files/test_analyze"
-        global_output_directory = path + "/output"
         current_df_title = "KHA"
         output_directory = global_output_directory + "/KHA"
         output_directory_curve = output_directory + "/curve_fit_plots_from_KHA"
@@ -96,8 +97,6 @@ class TestModelling:
         """
 
         # SETUP
-        path = "./test-files/test_analyze"
-        global_output_directory = path + "/output"
         current_df_title = "CMC"
         output_directory = global_output_directory + "/" + current_df_title
         output_directory_curve = output_directory + "/curve_fit_plots_from_" + current_df_title
