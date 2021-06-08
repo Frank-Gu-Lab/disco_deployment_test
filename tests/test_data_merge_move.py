@@ -44,7 +44,7 @@ class TestMove:
 
 class TestClean:
     """ This class contains all unit tests relating to the clean function. """
-    
+
     def test_clean_pos(self):
         
         # recreate input list
@@ -85,7 +85,7 @@ class TestClean:
         
         # compare
         assert len(dfs) == len(expected_dfs)
-        
+
         for i in range(len(dfs)):
             pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
     
@@ -96,7 +96,7 @@ class TestClean:
         path = "./test-files/test_merge"
         
         dfs = sorted(glob.glob(path + "/input/clean_neg_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
-                
+        
         for i in range(len(dfs)):
             
             try: # ppm in index
@@ -122,18 +122,16 @@ class TestClean:
         # recreate output list
         expected_dfspaths = sorted(glob.glob(path + "/expected/clean_neg_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
         expected_dfs = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in expected_dfspaths]
-
+        
         for i in range(len(expected_dfs)):
             if None in expected_dfs[i].index.names:
                 expected_dfs[i] = pd.read_excel(expected_dfspaths[i], index_col=[0, 1, 2])
                 expected_dfs[i] = expected_dfs[i].iloc[:, 1:] # removing extra column
-                
+        
         # compare
         assert len(dfs) == len(expected_dfs)
         
         for i in range(len(dfs)):
-            print(dfs[i].columns)
-            print(expected_dfs[i].columns)
             pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
 
 class TestReformat:
