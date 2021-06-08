@@ -36,8 +36,387 @@
       <div class="content" role="main">
         
         
-  <section id="test-wrangling-module">
-<h1>test_wrangling module<a class="headerlink" href="#test-wrangling-module" title="Permalink to this headline">¶</a></h1>
+  <section id="module-test_wrangling">
+<span id="test-wrangling-module"></span><h1>test_wrangling module<a class="headerlink" href="#module-test_wrangling" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestAF">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestAF</span></span><a class="headerlink" href="#test_wrangling.TestAF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the function compute_af.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAF.test_af" title="test_wrangling.TestAF.test_af"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_af</span></code></a>()</p></td>
+<td><p>Checks whether the expected amplication factor was calculated and appended to the dataframe.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAF.test_af">
+<span class="sig-name descname"><span class="pre">test_af</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAF.test_af" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the expected amplication factor was calculated and appended to the dataframe.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestAttenuation</span></span><a class="headerlink" href="#test_wrangling.TestAttenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_attenuation_batch" title="test_wrangling.TestAttenuation.test_add_attenuation_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_attenuation_batch</span></code></a>()</p></td>
+<td><p>Checks for expected attenuation calculations applied in the batch path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_attenuation_book" title="test_wrangling.TestAttenuation.test_add_attenuation_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_attenuation_book</span></code></a>()</p></td>
+<td><p>Checks for expected attenuation calculations applied in the book path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_both_att_batch" title="test_wrangling.TestAttenuation.test_add_both_att_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_both_att_batch</span></code></a>()</p></td>
+<td><p>Checks for expected attenuation and corrected attenuation calculations applied in the batch path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_both_att_book" title="test_wrangling.TestAttenuation.test_add_both_att_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_both_att_book</span></code></a>()</p></td>
+<td><p>Checks for expected attenuation and corrected attenuation calculations applied in the book path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_corr_attenuation_batch" title="test_wrangling.TestAttenuation.test_add_corr_attenuation_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_corr_attenuation_batch</span></code></a>()</p></td>
+<td><p>Checks for expected corrected attenuation calculations applied in the batch path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_corr_attenuation_book" title="test_wrangling.TestAttenuation.test_add_corr_attenuation_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_corr_attenuation_book</span></code></a>()</p></td>
+<td><p>Checks for expected corrected attenuation calculations applied in the book path.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_attenuation_batch">
+<span class="sig-name descname"><span class="pre">test_add_attenuation_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_attenuation_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected attenuation calculations applied in the batch path.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_attenuation_book">
+<span class="sig-name descname"><span class="pre">test_add_attenuation_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_attenuation_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected attenuation calculations applied in the book path.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_both_att_batch">
+<span class="sig-name descname"><span class="pre">test_add_both_att_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_both_att_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected attenuation and corrected attenuation calculations applied in the batch path.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_both_att_book">
+<span class="sig-name descname"><span class="pre">test_add_both_att_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_both_att_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected attenuation and corrected attenuation calculations applied in the book path.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_corr_attenuation_batch">
+<span class="sig-name descname"><span class="pre">test_add_corr_attenuation_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_corr_attenuation_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected corrected attenuation calculations applied in the batch path.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_add_corr_attenuation_book">
+<span class="sig-name descname"><span class="pre">test_add_corr_attenuation_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_add_corr_attenuation_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected corrected attenuation calculations applied in the book path.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestCleanBatch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestCleanBatch</span></span><a class="headerlink" href="#test_wrangling.TestCleanBatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating ti the function test_clean_batch_list.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestCleanBatch.test_clean_batch_list" title="test_wrangling.TestCleanBatch.test_clean_batch_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_clean_batch_list</span></code></a>()</p></td>
+<td><p>This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestCleanBatch.test_clean_batch_list">
+<span class="sig-name descname"><span class="pre">test_clean_batch_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestCleanBatch.test_clean_batch_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestCurveFit">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestCurveFit</span></span><a class="headerlink" href="#test_wrangling.TestCurveFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the execute_curvefit function.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestCurveFit.test_curvefit_batch" title="test_wrangling.TestCurveFit.test_curvefit_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_curvefit_batch</span></code></a>()</p></td>
+<td><p>Checks for whether the curvefit was executed as expected; batch path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestCurveFit.test_curvefit_book" title="test_wrangling.TestCurveFit.test_curvefit_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_curvefit_book</span></code></a>()</p></td>
+<td><p>Checks for whether the curvefit was executed as expected; book path.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestCurveFit.test_curvefit_batch">
+<span class="sig-name descname"><span class="pre">test_curvefit_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestCurveFit.test_curvefit_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-3.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestCurveFit.test_curvefit_book">
+<span class="sig-name descname"><span class="pre">test_curvefit_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestCurveFit.test_curvefit_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-3. 
+Simply checks for filepath existence.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestDataFrameConversion</span></span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestDataFrameConversion.test_batch" title="test_wrangling.TestDataFrameConversion.test_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_batch</span></code></a>()</p></td>
+<td><p>Testing overall functionality.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestDataFrameConversion.test_book" title="test_wrangling.TestDataFrameConversion.test_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_book</span></code></a>()</p></td>
+<td><p>Testing overall functionality.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion.test_batch">
+<span class="sig-name descname"><span class="pre">test_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion.test_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Testing overall functionality. Takes in a batch Excel sheet and converts each sheet into a dataframe, returning a tuple of the form
+(df_name, df).</p>
+<p class="rubric">Notes</p>
+<p>Equality checking ignores datatype matching.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion.test_book">
+<span class="sig-name descname"><span class="pre">test_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion.test_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
+excel sheet is removed during teardown.</p>
+<p class="rubric">Notes</p>
+<p>The equality check ignores datatype matching.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestDropBadPeaks">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestDropBadPeaks</span></span><a class="headerlink" href="#test_wrangling.TestDropBadPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the execute_curvefit function.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestDropBadPeaks.test_drop_peaks_book" title="test_wrangling.TestDropBadPeaks.test_drop_peaks_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_drop_peaks_book</span></code></a>()</p></td>
+<td><p>Checks whether the expected peaks were dropped and removes any generated files upon teardown.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 71%" />
+<col style="width: 29%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>test_drop_peaks_batch</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDropBadPeaks.test_drop_peaks_batch">
+<span class="sig-name descname"><span class="pre">test_drop_peaks_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDropBadPeaks.test_drop_peaks_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDropBadPeaks.test_drop_peaks_book">
+<span class="sig-name descname"><span class="pre">test_drop_peaks_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDropBadPeaks.test_drop_peaks_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the expected peaks were dropped and removes any generated files upon teardown.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestPlots">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestPlots</span></span><a class="headerlink" href="#test_wrangling.TestPlots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the plot generation functions.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestPlots.test_concentration" title="test_wrangling.TestPlots.test_concentration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_concentration</span></code></a>()</p></td>
+<td><p>Checks for whether the expected concentration plot is generated and removes the plot upon teardown.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestPlots.test_ppm" title="test_wrangling.TestPlots.test_ppm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_ppm</span></code></a>()</p></td>
+<td><p>Checks for whether the expected ppm plot is generated and removes the plot upon teardown.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestPlots.test_concentration">
+<span class="sig-name descname"><span class="pre">test_concentration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestPlots.test_concentration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for whether the expected concentration plot is generated and removes the plot upon teardown.</p>
+<p class="rubric">Notes</p>
+<p>Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestPlots.test_ppm">
+<span class="sig-name descname"><span class="pre">test_ppm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestPlots.test_ppm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for whether the expected ppm plot is generated and removes the plot upon teardown.</p>
+<p class="rubric">Notes</p>
+<p>Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestPrep">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestPrep</span></span><a class="headerlink" href="#test_wrangling.TestPrep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the prep functions.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestPrep.test_prep_mean_batch" title="test_wrangling.TestPrep.test_prep_mean_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_prep_mean_batch</span></code></a>()</p></td>
+<td><p>Checks whether an Excel batch is prepped for statistical analysis on a “mean” basis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestPrep.test_prep_mean_book" title="test_wrangling.TestPrep.test_prep_mean_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_prep_mean_book</span></code></a>()</p></td>
+<td><p>Checks whether an Excel book is prepped for statistical analysis on a “mean” basis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestPrep.test_prep_replicates_batch" title="test_wrangling.TestPrep.test_prep_replicates_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_prep_replicates_batch</span></code></a>()</p></td>
+<td><p>Checks whether an Excel batch is prepped for statistical analysis per replicate.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestPrep.test_prep_replicates_book" title="test_wrangling.TestPrep.test_prep_replicates_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_prep_replicates_book</span></code></a>()</p></td>
+<td><p>Checks whether an Excel book is prepped for statistical analysis per replicate.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestPrep.test_prep_mean_batch">
+<span class="sig-name descname"><span class="pre">test_prep_mean_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestPrep.test_prep_mean_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an Excel batch is prepped for statistical analysis on a “mean” basis.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestPrep.test_prep_mean_book">
+<span class="sig-name descname"><span class="pre">test_prep_mean_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestPrep.test_prep_mean_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an Excel book is prepped for statistical analysis on a “mean” basis.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestPrep.test_prep_replicates_batch">
+<span class="sig-name descname"><span class="pre">test_prep_replicates_batch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestPrep.test_prep_replicates_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an Excel batch is prepped for statistical analysis per replicate.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestPrep.test_prep_replicates_book">
+<span class="sig-name descname"><span class="pre">test_prep_replicates_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestPrep.test_prep_replicates_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an Excel book is prepped for statistical analysis per replicate.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_wrangling.TestT">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_wrangling.</span></span><span class="sig-name descname"><span class="pre">TestT</span></span><a class="headerlink" href="#test_wrangling.TestT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the t-test analysis function.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestT.test_t" title="test_wrangling.TestT.test_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_t</span></code></a>()</p></td>
+<td><p>Performa a sample t-test and checks whether the expected results were appended to the inputted dataframe.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestT.test_t">
+<span class="sig-name descname"><span class="pre">test_t</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestT.test_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performa a sample t-test and checks whether the expected results were appended to the inputted dataframe.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
