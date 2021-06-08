@@ -56,51 +56,32 @@ def clean(df_list, polymer_list, pos : bool):
     pos : bool
         True for positive binding observations, False for negative binding observations.
     """
-    
-    if pos:
+    # 1) clean list
+    for i in range(len(df_list)):
+
+        if 'polymer_name' not in df_list[i].columns:
+            df_list[i].insert(loc = 0, column = 'polymer_name', value = polymer_list[i]) # add polymer name column
         
-        # 1) clean list
-        for i, df in enumerate(df_list):
-            
-            if 'polymer_name' not in df.columns:
-                df_list[i].insert(loc = 0, column = 'polymer_name', value = polymer_list[i]) # add polymer name column
-            
-            # drop extra level
-            df_list[i] = df_list[i].droplevel(1, axis = 1)
-            
+        # drop extra level
+        df_list[i] = df_list[i].droplevel(1, axis = 1)
+        
+        if pos:
+            # if this column exists as a column (it should be in the index), also drop
+            if "ppm" in df_list[i].columns:
+                df_list[i] = df_list[i].drop("ppm", axis = 1)
+                
             # drop extra columns
-            drop_data_mean = df_list[i].loc[:,
+            drop_data = df_list[i].loc[:,
                                     ['corr_%_attenuation','dofs',
                                     'amp_factor', 'yikj_bar','SSE_bar']]
-            
-            df_list[i] = df_list[i].drop(drop_data_mean.columns, axis = 1)
-            
-            # if this column exists as a column (it should be in the index), also drop
-            if "ppm" in df.columns:
-                df_list[i] = df_list[i].drop("ppm", axis = 1)
+        else:
+            # drop other columns not needed and extra level
+            drop_data = df_list[i].loc[:, ['corr_%_attenuation', 'dofs', 'amp_factor']]
         
-    else:
+        df_list[i] = df_list[i].drop(drop_data.columns, axis = 1)
         
-        # 2) clean list
-        for i, df in enumerate(df_list):
-            df.insert(loc = 0, column = 'polymer_name', value = polymer_list[i]) # add polymer name column
-            
-            if df.index.names[3] == None: # drop ppm std column not needed
-                drop_data_2 = df.iloc[:, 1]
-                df_list[i] = df.drop(drop_data_2.name, axis = 1)
-                
-                # drop other columns not needed and extra level
-                drop_data_3 = df.loc[:, 
-                    [('corr_%_attenuation',                'mean'),
-                    ('corr_%_attenuation',                 'std'),
-                    (              'dofs',  'Unnamed: 7_level_1'),
-                    (        'amp_factor', 'Unnamed: 11_level_1')]]
-                df_list[i] = df.drop(drop_data_3.columns, axis = 1).droplevel(1, axis = 1)
-                
-            else:
-                # drop other columns not needed, and drop extra level in column index
-                drop_data_3 = df.iloc[:, [1,2,3,7]]
-                df_list[i] = df.drop(drop_data_3.columns, axis = 1).droplevel(1, axis = 1)
+        # changing column names to [None] for consistency
+        df_list[i].columns.names = [None]
 
 def reformat(df_list, pos : bool):
     """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame. 
