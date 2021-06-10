@@ -216,14 +216,10 @@ def merge(source_path, destination_path):
     polymer_names = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in selected_files]
     selected_dataframes = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files]
 
-    ################# REFACTOR --> CLEAN #################
-
     # 1) clean list
     
     clean(selected_dataframes, polymer_names, True)
-        
-    ################# REFACTOR --> REFORMAT #################
-    
+
     selected_dataframes_pos = reformat(selected_dataframes, True)
 
     # to balance the dataset, add BACK in the negative examples in preprocessing dropped due to statistical insignificance with an AFo = 0
@@ -232,17 +228,11 @@ def merge(source_path, destination_path):
     selected_files_neg = [file for file in all_files if indicator3 in file and indicator2 in file]
     polymer_names_neg = [re.search('all_(.+?).xlsx', file).group(1).strip() for file in selected_files_neg]
     selected_dataframes_neg_list = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files_neg]
-
-    ################# REFACTOR --> CLEAN #################
-
+    
     # 2) clean list
     
     clean(selected_dataframes_neg_list, polymer_names_neg, False)
         
-    ################# REFACTOR --> REFORMAT #################
-        
     selected_dataframes_neg = reformat(selected_dataframes_neg_list, False)
     
-    ################# REFACTOR --> JOIN #################
-
     return join(selected_dataframes_pos, selected_dataframes_neg)

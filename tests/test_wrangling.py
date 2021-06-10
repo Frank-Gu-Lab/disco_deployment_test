@@ -403,11 +403,9 @@ class TestAF:
 
         expected_replicates = pd.read_excel(expected_path + "/af_replicates_output.xlsx", index_col=0)
 
-        msg1 = "Amplification factors were not calculated as expected the for statistical analyses done on a 'mean' basis."
-        assert actual_mean.equals(expected_mean), msg1
+        pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
 
-        msg2 = "Amplification factors were not calculated as expected per replicate."
-        assert actual_replicates.equals(expected_replicates), msg2
+        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
 
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
@@ -440,12 +438,10 @@ class TestDropBadPeaks:
             expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
   
             expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_book_output.xlsx", index_col=0)
+
+            pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
             
-            msg1 = "Not all expected peaks were dropped for the statistical analyses done on a 'mean' basis."
-            assert actual_mean.equals(expected_mean), msg1
-            
-            msg2 = "Not all expected peaks were dropped per replicate."
-            assert actual_replicates.equals(expected_replicates), msg2
+            pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
         
         finally:
             
@@ -480,12 +476,10 @@ class TestDropBadPeaks:
             expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
   
             expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_batch_output.xlsx", index_col=0)
+
+            pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
             
-            msg1 = "Not all expected peaks were dropped for the statistical analyses done on a 'mean' basis."
-            assert actual_mean.equals(expected_mean), msg1
-            
-            msg2 = "Not all expected peaks were dropped per replicate."
-            assert actual_replicates.equals(expected_replicates), msg2
+            pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
         
         finally:
             
