@@ -110,6 +110,7 @@ class TestReformat:
         actual = reformat(df_list, True)
         
         expected = pd.read_excel(path + "/expected/reformat_pos_output.xlsx", index_col=0)
+        expected.columns.names = ['index'] # column name not included when reading in Excel file
         
         pd.testing.assert_frame_equal(actual, expected, check_exact=True)
         
