@@ -178,6 +178,10 @@ def join(df1, df2):
 
     # 3) now can drop the extra columns AFo_bar_a, AFo_bar_b, _merge
     df = df.drop(columns = ["AFo_bar_a", "AFo_bar_b", "_merge"])
+    
+    # extra column usually added for book input only
+    if 'level_2' in df.columns:
+        df = df.drop('level_2', axis=1)
 
     return df
 

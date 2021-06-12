@@ -175,7 +175,7 @@ class TestMerge:
 
             actual = merge(src_path, dst_path)
             
-            expected = pd.read_excel(path + "/expected/merged_binding_dataset.xlsx", index_col=0)
+            expected = pd.read_excel(path + "/expected/merge_book_output.xlsx", index_col=0)
             expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
 
             pd.testing.assert_frame_equal(actual, expected, check_dtype=False, check_exact=True)
