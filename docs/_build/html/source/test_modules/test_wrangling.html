@@ -15,8 +15,7 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="test_analyze module" href="test_analyze.html" />
-    <link rel="prev" title="test_data_merge_move module" href="test_data_merge_move.html" /> 
+    <link rel="prev" title="test_helpers module" href="test_helpers.html" /> 
   </head><body>
       <div class="header" role="banner"><h1 class="heading"><a href="../../index.html">
           <span>disco-data-processing 1.0.0 documentation</span></a></h1>
@@ -25,11 +24,9 @@
       <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
-        «&#160;&#160;<a href="test_data_merge_move.html">test_data_merge_move module</a>
+        «&#160;&#160;<a href="test_helpers.html">test_helpers module</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../../index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="test_analyze.html">test_analyze module</a>&#160;&#160;»
         </p>
 
       </div>
@@ -93,6 +90,36 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_add_corr_attenuation_book" title="test_wrangling.TestAttenuation.test_add_corr_attenuation_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_corr_attenuation_book</span></code></a>()</p></td>
 <td><p>Checks for expected corrected attenuation calculations applied in the book path.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset1" title="test_wrangling.TestAttenuation.test_attenuation_batch_subset1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_attenuation_batch_subset1</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the sample_or_control values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset2" title="test_wrangling.TestAttenuation.test_attenuation_batch_subset2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_attenuation_batch_subset2</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset3" title="test_wrangling.TestAttenuation.test_attenuation_batch_subset3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_attenuation_batch_subset3</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the proton_peak_index values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset4" title="test_wrangling.TestAttenuation.test_attenuation_batch_subset4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_attenuation_batch_subset4</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_attenuation_book_subset" title="test_wrangling.TestAttenuation.test_attenuation_book_subset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_attenuation_book_subset</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when subsets of the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_attenuation_diff_shape" title="test_wrangling.TestAttenuation.test_attenuation_diff_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_attenuation_diff_shape</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_corr_attenuation_diff_shape" title="test_wrangling.TestAttenuation.test_corr_attenuation_diff_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_corr_attenuation_diff_shape</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_corr_attenuation_subset1" title="test_wrangling.TestAttenuation.test_corr_attenuation_subset1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_corr_attenuation_subset1</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_corr_attenuation_subset2" title="test_wrangling.TestAttenuation.test_corr_attenuation_subset2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_corr_attenuation_subset2</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestAttenuation.test_corr_attenuation_subset3" title="test_wrangling.TestAttenuation.test_corr_attenuation_subset3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_corr_attenuation_subset3</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the concentration values in the true and false irradiated dataframes do not match.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py method">
@@ -141,6 +168,66 @@
 <dd><p>Checks for expected corrected attenuation calculations applied in the book path.</p>
 <p class="rubric">Notes</p>
 <p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_attenuation_batch_subset1">
+<span class="sig-name descname"><span class="pre">test_attenuation_batch_subset1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the sample_or_control values in the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_attenuation_batch_subset2">
+<span class="sig-name descname"><span class="pre">test_attenuation_batch_subset2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_attenuation_batch_subset3">
+<span class="sig-name descname"><span class="pre">test_attenuation_batch_subset3</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the proton_peak_index values in the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_attenuation_batch_subset4">
+<span class="sig-name descname"><span class="pre">test_attenuation_batch_subset4</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_attenuation_batch_subset4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_attenuation_book_subset">
+<span class="sig-name descname"><span class="pre">test_attenuation_book_subset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_attenuation_book_subset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when subsets of the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_attenuation_diff_shape">
+<span class="sig-name descname"><span class="pre">test_attenuation_diff_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_attenuation_diff_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e. missing data).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_corr_attenuation_diff_shape">
+<span class="sig-name descname"><span class="pre">test_corr_attenuation_diff_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_corr_attenuation_diff_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e. missing data).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_corr_attenuation_subset1">
+<span class="sig-name descname"><span class="pre">test_corr_attenuation_subset1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_corr_attenuation_subset1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_corr_attenuation_subset2">
+<span class="sig-name descname"><span class="pre">test_corr_attenuation_subset2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_corr_attenuation_subset2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestAttenuation.test_corr_attenuation_subset3">
+<span class="sig-name descname"><span class="pre">test_corr_attenuation_subset3</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestAttenuation.test_corr_attenuation_subset3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the concentration values in the true and false irradiated dataframes do not match.</p>
 </dd></dl>
 
 </dd></dl>
@@ -229,6 +316,9 @@ Simply checks for filepath existence.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#test_wrangling.TestDataFrameConversion.test_book" title="test_wrangling.TestDataFrameConversion.test_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_book</span></code></a>()</p></td>
 <td><p>Testing overall functionality.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_wrangling.TestDataFrameConversion.test_book_unequal" title="test_wrangling.TestDataFrameConversion.test_book_unequal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_book_unequal</span></code></a>()</p></td>
+<td><p>Checks whether a ValueError is raised when the number of samples and controls do not match.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py method">
@@ -247,6 +337,12 @@ Simply checks for filepath existence.</p>
 excel sheet is removed during teardown.</p>
 <p class="rubric">Notes</p>
 <p>The equality check ignores datatype matching.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_wrangling.TestDataFrameConversion.test_book_unequal">
+<span class="sig-name descname"><span class="pre">test_book_unequal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_wrangling.TestDataFrameConversion.test_book_unequal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the number of samples and controls do not match.</p>
 </dd></dl>
 
 </dd></dl>
@@ -424,11 +520,9 @@ excel sheet is removed during teardown.</p>
       <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
-        «&#160;&#160;<a href="test_data_merge_move.html">test_data_merge_move module</a>
+        «&#160;&#160;<a href="test_helpers.html">test_helpers module</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../../index.html">Contents</a>
-        &#160;&#160;::&#160;&#160;
-        <a href="test_analyze.html">test_analyze module</a>&#160;&#160;»
         </p>
 
       </div>
