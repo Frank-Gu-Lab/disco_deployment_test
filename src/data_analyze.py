@@ -112,8 +112,7 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
 
     # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
     
-    current_df_mean, current_df_replicates = execute_curvefit(
-        current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book)
+    current_df_mean, current_df_replicates = execute_curvefit(current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book)
 
     return current_df_mean, current_df_replicates
 

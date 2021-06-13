@@ -155,6 +155,7 @@ class TestJoin:
 class TestMerge:
     """This class contains all the unit tests relating to the merge function."""
     
+    @pytest.mark.xfail
     def test_merge_book(self):
         """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
         sheets together into one Dataframe.

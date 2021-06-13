@@ -58,31 +58,32 @@ def clean(df_list, polymer_list, pos : bool):
     """
     # 1) clean list
     for i in range(len(df_list)):
-
         if 'polymer_name' not in df_list[i].columns:
             df_list[i].insert(loc = 0, column = 'polymer_name', value = polymer_list[i]) # add polymer name column
         
+        if 'ppm' in df_list[i].columns:
+            # drop (ppm, mean) to index
+            df_list[i].set_index(('ppm', 'mean'), append=True, inplace=True)
+            
+            # renaming new index name to ppm
+            df_list[i].index.names=['concentration', 'sat_time', 'proton_peak_index', 'ppm']
+            
+            # drop (ppm, std)
+            df_list[i] = df_list[i].drop(('ppm', 'std'), axis = 1) 
+
         # drop extra level
         df_list[i] = df_list[i].droplevel(1, axis = 1)
-        
+
         if pos:
-            # if this column exists as a column (it should be in the index), also drop
-            if "ppm" in df_list[i].columns:
-                df_list[i] = df_list[i].drop("ppm", axis = 1)
-                
             # drop extra columns
-            drop_data = df_list[i].loc[:,
-                                    ['corr_%_attenuation','dofs',
-                                    'amp_factor', 'yikj_bar','SSE_bar']]
+            drop_data = df_list[i].loc[:, ['corr_%_attenuation','dofs', 'amp_factor', 'yikj_bar','SSE_bar']]
+            
         else:
             # drop other columns not needed and extra level
             drop_data = df_list[i].loc[:, ['corr_%_attenuation', 'dofs', 'amp_factor']]
         
         df_list[i] = df_list[i].drop(drop_data.columns, axis = 1)
         
-        # changing column names to [None] for consistency
-        df_list[i].columns.names = [None]
-
 def reformat(df_list, pos : bool):
     """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame. 
     
@@ -218,25 +219,57 @@ def merge(source_path, destination_path):
     # 1) need to merge all the input polymer files with a significant AFo into one tidy longform dataframe 
     selected_files = [file for file in all_files if indicator3 in file and indicator2 not in file]
     polymer_names = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in selected_files]
-    selected_dataframes = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files]
+    #selected_dataframes = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files]
+    
+    for i in range(len(selected_files)):
+
+        try: # ppm in index
+            # Preserve multi-index when reading in Excel file
+            df = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            df_other = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+            selected_files[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+        except: # ppm in column
+            # Preserve multi-index when reading in Excel file
+            df = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            df_other = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+            selected_files[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
     # 1) clean list
     
-    clean(selected_dataframes, polymer_names, True)
+    clean(selected_files, polymer_names, True)
 
-    selected_dataframes_pos = reformat(selected_dataframes, True)
+    selected_dataframes_pos = reformat(selected_files, True)
 
     # to balance the dataset, add BACK in the negative examples in preprocessing dropped due to statistical insignificance with an AFo = 0
 
     # 2) need to merge all the input polymer observations (significant and not) into a dataframe (mean all)
     selected_files_neg = [file for file in all_files if indicator3 in file and indicator2 in file]
     polymer_names_neg = [re.search('all_(.+?).xlsx', file).group(1).strip() for file in selected_files_neg]
-    selected_dataframes_neg_list = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files_neg]
+    #selected_dataframes_neg_list = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files_neg]
     
+    for i in range(len(selected_files_neg)):
+    
+        try: # ppm in index
+            # Preserve multi-index when reading in Excel file
+            df = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            df_other = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+            selected_files_neg[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+        except: # ppm in column
+            # Preserve multi-index when reading in Excel file
+            df = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            df_other = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+            selected_files_neg[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
     # 2) clean list
     
-    clean(selected_dataframes_neg_list, polymer_names_neg, False)
+    clean(selected_files_neg, polymer_names_neg, False)
         
-    selected_dataframes_neg = reformat(selected_dataframes_neg_list, False)
+    selected_dataframes_neg = reformat(selected_files_neg, False)
     
     return join(selected_dataframes_pos, selected_dataframes_neg)
