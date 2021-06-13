@@ -234,7 +234,7 @@ def export_clean_books(current_book_title, clean_df, global_output_directory):
     print('Excel export complete! Navigate to output directory to see the clean Excel file.\n')
 
 def add_attenuation(current_book, batch_or_book = 'book'):
-    '''This function calculates the attenuation if the dataframe passes all checks
+    ''' This function calculates the attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
     
     Parameters
@@ -268,7 +268,6 @@ def add_attenuation(current_book, batch_or_book = 'book'):
     else:
         intensity_irrad_true = current_book.loc[(current_book['irrad_bool'] == True), ['polymer_name', 'proton_peak_index', 'ppm_range', 'ppm', 'sample_or_control', 'replicate', 'concentration', 'sat_time', 'absolute']]
         intensity_irrad_false = current_book.loc[(current_book['irrad_bool'] == False), ['polymer_name', 'proton_peak_index',  'ppm_range', 'ppm', 'sample_or_control', 'replicate', 'concentration', 'sat_time', 'absolute']]
-        
         
     # check if the fixed experimental values in irrad true and irrad false are equal, in the same order, and the same size, so that one to one calculations can be performed to calculate attenuation.
     fixed_values_equality_check = attenuation_calc_equality_checker(intensity_irrad_true, intensity_irrad_false, batch_or_book)

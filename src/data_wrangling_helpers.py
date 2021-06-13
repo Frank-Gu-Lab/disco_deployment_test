@@ -491,7 +491,7 @@ def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_ind
 def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
     '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
     in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
-    'sat_time' 
+    'sat_time'.
     
     Parameters
     ----------
@@ -530,7 +530,6 @@ def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
             subset_compare_2 = df2.sample_or_control.values
             exactly_equal_1 = np.array_equal(subset_compare_1, subset_compare_2)
             
-            
             #check replicate is the same
             subset_compare_1 = df1.replicate.values
             subset_compare_2 = df2.replicate.values
@@ -547,11 +546,12 @@ def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
             subset_compare_2 = df2.sat_time.values
             exactly_equal_4 = np.array_equal(subset_compare_1, subset_compare_2)
             
-            #if passes all 4 checks return true, if not false
+            # if passes all 4 checks return true, if not false
             if exactly_equal_1 == exactly_equal_2 == exactly_equal_3 == exactly_equal_4 == True:
                 return True
             
-            else: return False
+            else: 
+                return False
         
     else:
         raise ValueError("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
@@ -601,13 +601,12 @@ def corrected_attenuation_calc_equality_checker(df1, df2, df3):
         
         exactly_equal_3 = np.logical_and((subset_compare_1==subset_compare_2).all(), (subset_compare_2==subset_compare_3).all())
         
-
         #if passes all 3 checks return true, if not false
         if exactly_equal_1 == exactly_equal_2 == exactly_equal_3 == True:
             return True
             
-        else: return False
-        
+        else: 
+            return False
         
     else:
         raise ValueError("Error, corrected % attenuation input dataframes are not the same shape to begin with.")

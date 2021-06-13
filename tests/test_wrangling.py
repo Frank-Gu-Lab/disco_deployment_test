@@ -68,7 +68,19 @@ class TestDataFrameConversion:
         msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
         assert actual_title == expected_title, msg
         pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
-            
+   
+    # testing assertions for book_to_dataframe
+   
+    def test_book_unequal(self):
+        ''' Checks whether a ValueError is raised when the number of samples and controls do not match. '''
+        
+        book = input_path + "/KHA_modified.xlsx" # Control (2) deleted
+        
+        with pytest.raises(ValueError) as e:
+            raise book_to_dataframe(book)
+        
+        assert e.match('ERROR: The number of sample sheets is not equal to the number of control sheets in {} please confirm the data in the book is correct.'.format(book))
+                
 class TestCleanBatch:
     """ This class contains all the unit tests relating ti the function test_clean_batch_list. """
     
@@ -213,6 +225,115 @@ class TestAttenuation:
         expected = pd.read_excel(expected_path + "/corr_att_book.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
+
+    # testing assertions for add_attenuation
+    # in creating these unit tests, changes made to Excel file are highlighted in yellow
+    
+    def test_attenuation_diff_shape(self):
+        ''' Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e. missing data). '''
+        
+        df = pd.read_excel(input_path + "/att_diff_shape_input.xlsx", index_col=0) # last seven rows removed
+        
+        with pytest.raises(ValueError) as e:
+            raise add_attenuation(df)
+        
+        assert e.match("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
+
+    def test_attenuation_book_subset(self):
+        ''' Checks whether a ValueError is raised when subsets of the true and false irradiated dataframes do not match. '''
+        
+        df = pd.read_excel(input_path + "/att_book_subset_wrong.xlsx", index_col=0)
+        
+        with pytest.raises(ValueError) as e:
+            raise add_attenuation(df)
+            
+        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
+        
+    def test_attenuation_batch_subset1(self):
+        ''' Checks whether a ValueError is raised when the sample_or_control values in the true and false irradiated dataframes do not match. '''
+        
+        df = pd.read_excel(input_path + "/att_batch_subset_1.xlsx", index_col=0)
+
+        with pytest.raises(ValueError) as e:
+            raise add_attenuation(df, 'batch')
+            
+        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
+        
+    def test_attenuation_batch_subset2(self):
+        ''' Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match. '''
+       
+        df = pd.read_excel(input_path + "/att_batch_subset_2.xlsx", index_col=0)
+        
+        with pytest.raises(ValueError) as e:
+            raise add_attenuation(df, 'batch')
+            
+        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
+        
+    def test_attenuation_batch_subset3(self):
+        ''' Checks whether a ValueError is raised when the proton_peak_index values in the true and false irradiated dataframes do not match. '''
+       
+        df = pd.read_excel(input_path + "/att_batch_subset_3.xlsx", index_col=0)
+        
+        with pytest.raises(ValueError) as e:
+            raise add_attenuation(df, 'batch')
+            
+        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
+        
+    def test_attenuation_batch_subset4(self):
+        ''' Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match. '''
+       
+        df = pd.read_excel(input_path + "/att_batch_subset_4.xlsx", index_col=0)
+        
+        with pytest.raises(ValueError) as e:
+            raise add_attenuation(df, 'batch')
+            
+        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
+        
+    # testing assertions for add_corr_attenuation
+    
+    def test_corr_attenuation_diff_shape(self):
+        ''' Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e. missing data). '''
+        
+        df_true = pd.read_excel(input_path + "/att_book_true_diff.xlsx", index_col=0) # modified, last 7 rows removed
+        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
+        
+        with pytest.raises(ValueError) as e:
+            raise add_corr_attenuation(df_true, df_false)
+        
+        assert e.match("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
+
+    def test_corr_attenuation_subset1(self):
+        ''' Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match. '''
+        
+        df_true = pd.read_excel(input_path + "/att_book_true_subset1.xlsx", index_col=0) # modified
+        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
+                
+        with pytest.raises(ValueError) as e:
+            raise add_corr_attenuation(df_true, df_false)
+        
+        assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
+
+    def test_corr_attenuation_subset2(self):
+        ''' Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match. '''
+        
+        df_true = pd.read_excel(input_path + "/att_book_true_subset2.xlsx", index_col=0) # modified
+        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
+                
+        with pytest.raises(ValueError) as e:
+            raise add_corr_attenuation(df_true, df_false)
+        
+        assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
+
+    def test_corr_attenuation_subset3(self):
+        ''' Checks whether a ValueError is raised when the concentration values in the true and false irradiated dataframes do not match. '''
+        
+        df_true = pd.read_excel(input_path + "/att_book_true_subset3.xlsx", index_col=0) # modified
+        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
+                
+        with pytest.raises(ValueError) as e:
+            raise add_corr_attenuation(df_true, df_false)
+        
+        assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
 
 class TestPlots:
     """ This class contains all the unit tests relating to the plot generation functions."""
