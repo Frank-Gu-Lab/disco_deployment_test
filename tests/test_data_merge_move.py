@@ -6,7 +6,7 @@ import glob
 import pandas as pd
 
 # appending path to access sibling directory
-sys.path.append(os.getcwd() + '\\..\\src')
+sys.path.append(os.getcwd() + '/../src')
 
 from data_merging import *
 
@@ -52,7 +52,22 @@ class TestClean:
         path = "./test-files/test_merge"
         
         dfs = glob.glob(path + "/input/clean_pos_input/*")
-        dfs = [pd.read_excel(df, header=[0, 1], index_col=[0, 1, 2, 3]) for df in dfs]
+
+        for i in range(len(dfs)):
+        
+            try: # ppm in index
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+            except: # ppm in column
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
         polymer_list = open(path + "/input/clean_pos_polymer.txt").readlines()
         polymer_list = [l.rstrip() for l in polymer_list]
@@ -77,7 +92,22 @@ class TestClean:
         path = "./test-files/test_merge"
         
         dfs = sorted(glob.glob(path + "/input/clean_neg_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
-        dfs = [pd.read_excel(df, header=[0, 1], index_col=[0, 1, 2, 3]) for df in dfs]
+
+        for i in range(len(dfs)):
+            
+            try: # ppm in index
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+            except: # ppm in column
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
         polymer_list = open(path + "/input/clean_neg_polymer.txt").readlines()
         polymer_list = [l.rstrip() for l in polymer_list]
@@ -155,7 +185,6 @@ class TestJoin:
 class TestMerge:
     """This class contains all the unit tests relating to the merge function."""
     
-    @pytest.mark.xfail
     def test_merge_book(self):
         """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
         sheets together into one Dataframe.

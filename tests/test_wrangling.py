@@ -6,7 +6,7 @@ import shutil
 import matplotlib.pyplot as plt
 
 # appending path to access sibling directory
-sys.path.append(os.getcwd() + '\\..\\src')
+sys.path.append(os.getcwd() + '/../src')
 
 from data_wrangling_functions import *
 from matplotlib.testing.compare import compare_images

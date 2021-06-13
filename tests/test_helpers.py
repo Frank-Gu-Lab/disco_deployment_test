@@ -5,7 +5,7 @@ import glob
 import shutil
 
 # appending path to access sibling directory
-sys.path.append(os.getcwd() + '\\..\\src')
+sys.path.append(os.getcwd() + '/../src')
 
 from data_wrangling_functions import *
 
