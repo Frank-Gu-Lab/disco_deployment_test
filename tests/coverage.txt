@@ -1,0 +1,9 @@
+Name                                                                                                  Stmts   Miss  Cover
+-------------------------------------------------------------------------------------------------------------------------
+C:\Users\Jennifer Tramsu\Desktop\frank-gu-lab\disco-data-processing\src\data_analyze.py                  42     13    69%
+C:\Users\Jennifer Tramsu\Desktop\frank-gu-lab\disco-data-processing\src\data_merging.py                  95      1    99%
+C:\Users\Jennifer Tramsu\Desktop\frank-gu-lab\disco-data-processing\src\data_wrangling_functions.py     294     10    97%
+C:\Users\Jennifer Tramsu\Desktop\frank-gu-lab\disco-data-processing\src\data_wrangling_helpers.py       238      2    99%
+-------------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                                   669     26    96%
+

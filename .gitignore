@@ -7,4 +7,4 @@ __pycache__/
 output
 archive
 .pytest_cache
-coverage.txt
+.coverage
