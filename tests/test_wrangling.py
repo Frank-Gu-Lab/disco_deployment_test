@@ -11,10 +11,20 @@ sys.path.append(os.getcwd() + '/../src')
 from data_wrangling_functions import *
 from matplotlib.testing.compare import compare_images
 
-# global testng directories
+# global testing directories
 path = "./test-files/test_wrangling"
 input_path = path + "/input"
 expected_path = path + "/expected"
+
+@pytest.fixture(scope='function')
+def remove():
+    
+    output_dir = path + "/output"
+    os.mkdir(output_dir)
+    
+    yield output_dir
+    
+    shutil.rmtree(output_dir)
 
 class TestDataFrameConversion:
     """This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe."""
@@ -248,47 +258,18 @@ class TestAttenuation:
             raise add_attenuation(df)
             
         assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
+    
+    @pytest.mark.parametrize("filename", [f'/att_batch_subset_{i}.xlsx' for i in range(1, 5)])
+    def test_attenuation_batch_subset(self, filename):
+        ''' Checks whether a ValueError is raised when the sample_or_control, replicate, proton_peak_index, and sat_time values in the true and false irradiated dataframes do not match. '''
         
-    def test_attenuation_batch_subset1(self):
-        ''' Checks whether a ValueError is raised when the sample_or_control values in the true and false irradiated dataframes do not match. '''
-        
-        df = pd.read_excel(input_path + "/att_batch_subset_1.xlsx", index_col=0)
-
-        with pytest.raises(ValueError) as e:
-            raise add_attenuation(df, 'batch')
-            
-        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
-        
-    def test_attenuation_batch_subset2(self):
-        ''' Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match. '''
-       
-        df = pd.read_excel(input_path + "/att_batch_subset_2.xlsx", index_col=0)
+        df = pd.read_excel(input_path + filename, index_col=0)
         
         with pytest.raises(ValueError) as e:
             raise add_attenuation(df, 'batch')
             
         assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
-        
-    def test_attenuation_batch_subset3(self):
-        ''' Checks whether a ValueError is raised when the proton_peak_index values in the true and false irradiated dataframes do not match. '''
-       
-        df = pd.read_excel(input_path + "/att_batch_subset_3.xlsx", index_col=0)
-        
-        with pytest.raises(ValueError) as e:
-            raise add_attenuation(df, 'batch')
-            
-        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
-        
-    def test_attenuation_batch_subset4(self):
-        ''' Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match. '''
-       
-        df = pd.read_excel(input_path + "/att_batch_subset_4.xlsx", index_col=0)
-        
-        with pytest.raises(ValueError) as e:
-            raise add_attenuation(df, 'batch')
-            
-        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
-        
+                
     # testing assertions for add_corr_attenuation
     
     def test_corr_attenuation_diff_shape(self):
@@ -302,32 +283,10 @@ class TestAttenuation:
         
         assert e.match("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
-    def test_corr_attenuation_subset1(self):
-        ''' Checks whether a ValueError is raised when the replicate values in the true and false irradiated dataframes do not match. '''
+    @pytest.mark.parametrize("filename", [f'/att_book_true_subset{i}.xlsx' for i in range(1, 4)])
+    def test_corr_attenuation_subset(self, filename):
         
-        df_true = pd.read_excel(input_path + "/att_book_true_subset1.xlsx", index_col=0) # modified
-        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
-                
-        with pytest.raises(ValueError) as e:
-            raise add_corr_attenuation(df_true, df_false)
-        
-        assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
-
-    def test_corr_attenuation_subset2(self):
-        ''' Checks whether a ValueError is raised when the sat_time values in the true and false irradiated dataframes do not match. '''
-        
-        df_true = pd.read_excel(input_path + "/att_book_true_subset2.xlsx", index_col=0) # modified
-        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
-                
-        with pytest.raises(ValueError) as e:
-            raise add_corr_attenuation(df_true, df_false)
-        
-        assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
-
-    def test_corr_attenuation_subset3(self):
-        ''' Checks whether a ValueError is raised when the concentration values in the true and false irradiated dataframes do not match. '''
-        
-        df_true = pd.read_excel(input_path + "/att_book_true_subset3.xlsx", index_col=0) # modified
+        df_true = pd.read_excel(input_path + filename, index_col=0) # modified
         df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
                 
         with pytest.raises(ValueError) as e:
@@ -338,7 +297,7 @@ class TestAttenuation:
 class TestPlots:
     """ This class contains all the unit tests relating to the plot generation functions."""
     
-    def test_concentration(self):
+    def test_concentration(self, remove):
         """ Checks for whether the expected concentration plot is generated and removes the plot upon teardown.
         
         Notes
@@ -347,28 +306,19 @@ class TestPlots:
         """
         
         # SETUP
-        output_dir = path + "/output"
-        
-        os.mkdir(output_dir)
+        output_dir = remove
             
         current_df_title = "KHA"
         
-        try:
+        df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
+        generate_concentration_plot(df, output_dir, current_df_title)
         
-            df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
-            generate_concentration_plot(df, output_dir, current_df_title)
-            
-            actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
+        actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
 
-            msg = "The generated plot could not be found."
-            assert os.path.exists(actual), msg
-            
-        finally:
-            
-            # TEARDOWN
-            shutil.rmtree(output_dir)
-            
-    def test_ppm(self):
+        msg = "The generated plot could not be found."
+        assert os.path.exists(actual), msg
+    
+    def test_ppm(self, remove):
         """ Checks for whether the expected ppm plot is generated and removes the plot upon teardown.
         
         Notes
@@ -377,27 +327,18 @@ class TestPlots:
         """
          
         # SETUP
-        output_dir = path + "/output"
-        
-        os.mkdir(output_dir)
+        output_dir = remove
             
-        current_df_title = "KHA"
+        current_df_title = "KHA"        
+    
+        df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
+        generate_ppm_plot(df, output_dir, current_df_title)
         
-        try:
-        
-            df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
-            generate_ppm_plot(df, output_dir, current_df_title)
-            
-            actual = path + "/output/exploratory_ppm_plot_from_KHA.png"
+        actual = path + "/output/exploratory_ppm_plot_from_KHA.png"
 
-            msg = "The generated plot could not be found."
-            assert os.path.exists(actual), msg
-            
-        finally:
-            
-            # TEARDOWN
-            shutil.rmtree(output_dir)
- 
+        msg = "The generated plot could not be found."
+        assert os.path.exists(actual), msg
+    
 class TestPrep:
     """ This class contains all the unit tests relating to the prep functions. """
     
@@ -531,86 +472,69 @@ class TestAF:
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     
-    def test_drop_peaks_book(self):
+    def test_drop_peaks_book(self, remove):
         """ Checks whether the expected peaks were dropped and removes any generated files upon teardown. """
         
         # SETUP
-        output_dir = path + "/output"
+        output_dir = remove
         df_title = "KHA"
         
-        os.mkdir(output_dir)
-        
-        try:
-            
-            # Preserve multi-index when reading in Excel file
-            df_mean = pd.read_excel(input_path + "/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            df_mean_other = pd.read_excel(input_path + "/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        # Preserve multi-index when reading in Excel file
+        df_mean = pd.read_excel(input_path + "/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        df_mean_other = pd.read_excel(input_path + "/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+        mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
-            df_replicates = pd.read_excel(input_path + "/drop_replicates_peaks_book_input.xlsx", index_col=0)
-            
-            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
-            
-            # Preserve multi-index when reading in Excel file
-            expected_mean_left = pd.read_excel(expected_path + "/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            expected_mean_right = pd.read_excel(expected_path + "/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-  
-            expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_book_output.xlsx", index_col=0)
+        df_replicates = pd.read_excel(input_path + "/drop_replicates_peaks_book_input.xlsx", index_col=0)
+        
+        actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
+        
+        # Preserve multi-index when reading in Excel file
+        expected_mean_left = pd.read_excel(expected_path + "/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        expected_mean_right = pd.read_excel(expected_path + "/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
-            pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
-            
-            pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
+        expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_book_output.xlsx", index_col=0)
+
+        pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
         
-        finally:
-            
-            # TEARDOWN
-            shutil.rmtree(output_dir)
+        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
         
-    def test_drop_peaks_batch(self):     
+    def test_drop_peaks_batch(self, remove):     
         
         # SETUP
-        output_dir = path + "/output" 
+        output_dir = remove
         
         df_title = "CMC"
         
-        os.mkdir(output_dir)
-            
-        try:
-   
-            # Preserve multi-index when reading in Excel file
-            df_mean = pd.read_excel(input_path + "/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-            df_mean_other = pd.read_excel(input_path + "/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+        # Preserve multi-index when reading in Excel file
+        df_mean = pd.read_excel(input_path + "/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+        df_mean_other = pd.read_excel(input_path + "/drop_mean_peaks_batch_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+        df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+        mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
-            df_replicates = pd.read_excel(input_path + "/drop_replicates_peaks_batch_input.xlsx", index_col=0)
-            
-            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir, 'batch')
-            
-            # Preserve multi-index when reading in Excel file
-            expected_mean_left = pd.read_excel(expected_path + "/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-            expected_mean_right = pd.read_excel(expected_path + "/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-  
-            expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_batch_output.xlsx", index_col=0)
-
-            pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
-            
-            pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
+        df_replicates = pd.read_excel(input_path + "/drop_replicates_peaks_batch_input.xlsx", index_col=0)
         
-        finally:
-            
-            # TEARDOWN
-            shutil.rmtree(output_dir)
+        actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir, 'batch')
+        
+        # Preserve multi-index when reading in Excel file
+        expected_mean_left = pd.read_excel(expected_path + "/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+        expected_mean_right = pd.read_excel(expected_path + "/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
+        expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_batch_output.xlsx", index_col=0)
+
+        pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
+        
+        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
+
+# shorten
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     
-    def test_curvefit_batch(self):
+    def test_curvefit_batch(self, remove):
         """ Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.
         
         Notes
@@ -619,93 +543,86 @@ class TestCurveFit:
         """
         
         # SETUP
+        output_dir = remove
         df_title = "CMC"
-        output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
-        output_table = "{}/output/data_tables_from_{}".format(path, df_title)
+        output_curve = "{}/curve_fit_plots_from_{}".format(output_dir, df_title)
+        output_table = "{}/data_tables_from_{}".format(output_dir, df_title)
         
-        os.mkdir(path + "/output")
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
-        try:
-
-            # Preserve multi-index when reading in Excel file
-            df_mean_left = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-            df_mean_right = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-            df_mean_right.columns = pd.MultiIndex.from_product([df_mean_right.columns, ['']])
-            df_mean = pd.merge(df_mean_left, df_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-                    
-            df_replicates = pd.read_excel(input_path + "/batch_curve_replicate_input.xlsx", index_col=0)
-            
-            actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
-            
-            # Preserve multi-index when reading in Excel file
-            expected_mean_left = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-            expected_mean_right = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-
-            expected_replicates = pd.read_excel(expected_path + "/batch_curve_replicate_output.xlsx", index_col=0)
+        # Preserve multi-index when reading in Excel file
+        df_mean_left = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+        df_mean_right = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+        df_mean_right.columns = pd.MultiIndex.from_product([df_mean_right.columns, ['']])
+        df_mean = pd.merge(df_mean_left, df_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+                
+        df_replicates = pd.read_excel(input_path + "/batch_curve_replicate_input.xlsx", index_col=0)
         
-            pd.testing.assert_frame_equal(df_mean, expected_mean, rtol=1e-3)
-            pd.testing.assert_frame_equal(df_replicates, expected_replicates, rtol=1e-3)
-
-            # check if the same plots are generated (can only compare filepath/name)
-
-            actual_curve = glob.glob(output_curve + "/*")
-            actual_table = glob.glob(output_table + "/*")
-            
-            expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_CMC/*")
-            expected_table = glob.glob(expected_path + "/data_tables_from_CMC/*")
-            
-            if len(actual_curve) != len(expected_curve):
-                assert len(actual_curve) == len(expected_curve)
-            
-            if len(actual_table) != len(expected_table):
-                assert len(actual_table) == len(expected_table)
-            
-            for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
-                #actual_curve[i] = os.path.basename(actual_curve[i])
-                #expected_curve[i] = os.path.basename(expected_curve[i])
-                
-                #assert actual_curve[i] == expected_curve[i]
-                msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
-                assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
-            
-            for i in range(len(actual_table)):
-                if "mean" in actual_table[i] and "mean" in expected_table[i]:
-                    
-                    # Preserve multi-index when reading in Excel file
-                    df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-                    df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-                    df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-                    actual = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-
-                    # Preserve multi-index when reading in Excel file
-                    expected_mean_left = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-                    expected_mean_right = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-                    expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-                    expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+        actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
         
-                    pd.testing.assert_frame_equal(actual, expected, rtol=1e-3)
-                            
-                elif "replicate" in actual_table[i] and "replicate" in expected_table[i]:
-                    actual_table[i] = pd.read_excel(actual_table[i], index_col=0)
-                    expected_table[i] = pd.read_excel(expected_table[i], index_col=0)
-                
-                    pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
-                    
-                else:
-                    
-                    msg4 = "Not all data tables were generated and exported."
-                    assert False, msg4
-                
-        finally:
-            
-            # TEARDOWN
-            shutil.rmtree(path + "/output")
+        # Preserve multi-index when reading in Excel file
+        expected_mean_left = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+        expected_mean_right = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+        expected_replicates = pd.read_excel(expected_path + "/batch_curve_replicate_output.xlsx", index_col=0)
     
-    def test_curvefit_book(self):  
+        pd.testing.assert_frame_equal(df_mean, expected_mean, rtol=1e-3)
+        pd.testing.assert_frame_equal(df_replicates, expected_replicates, rtol=1e-3)
+
+        # check if the same plots are generated (can only compare filepath/name)
+
+        actual_curve = glob.glob(output_curve + "/*")
+        actual_table = glob.glob(output_table + "/*")
+        
+        expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_CMC/*")
+        expected_table = glob.glob(expected_path + "/data_tables_from_CMC/*")
+        
+        if len(actual_curve) != len(expected_curve):
+            assert len(actual_curve) == len(expected_curve)
+        
+        if len(actual_table) != len(expected_table):
+            assert len(actual_table) == len(expected_table)
+        
+        for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
+            #actual_curve[i] = os.path.basename(actual_curve[i])
+            #expected_curve[i] = os.path.basename(expected_curve[i])
+            
+            #assert actual_curve[i] == expected_curve[i]
+            msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
+            assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
+        
+        for i in range(len(actual_table)):
+            if "mean" in actual_table[i] and "mean" in expected_table[i]:
+                
+                # Preserve multi-index when reading in Excel file
+                df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+                actual = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+                # Preserve multi-index when reading in Excel file
+                expected_mean_left = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                expected_mean_right = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+                expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+    
+                pd.testing.assert_frame_equal(actual, expected, rtol=1e-3)
+                        
+            elif "replicate" in actual_table[i] and "replicate" in expected_table[i]:
+                actual_table[i] = pd.read_excel(actual_table[i], index_col=0)
+                expected_table[i] = pd.read_excel(expected_table[i], index_col=0)
+            
+                pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
+                
+            else:
+                
+                msg4 = "Not all data tables were generated and exported."
+                assert False, msg4
+    
+    def test_curvefit_book(self, remove):  
         """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
         
         Notes
@@ -715,90 +632,83 @@ class TestCurveFit:
         """
         
         # SETUP
+        output_dir = remove
         df_title = "KHA"
-        output_curve = "{}/output/curve_fit_plots_from_{}".format(path, df_title)
-        output_table = "{}/output/data_tables_from_{}".format(path, df_title)
+        output_curve = "{}/curve_fit_plots_from_{}".format(output_dir, df_title)
+        output_table = "{}/data_tables_from_{}".format(output_dir, df_title)
         
-        os.mkdir(path + "/output")
         os.mkdir(output_curve)
         os.mkdir(output_table)
+ 
+        # Preserve multi-index when reading in Excel file
+        df_mean = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        df_mean_other = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+        mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
         
-        try:
-            
-            # Preserve multi-index when reading in Excel file
-            df_mean = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            df_mean_other = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-            
-            df_replicates = pd.read_excel(input_path + "/book_replicates_input.xlsx", index_col=0)
-            
-            actual_mean, actual_replicates = execute_curvefit(mean, df_replicates, output_curve, output_table, df_title)
-            
-            # Preserve multi-index when reading in Excel file
-            expected_mean_left = pd.read_excel(expected_path + "/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            expected_mean_right = pd.read_excel(expected_path + "/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-            expected_replicates = pd.read_excel(expected_path + "/book_replicatescurve.xlsx", index_col=0)
-
-            pd.testing.assert_frame_equal(actual_mean, expected_mean, rtol=1e-3)
-            pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
-            
-            # check if the same plots are generated (can only compare filepath/name)
-
-            actual_curve = glob.glob(output_curve + "/*")
-            actual_table = glob.glob(output_table + "/*")
-            
-            expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_KHA/*")
-            expected_table = glob.glob(expected_path + "/data_tables_from_KHA/*")
-            
-            if len(actual_curve) != len(expected_curve):
-                msg1 = "Not all curve plots were generated."
-                assert len(actual_curve) == len(expected_curve), msg1
-            
-            if len(actual_table) != len(expected_table):
-                msg2 = "Not all data tables were generated."
-                assert len(actual_table) == len(expected_table), msg2
-            
-            for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
-                #actual_curve[i] = os.path.basename(actual_curve[i])
-                #expected_curve[i] = os.path.basename(expected_curve[i])
-                
-                #assert actual_curve[i] == expected_curve[i]
-                msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
-                assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
-            
-            for i in range(len(actual_table)):
-                if "mean" in actual_table[i] and "mean" in expected_table[i]:
-                    
-                    # Preserve multi-index when reading in Excel file
-                    df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                    df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                    df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-                    actual = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-                    # Preserve multi-index when reading in Excel file
-                    expected_mean_left = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                    expected_mean_right = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                    expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-                    expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        df_replicates = pd.read_excel(input_path + "/book_replicates_input.xlsx", index_col=0)
         
-                    pd.testing.assert_frame_equal(actual, expected, rtol=1e-3)
-                            
-                elif "replicate" in actual_table[i] and "replicate" in expected_table[i]:
-                    actual_table[i] = pd.read_excel(actual_table[i], index_col=0)
-                    expected_table[i] = pd.read_excel(expected_table[i], index_col=0)
-                
-                    pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
-                    
-                else:
-                    
-                    msg4 = "Not all data tables were generated and exported."
-                    assert False, msg4
+        actual_mean, actual_replicates = execute_curvefit(mean, df_replicates, output_curve, output_table, df_title)
+        
+        # Preserve multi-index when reading in Excel file
+        expected_mean_left = pd.read_excel(expected_path + "/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+        expected_mean_right = pd.read_excel(expected_path + "/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
-        finally:
+        expected_replicates = pd.read_excel(expected_path + "/book_replicatescurve.xlsx", index_col=0)
+
+        pd.testing.assert_frame_equal(actual_mean, expected_mean, rtol=1e-3)
+        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
+        
+        # check if the same plots are generated (can only compare filepath/name)
+
+        actual_curve = glob.glob(output_curve + "/*")
+        actual_table = glob.glob(output_table + "/*")
+        
+        expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_KHA/*")
+        expected_table = glob.glob(expected_path + "/data_tables_from_KHA/*")
+        
+        if len(actual_curve) != len(expected_curve):
+            msg1 = "Not all curve plots were generated."
+            assert len(actual_curve) == len(expected_curve), msg1
+        
+        if len(actual_table) != len(expected_table):
+            msg2 = "Not all data tables were generated."
+            assert len(actual_table) == len(expected_table), msg2
+        
+        for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
+            #actual_curve[i] = os.path.basename(actual_curve[i])
+            #expected_curve[i] = os.path.basename(expected_curve[i])
             
-            # TEARDOWN
-            shutil.rmtree(path + "/output")        
+            #assert actual_curve[i] == expected_curve[i]
+            msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
+            assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
+        
+        for i in range(len(actual_table)):
+            if "mean" in actual_table[i] and "mean" in expected_table[i]:
+                
+                # Preserve multi-index when reading in Excel file
+                df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
+                actual = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+
+                # Preserve multi-index when reading in Excel file
+                expected_mean_left = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                expected_mean_right = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+                expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+    
+                pd.testing.assert_frame_equal(actual, expected, rtol=1e-3)
+                        
+            elif "replicate" in actual_table[i] and "replicate" in expected_table[i]:
+                actual_table[i] = pd.read_excel(actual_table[i], index_col=0)
+                expected_table[i] = pd.read_excel(expected_table[i], index_col=0)
+            
+                pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
+                
+            else:
+                
+                msg4 = "Not all data tables were generated and exported."
+                assert False, msg4
