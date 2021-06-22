@@ -194,7 +194,7 @@ class TestMerge:
         #SETUP
         src_path = merge_path + "/input/KHA/data_tables_from_KHA"
         dst_path = remove
-
+    
         actual = merge(src_path, dst_path)
         
         expected = pd.read_excel(merge_path + "/expected/merge_book_output.xlsx", index_col=0)
@@ -224,4 +224,4 @@ class TestMerge:
         expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
 
         pd.testing.assert_frame_equal(actual, expected, check_dtype=False, check_exact=True)
-              
+                   

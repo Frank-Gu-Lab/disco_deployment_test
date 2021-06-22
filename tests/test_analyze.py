@@ -20,7 +20,7 @@ def remove():
     yield output_dir
     
     shutil.rmtree(output_dir)
-    
+
 class TestGenerateDirectory:
     """ This class contains all the unit tests relating to the function generate_directories."""
     
@@ -39,7 +39,8 @@ class TestGenerateDirectory:
         assert os.path.exists(output_directory_curve)
         assert os.path.exists(output_directory_exploratory)
         assert os.path.exists(output_directory_tables)
-            
+
+# mocking?
 class TestModelling:
     """This class contains all the unit tests relating to the function modelling()."""
     

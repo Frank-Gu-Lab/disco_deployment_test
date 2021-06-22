@@ -56,8 +56,8 @@ class TestDataFrameConversion:
             name = f"sheet_{i}"
             expected_df = pd.read_excel(expected_path + "/batch_to_dataframe/" + name + ".xlsx", index_col=0)
             pd.testing.assert_frame_equal(actual[i][1], expected_df, check_dtype=False, check_exact=True)
-            
-    def test_book(self):
+
+    def test_book_mock(self):
         """ Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
         excel sheet is removed during teardown.
         
@@ -78,9 +78,8 @@ class TestDataFrameConversion:
         msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
         assert actual_title == expected_title, msg
         pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
-   
-    # testing assertions for book_to_dataframe
-   
+
+    # testing assertions
     def test_book_unequal(self):
         ''' Checks whether a ValueError is raised when the number of samples and controls do not match. '''
         
@@ -132,36 +131,54 @@ class TestCleanBatch:
             expected_df = pd.read_excel(output_list[i], index_col=0)
             pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
 
+class TestExport:
+    
+    def test_export_book(self, remove):
+        
+        name = 'test'
+        df = pd.DataFrame({'a':1, 'b':2}, index=['a','b'])
+        output_dir = remove
+        
+        export_clean_books(name, df, output_dir)
+        
+        assert os.path.isfile(output_dir + "/" + name + "/" + "test_clean_raw_df.xlsx"), "Exported file could not be found."
+        
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
     
-    def test_add_attenuation_batch(self):
+    def test_add_attenuation_batch(self, mocker):
         """ Checks for expected attenuation calculations applied in the batch path.
         
         Notes
         -----
         Equality checking uses a relative tolerance of 1e-5.
+        The function attenuation_calc_equality_checker is mocked to return True.
         """
         
         df = pd.read_excel(input_path + "/att_batch_input.xlsx", index_col=0)
            
+        mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
+        
         actual_true, actual_false = add_attenuation(df, 'batch')
         
         expected_true = pd.read_excel(expected_path + "/att_batch_true_output.xlsx", index_col=0)
         expected_false = pd.read_excel(expected_path + "/att_batch_false_output.xlsx", index_col=0)
-        
+                
         pd.testing.assert_frame_equal(actual_true, expected_true)
         pd.testing.assert_frame_equal(actual_false, expected_false)
     
-    def test_add_attenuation_book(self):
+    def test_add_attenuation_book(self, mocker):
         """ Checks for expected attenuation calculations applied in the book path.
         
         Notes
         -----
         Equality checking uses a relative tolerance of 1e-5.
+        The function attenuation_calc_equality_checker is mocked to return True.
         """
-        
+
         df = pd.read_excel(input_path + "/att_book_input.xlsx", index_col=0)
+        
+        mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
         
         actual_true, actual_false = add_attenuation(df)
         expected_true = pd.read_excel(expected_path + "/att_book_true.xlsx", index_col=0)
@@ -169,68 +186,40 @@ class TestAttenuation:
         
         pd.testing.assert_frame_equal(actual_true, expected_true)
         pd.testing.assert_frame_equal(actual_false, expected_false)
-    
-    def test_add_both_att_batch(self):
-        """ Checks for expected attenuation and corrected attenuation calculations applied in the batch path.
-        
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-5.
-        """
-        
-        df = pd.read_excel(input_path + "/att_batch_input.xlsx", index_col=0)
-           
-        actual_true, actual_false = add_attenuation(df, 'batch')
-        actual = add_corr_attenuation(actual_true, actual_false, 'batch')
-        
-        expected = pd.read_excel(expected_path + "/corr_att_batch_output.xlsx", index_col=0)
-        
-        pd.testing.assert_frame_equal(actual, expected)
-    
-    def test_add_both_att_book(self):
-        """ Checks for expected attenuation and corrected attenuation calculations applied in the book path.
-        
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-5.
-        """
-        
-        df = pd.read_excel(input_path + "/att_book_input.xlsx", index_col=0)
-        
-        actual_true, actual_false = add_attenuation(df)
-        actual = add_corr_attenuation(actual_true, actual_false)
-        
-        expected = pd.read_excel(expected_path + "/corr_att_book.xlsx", index_col=0)
-        
-        pd.testing.assert_frame_equal(actual, expected)
-
-    def test_add_corr_attenuation_batch(self):
+            
+    def test_add_corr_attenuation_batch(self, mocker):
         """ Checks for expected corrected attenuation calculations applied in the batch path.
         
         Notes
         -----
         Equality checking uses a relative tolerance of 1e-5.
+        The function corrected_attenuation_calc_equality_checker is mocked to return True.
         """  
         
         df_true = pd.read_excel(input_path + "/corr_att_batch_true_input.xlsx", index_col=0)
         df_false = pd.read_excel(input_path + "/corr_att_batch_false_input.xlsx", index_col=0)
         
+        mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
+               
         actual = add_corr_attenuation(df_true, df_false, 'batch')
         expected = pd.read_excel(expected_path + "/corr_att_batch_output.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
     
-    def test_add_corr_attenuation_book(self):
+    def test_add_corr_attenuation_book(self, mocker):
         """ Checks for expected corrected attenuation calculations applied in the book path.
         
         Notes
         -----
         Equality checking uses a relative tolerance of 1e-5.
+        The function attenuation_calc_equality_checker is mocked to return True.
         """
         
         df_true = pd.read_excel(input_path + "/att_book_true.xlsx", index_col=0)
         df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0)
-           
+        
+        mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
+        
         actual = add_corr_attenuation(df_true, df_false)
         expected = pd.read_excel(expected_path + "/corr_att_book.xlsx", index_col=0)
         
@@ -533,7 +522,7 @@ class TestDropBadPeaks:
 # shorten
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
-    
+    # can split to check for figures separately from df modification
     def test_curvefit_batch(self, remove):
         """ Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.
         
@@ -621,6 +610,8 @@ class TestCurveFit:
                 
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
+    
+    #def test_curvefit_batch_figures(self, remove):
     
     def test_curvefit_book(self, remove):  
         """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
@@ -712,3 +703,7 @@ class TestCurveFit:
                 
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
+
+    #def test_curvefit_book_figures(self, remove):
+        
+        

@@ -155,7 +155,7 @@ class TestCount:
         # CHECKING SAMPLE AND CONTROL INITIALIZER
         expected_sample_control = []
         
-        with open(input_path + "/sample_control.txt") as file:
+        with open(expected_path + "/sample_control.txt") as file:
             for line in file.readlines():
                 expected_sample_control.append(line.rstrip())
                 
@@ -165,7 +165,7 @@ class TestCount:
         # CHECKING SAMPLE REPLICATE INDICES
         expected_sample_replicate = []
 
-        with open(input_path + "/sample_replicate.txt") as file:
+        with open(expected_path + "/sample_replicate.txt") as file:
             for line in file.readlines():
                 expected_sample_replicate.append(int(line.rstrip()))
                 
@@ -175,7 +175,7 @@ class TestCount:
         # CHECKING CONTROL REPLICATE INDICES
         expected_control_replicate = []
         
-        with open(input_path + "/control_replicate.txt") as file:
+        with open(expected_path + "/control_replicate.txt") as file:
             for line in file.readlines():
                 expected_control_replicate.append(int(line.rstrip()))
                 
