@@ -45,3 +45,32 @@ Simply run the disco-data-processing.py file after preparing the input as descri
 <h3><b> Results </b></h3>
 The ultimate merged dataset will be available ("merged_binding_dataset.xlsx") as an Excel file in output/merged. 
 
+## Unit Tests
+<h3><b> Running Pytest </b></h3>
+Currently, dependencies are not packaged and rely on relative import statements. To ensure that relative paths are correct, unit tests must be run from within the tests module.
+To run all tests:
+
+<html>
+  <head>
+   
+    python pytest
+   
+</html>
+
+ To run a specific module:
+ 
+<html>
+  <head>
+   
+    python pytest <<module.py>>
+   
+</html>
+
+To run a specific class/function (substring matching, regex):
+ 
+<html>
+  <head>
+   
+    python pytest -k "class_name or function_name"
+   
+</html>
