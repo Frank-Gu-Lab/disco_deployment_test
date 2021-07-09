@@ -29,7 +29,7 @@ def remove():
 class TestDataFrameConversion:
     """This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe."""
     
-    def test_batch(self):
+    def test_batch(self, mocker):
         """Testing overall functionality. Takes in a batch Excel sheet and converts each sheet into a dataframe, returning a tuple of the form
         (df_name, df).
         
@@ -39,9 +39,24 @@ class TestDataFrameConversion:
         """
         
         batch = input_path + "/batch_to_dataframe_input.xlsx"
+        """        
+        def mock_wrangle():
+            df_names = open(expected_path + "/wrangle_batch_output.txt").readlines()
+            df_names = [l.rstrip() for l in df_names]
+            
+            dfs = sorted(glob.glob(expected_path + "/wrangle_batch_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order 
+            dfs = [pd.read_excel(df, index_col=0) for df in dfs]
+            
+            actual = []
+            
+            for i in range(len(df_names)):
+                actual.append((df_names[i], dfs[i]))
+                
+            return actual
         
+        mocker.patch("data_wrangling_functions.wrangle_batch", return_value=actual)
+        """
         # loop through names and assert equality of dataframes
-        
         actual = batch_to_dataframe(batch)
         file = open(expected_path + "/batch_to_dataframe_output.txt")
         
@@ -57,9 +72,8 @@ class TestDataFrameConversion:
             expected_df = pd.read_excel(expected_path + "/batch_to_dataframe/" + name + ".xlsx", index_col=0)
             pd.testing.assert_frame_equal(actual[i][1], expected_df, check_dtype=False, check_exact=True)
 
-    def test_book_mock(self):
-        """ Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe. The created 
-        excel sheet is removed during teardown.
+    def test_book(self):
+        """ Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe.
         
         Notes
         -----
@@ -78,20 +92,85 @@ class TestDataFrameConversion:
         msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
         assert actual_title == expected_title, msg
         pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
-
-    # testing assertions
-    def test_book_unequal(self):
-        ''' Checks whether a ValueError is raised when the number of samples and controls do not match. '''
+   
+    def test_book_mock(self, mocker):
+        """ Testing book_to_dataframe independent of its dependencies. Takes in a book Excel sheet and converts it into a dataframe.
         
-        book = input_path + "/KHA_modified.xlsx" # Control (2) deleted
+        Notes
+        -----
+        The equality check ignores datatype matching.
+        The functions count_sheets and wrangle_book are mocked to isolate behaviour.
+        """
+
+        book = input_path + "/KHA.xlsx"
+        
+        def return_mock_count():
+            
+            num_samples = 3
+            num_controls = 3
+            
+            sample_control_initializer = ['sample', 'sample', 'sample', 'control', 'control', 'control']
+
+            sample_replicate_initializer = [1, 2, 3]
+            
+            control_replicate_initializer = [1, 2, 3]
+                    
+            return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
+
+        def return_mock_wrangle():
+            
+            dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
+            dfs = [pd.read_excel(df, index_col=0) for df in dfs]
+            
+            return dfs
+        
+        mock_count = mocker.patch("data_wrangling_functions.count_sheets", return_value=return_mock_count())
+        mock_wrangle = mocker.patch("data_wrangling_functions.wrangle_book", return_value=return_mock_wrangle())
+        
+        actual = book_to_dataframe(book)
+        actual_title = actual[0]
+        actual_df = actual[1]
+        
+        expected_title = "KHA"
+        expected_df = pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0)
+        
+        msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
+        assert actual_title == expected_title, msg
+        pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
+    
+    # testing assertions for book_to_dataframe
+    def test_book_unequal(self, mocker):
+        ''' Checks whether a ValueError is raised when the number of samples and controls do not match. 
+        
+        Notes
+        -----
+        Mocker modifies the output for count_sheets from num_controls = 3 to num_controls = 2.
+        '''
+        
+        book = input_path + "/KHA.xlsx"
+        
+        def return_mock_count():
+            
+            num_samples = 3
+            num_controls = 2
+            
+            sample_control_initializer = ['sample', 'sample', 'sample', 'control', 'control', 'control']
+
+            sample_replicate_initializer = [1, 2, 3]
+            
+            control_replicate_initializer = [1, 2, 3]
+                    
+            return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
+
+        mocker.patch("data_wrangling_functions.count_sheets", return_value=return_mock_count())
         
         with pytest.raises(ValueError) as e:
-            raise book_to_dataframe(book)
+            book_to_dataframe(book)
         
         assert e.match('ERROR: The number of sample sheets is not equal to the number of control sheets in {} please confirm the data in the book is correct.'.format(book))
                 
 class TestCleanBatch:
-    """ This class contains all the unit tests relating ti the function test_clean_batch_list. """
+    """ This class contains all the unit tests relating to the function test_clean_batch_list. """
     
     def test_clean_batch_list(self):
         """ This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results. 
@@ -142,7 +221,8 @@ class TestExport:
         export_clean_books(name, df, output_dir)
         
         assert os.path.isfile(output_dir + "/" + name + "/" + "test_clean_raw_df.xlsx"), "Exported file could not be found."
-        
+
+# separate assertions from equality checkers   
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
     
@@ -234,7 +314,7 @@ class TestAttenuation:
         df = pd.read_excel(input_path + "/att_diff_shape_input.xlsx", index_col=0) # last seven rows removed
         
         with pytest.raises(ValueError) as e:
-            raise add_attenuation(df)
+            add_attenuation(df)
         
         assert e.match("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
 
@@ -244,7 +324,7 @@ class TestAttenuation:
         df = pd.read_excel(input_path + "/att_book_subset_wrong.xlsx", index_col=0)
         
         with pytest.raises(ValueError) as e:
-            raise add_attenuation(df)
+            add_attenuation(df)
             
         assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
     
@@ -255,7 +335,7 @@ class TestAttenuation:
         df = pd.read_excel(input_path + filename, index_col=0)
         
         with pytest.raises(ValueError) as e:
-            raise add_attenuation(df, 'batch')
+            add_attenuation(df, 'batch')
             
         assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
                 
@@ -268,7 +348,7 @@ class TestAttenuation:
         df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
         
         with pytest.raises(ValueError) as e:
-            raise add_corr_attenuation(df_true, df_false)
+            add_corr_attenuation(df_true, df_false)
         
         assert e.match("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
 
@@ -279,7 +359,7 @@ class TestAttenuation:
         df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
                 
         with pytest.raises(ValueError) as e:
-            raise add_corr_attenuation(df_true, df_false)
+            add_corr_attenuation(df_true, df_false)
         
         assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
 
@@ -705,5 +785,4 @@ class TestCurveFit:
                 assert False, msg4
 
     #def test_curvefit_book_figures(self, remove):
-        
         

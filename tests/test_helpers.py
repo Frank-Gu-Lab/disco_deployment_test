@@ -79,7 +79,7 @@ class TestWrangle:
         replicate_index = open(input_path + "/wrangle_batch_index.txt").readlines()
         replicate_index = [int(l.rstrip()) for l in replicate_index]
         
-        df_list = wrangle_batch(b, name_sheets, replicate_index)
+        actual = wrangle_batch(b, name_sheets, replicate_index)
         
         df_names = open(expected_path + "/wrangle_batch_output.txt").readlines()
         df_names = [l.rstrip() for l in df_names]
@@ -87,19 +87,23 @@ class TestWrangle:
         dfs = sorted(glob.glob(expected_path + "/wrangle_batch_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order 
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
         
-        actual = []
+        expected = []
         
         for i in range(len(df_names)):
-            actual.append((df_names[i], dfs[i]))
+            expected.append((df_names[i], dfs[i]))
             
-        msg1 = "Too many or too few dataframes appended to output list."
-        assert len(df_list) == len(actual), msg1
+        if len(actual) < len(expected):
+            msg1 = "Not enough dataframes appended to output list."
+        else:
+            msg1 = "Too many dataframes appended to output list."
+
+        assert len(actual) == len(expected), msg1
         
-        for i in range(len(df_list)):
-            msg2 = "Actual title of dataframe: {}\nExpected title of dataframe: {}".format(df_list[i][0], actual[i][0])
-            assert df_list[i][0] == actual[i][0], msg2
-            pd.testing.assert_frame_equal(df_list[i][1], actual[i][1], check_dtype=False, check_exact=True)
-        
+        for i in range(len(actual)):
+            msg2 = "Actual title of dataframe: {}\nExpected title of dataframe: {}".format(actual[i][0], expected[i][0])
+            assert actual[i][0] == expected[i][0], msg2
+            pd.testing.assert_frame_equal(actual[i][1], expected[i][1], check_dtype=False, check_exact=True)
+     
     def test_wrangle_book(self):
         """ As part of book initialization, checks for whether the expected dataframes from an Excel book are returned in list format.
         
@@ -119,17 +123,21 @@ class TestWrangle:
         replicate_index = open(input_path + "/wrangle_book_index.txt").readlines()
         replicate_index = [int(l.rstrip()) for l in replicate_index]
         
-        df_list = wrangle_book(b, name_sheets, sample_control, replicate_index)
+        actual = wrangle_book(b, name_sheets, sample_control, replicate_index)
         
         dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
         
-        msg1 = "Too many or too few dataframes appended to output list."
-        assert len(df_list) == len(dfs), msg1
+        if len(actual) > len(dfs):
+            msg1 = "Too many dataframes appended to output list."
+        else:
+            msg1 = "Too few dataframes appended to output list."
+            
+        assert len(actual) == len(dfs), msg1
         
-        for i in range(len(df_list)):
-            pd.testing.assert_frame_equal(df_list[i], dfs[i], check_dtype=False, check_exact=True)
-
+        for i in range(len(actual)):
+            pd.testing.assert_frame_equal(actual[i], dfs[i], check_dtype=False, check_exact=True)
+        
 class TestCount:
     """ This class contains all the unit tests related to the helper function count_sheets."""
     
@@ -182,6 +190,8 @@ class TestCount:
         msg5 = "Control replicate indices are not ordered as expected."
         assert control_replicate_initializer == expected_control_replicate, msg5
 
+    #def test_count_modified(self):
+        
 class TestEqualityChecker:
     """ This class contains all the unit tests related to the attenuation equality checkers."""
     

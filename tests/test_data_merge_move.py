@@ -182,6 +182,7 @@ class TestJoin:
 class TestMerge:
     """This class contains all the unit tests relating to the merge function."""
     
+    # change to test for assertions, no need to test general functionality bc those are dependent on dependencies
     def test_merge_book(self, remove):
         """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
         sheets together into one Dataframe.

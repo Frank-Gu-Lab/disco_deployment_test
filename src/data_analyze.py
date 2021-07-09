@@ -59,8 +59,8 @@ def generate_directories(current_df_title, global_output_directory):
         
     return output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory
 
-def modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = 'book'):
-    """This function outlines the full data-modelling procedure for the inputted dataframe.
+def modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = 'book'):
+    """This function outlines the full data-modeling procedure for the inputted dataframe.
     
     Parameters
     ----------
@@ -117,7 +117,7 @@ def modelling_data(current_df_attenuation, current_df_title, output_directory, o
     return current_df_mean, current_df_replicates
 
 def analyze_data(tuple_list, global_output_directory, batch_or_book = 'book'):
-        """This function outlines the full data visualization and modelling processing for a list of dataframes. 
+        """This function outlines the full data visualization and modeling processing for a list of dataframes. 
         
         Parameters
         ----------
@@ -163,6 +163,6 @@ def analyze_data(tuple_list, global_output_directory, batch_or_book = 'book'):
 
             # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
 
-            current_df_mean, current_df_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book)
+            current_df_mean, current_df_replicates = modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book)
             
             print("All activities are now completed for: {}".format(current_df_title))

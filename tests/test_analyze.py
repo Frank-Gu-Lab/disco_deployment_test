@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest 
 import os
 import sys
@@ -8,7 +9,7 @@ sys.path.append(os.getcwd() + '/../src')
 
 from data_analyze import *
 
-# global testng directories
+# global testing directories
 path = "./test-files/test_analyze"
 
 @pytest.fixture(scope='function')
@@ -40,79 +41,90 @@ class TestGenerateDirectory:
         assert os.path.exists(output_directory_exploratory)
         assert os.path.exists(output_directory_tables)
 
-# mocking?
-class TestModelling:
-    """This class contains all the unit tests relating to the function modelling()."""
+# mock all dependencies, simply check if they are called
+class TestModeling:
+    """This class contains all the unit tests relating to the function modeling_data."""
     
-    def test_modelling_book(self, remove):
-        """ This function tests for overall functionality. Taking in a dataframe, its title, and associated custom directories, this function
-        implements a non-linear curve-fitting process on the dataframe and appends it as a new column, returned as the output. All created directories, plots, and 
-        intermediate dataframes are removed upon teardown. Tests for 'book' path.
+    @pytest.mark.parametrize('path', ['book', 'batch'])
+    def test_modeling_book(self, remove, path, mocker):
+        ''' As modeling_data is not a pure function, these unit tests simply check whether the expected dependencies are called. Pytest parametrize tests for both book and batch paths.
         
         Notes
         -----
-        Ideally, test should be independent of nested functions. Try to incorporate mocking.
-        Equality checking uses a relative tolerance of 1e-3, and ignores datatype matching.
-        """
+        Mocked dependencies were given specified return values. These return values are simply a placeholder to maintain functionality and are not the actual 
+        outputs of each dependency (should already have a separate unit test).
+        '''
         
-        # SETUP
-        current_df_title = "KHA"
-        output_directory = remove + "/KHA"
-        output_directory_curve = output_directory + "/curve_fit_plots_from_KHA"
-        output_directory_tables = output_directory + "/exploratory_plots_from_KHA"
+        df = pd.DataFrame({1:1, 2:2}, index=(1, 2))
+        df_title = "Mock"
+        global_output_directory = remove
+        output_directory = global_output_directory + "/Mock"
+        output_directory_curve = output_directory + "/Curve" 
+        output_directory_tables = output_directory + "/Table"
         
-        os.mkdir(output_directory)
-        os.mkdir(output_directory_curve)
-        os.mkdir(output_directory_tables)
+        dirs = [output_directory, output_directory_curve, output_directory_tables]
+        
+        for d in dirs:
+            os.mkdir(d)
+        
+        mock1 = mocker.patch("data_analyze.prep_mean")
+        mock2 = mocker.patch("data_analyze.prep_replicate")
+        mock3 = mocker.patch("data_analyze.t_test")
+        mock4 = mocker.patch("data_analyze.compute_af", return_value=(df, df))
+        mock5 = mocker.patch("data_analyze.drop_bad_peaks", return_value=(df, df))
+        mock6 = mocker.patch("data_analyze.execute_curvefit", return_value=(df, df))
+        
+        modeling_data(df, df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = path)
+        
+        mocks = [mock1, mock2, mock3, mock4, mock5, mock6]
+        
+        for mock in mocks:
+            mock.assert_called_once()
             
-        current_df_attenuation = pd.read_excel(path + "/input/book_modelling_input.xlsx", index_col=0)
-
-        actual_mean, actual_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
-    
-        # preserve multi-index when reading in Excel file
-        expected_mean_left = pd.read_excel(path + "/expected/book_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-        expected_mean_right = pd.read_excel(path + "/expected/book_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-        expected_replicates = pd.read_excel(path + "/expected/book_modelling_replicates.xlsx", index_col=0)
+        # check if outputs were successfully created in output_directory_tables
+        assert os.path.exists(output_directory_tables + "/stats_analysis_output_replicate_all_Mock.xlsx"), "Analysis output for replicates was not exported to an Excel file!"
+        assert os.path.exists(output_directory_tables + "/stats_analysis_output_mean_all_Mock.xlsx"), "Analysis output for means was not exported to an Excel file!"
         
-        pd.testing.assert_frame_equal(actual_mean, expected_mean, rtol=1e-3, check_dtype=False)
-        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
-     
-    def test_modelling_batch(self, remove):
-        """ This function tests for overall functionality. Taking in a dataframe, its title, and associated custom directories, this function
-        implements a non-linear curve-fitting process on the dataframe and appends it as a new column, returned as the output. All created directories, plots, and 
-        intermediate dataframes are removed upon teardown. Tests for 'batch' path.
+        # check that book path was passed
+        assert mock1.call_args_list[0][0][-1] == path, "{} path was not passed into prep_mean.".format(path.capitalize())
+        assert mock2.call_args_list[0][0][-1] == path, "{} path was not passed into prep_replicate.".format(path.capitalize())
+        assert mock5.call_args_list[0][0][-1] == path, "{} path was not passed into drop_bad_peaks.".format(path.capitalize())
+        assert mock6.call_args_list[0][0][-1] == path, "{} path was not passed into execute_curvefit.".format(path.capitalize())
+    
+class TestAnalyze:
+    ''' This class contains all the unit tests relating to the function data_analyze. '''
+    
+    @pytest.mark.parametrize('path', ['book', 'batch'])
+    def test_analyze(self, remove, path, mocker):
+        ''' As data_analyze is not a pure function, these unit tests simply check whether the expected dependencies are called. Pytest parametrize tests for both book and batch paths.
         
         Notes
         -----
-        Ideally, test should be independent of nested functions. Try to incorporate mocking.
-        Equality checking uses a relative tolerance of 1e-3, and ignores datatype matching.
-        """
-
-        # SETUP
-        current_df_title = "CMC"
-        output_directory = remove + "/" + current_df_title
-        output_directory_curve = output_directory + "/curve_fit_plots_from_" + current_df_title
-        output_directory_tables = output_directory + "/exploratory_plots_from_" + current_df_title
+        Mocked dependencies were given specified return values. These return values are simply a placeholder to maintain functionality and are not the actual 
+        outputs of each dependency (should already have a separate unit test).
+        '''
         
-        os.mkdir(output_directory)
-        os.mkdir(output_directory_curve)
-        os.mkdir(output_directory_tables)
-      
-        current_df_attenuation = pd.read_excel(path + "/input/batch_modelling_input.xlsx", index_col=0)
+        df = pd.DataFrame({1:1, 2:2}, index=(1, 2))
+        tuple_list = [('Mock', df)]
+        global_output_directory = remove
+            
+        mock1 = mocker.patch("data_analyze.generate_directories", return_value=[global_output_directory + "/Mock"]*4)
+        mock2 = mocker.patch("data_analyze.add_attenuation", return_value = (df, df))
+        mock3 = mocker.patch("data_analyze.add_corr_attenuation")
+        mock4 = mocker.patch("data_analyze.generate_concentration_plot")
+        mock5 = mocker.patch("data_analyze.generate_ppm_plot")
+        mock6 = mocker.patch("data_analyze.modeling_data", return_value = (df, df))
         
-        actual_mean, actual_replicates = modelling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, 'batch')
+        mocks = [mock1, mock2, mock3, mock4, mock5, mock6]
         
-        # preserve multi-index when reading in Excel file
-        expected_mean_left = pd.read_excel(path + "/expected/batch_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-        expected_mean_right = pd.read_excel(path + "/expected/batch_modelling_mean.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-
-        expected_replicates = pd.read_excel(path + "/expected/batch_modelling_replicates.xlsx", index_col=0)
-        
-        pd.testing.assert_frame_equal(actual_mean, expected_mean, check_dtype=False)
-        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
-        
+        analyze_data(tuple_list, global_output_directory, batch_or_book = path)
+                
+        # check that dependencies are called only once
+        for mock in mocks:
+            mock.assert_called_once()
+            
+        # check that the 'batch' path was passed as expected
+        assert mock2.call_args_list[0][0][-1] == path, "{} path was not passed into add_attenuation.".format(path.capitalize())
+        assert mock3.call_args_list[0][0][-1] == path, "{} path was not passed into add_corr_attenuation.".format(path.capitalize())
+        assert mock6.call_args_list[0][0][-1] == path, "{} path was not passed into modelling_data.".format(path.capitalize())
+  
