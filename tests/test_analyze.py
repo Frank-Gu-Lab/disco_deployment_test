@@ -41,12 +41,11 @@ class TestGenerateDirectory:
         assert os.path.exists(output_directory_exploratory)
         assert os.path.exists(output_directory_tables)
 
-# mock all dependencies, simply check if they are called
 class TestModeling:
     """This class contains all the unit tests relating to the function modeling_data."""
     
     @pytest.mark.parametrize('path', ['book', 'batch'])
-    def test_modeling_book(self, remove, path, mocker):
+    def test_modeling_data(self, remove, path, mocker):
         ''' As modeling_data is not a pure function, these unit tests simply check whether the expected dependencies are called. Pytest parametrize tests for both book and batch paths.
         
         Notes
@@ -95,7 +94,7 @@ class TestAnalyze:
     ''' This class contains all the unit tests relating to the function data_analyze. '''
     
     @pytest.mark.parametrize('path', ['book', 'batch'])
-    def test_analyze(self, remove, path, mocker):
+    def test_analyze_data(self, remove, path, mocker):
         ''' As data_analyze is not a pure function, these unit tests simply check whether the expected dependencies are called. Pytest parametrize tests for both book and batch paths.
         
         Notes

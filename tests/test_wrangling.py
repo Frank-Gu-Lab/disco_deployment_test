@@ -29,117 +29,74 @@ def remove():
 class TestDataFrameConversion:
     """This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe."""
     
-    def test_batch(self, mocker):
-        """Testing overall functionality. Takes in a batch Excel sheet and converts each sheet into a dataframe, returning a tuple of the form
-        (df_name, df).
-        
-        Notes
-        -----
-        Equality checking ignores datatype matching.
-        """
-        
-        batch = input_path + "/batch_to_dataframe_input.xlsx"
-        """        
-        def mock_wrangle():
-            df_names = open(expected_path + "/wrangle_batch_output.txt").readlines()
-            df_names = [l.rstrip() for l in df_names]
+    def test_batch_to_dataframe(self, mocker):
+    
+        b = input_path + "/batch_to_dataframe_input.xlsx"
+    
+        def mock_initialize_excel_batch_replicates():
             
-            dfs = sorted(glob.glob(expected_path + "/wrangle_batch_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order 
-            dfs = [pd.read_excel(df, index_col=0) for df in dfs]
+            unique_polymers = ['CMC', 'CMC_ours', 'HEMAcMPC', 'HPMC E3', 'HPMC E4M', 'PDMA', 'PDMAcd', 'PEGHCO', 'PTA']
+            unique_polymer_replicates = [3.0, 1.0, 4.0, 3.0, 3.0, 3.0, 3.0, 1.0, 3.0]
+            name_sheets = ['CMC (2)', 'CMC (3)', 'CMC (4)', 'CMC_ours', 'HEMAcMPC (1)', 'HEMAcMPC (2)', 'HEMAcMPC (3)', 'HEMAcMPC (4)', 'HPMC E3', 
+                           'HPMC E3 (2)', 'HPMC E3 (3)', 'HPMC E4M', 'HPMC E4M (2)', 'HPMC E4M (3)', 'PDMA (1)', 'PDMA (2)', 'PDMA (3)', 'PDMAcd (1)',
+                           'PDMAcd (2)', 'PDMAcd (3)', 'PEGHCO', 'PTA (1)', 'PTA (2)', 'PTA (3)']
             
-            actual = []
+            return unique_polymers, unique_polymer_replicates, name_sheets
+    
+        mock1 = mocker.patch("data_wrangling_functions.initialize_excel_batch_replicates", return_value=mock_initialize_excel_batch_replicates())
+        mock2 = mocker.patch("data_wrangling_functions.wrangle_batch")
+        
+        mocks = [mock1, mock2]
+        
+        batch_to_dataframe(b)
+        
+        for mock in mocks:
+            mock.assert_called_once()
             
-            for i in range(len(df_names)):
-                actual.append((df_names[i], dfs[i]))
-                
-            return actual
+        # check that replicate_index was properly created
+        actual = mock2.call_args_list[0][0][-1]
+        expected = [1, 2, 3, 1, 1, 2, 3, 4, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 1, 2, 3]
         
-        mocker.patch("data_wrangling_functions.wrangle_batch", return_value=actual)
-        """
-        # loop through names and assert equality of dataframes
-        actual = batch_to_dataframe(batch)
-        file = open(expected_path + "/batch_to_dataframe_output.txt")
+        assert actual == expected, "Replicate index list was not properly created!"
+    
+    def test_book_to_dataframe(self, mocker):
         
-        for i in range(len(actual)):
-            
-            # testing equality of sheet names
-            expected_name = file.readline().rstrip()
-            msg1 = "Actual name of sheet: {}, Expected name of sheet: {}".format(actual[i][0], expected_name)
-            assert actual[i][0] == expected_name, msg1
-            
-            # testing equality of dataframes
-            name = f"sheet_{i}"
-            expected_df = pd.read_excel(expected_path + "/batch_to_dataframe/" + name + ".xlsx", index_col=0)
-            pd.testing.assert_frame_equal(actual[i][1], expected_df, check_dtype=False, check_exact=True)
-
-    def test_book(self):
-        """ Testing overall functionality. Takes in a book Excel sheet and converts it into a dataframe.
+        b = input_path + "/KHA.xlsx"
         
-        Notes
-        -----
-        The equality check ignores datatype matching.
-        """
-
-        book = input_path + "/KHA.xlsx"
-        
-        actual = book_to_dataframe(book)
-        actual_title = actual[0]
-        actual_df = actual[1]
-        
-        expected_title = "KHA"
-        expected_df = pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0)
-        
-        msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
-        assert actual_title == expected_title, msg
-        pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
-   
-    def test_book_mock(self, mocker):
-        """ Testing book_to_dataframe independent of its dependencies. Takes in a book Excel sheet and converts it into a dataframe.
-        
-        Notes
-        -----
-        The equality check ignores datatype matching.
-        The functions count_sheets and wrangle_book are mocked to isolate behaviour.
-        """
-
-        book = input_path + "/KHA.xlsx"
-        
-        def return_mock_count():
+        def mock_count_sheets():
             
             num_samples = 3
             num_controls = 3
-            
             sample_control_initializer = ['sample', 'sample', 'sample', 'control', 'control', 'control']
-
             sample_replicate_initializer = [1, 2, 3]
-            
             control_replicate_initializer = [1, 2, 3]
-                    
+            
             return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
-
-        def return_mock_wrangle():
+        
+        mock1 = mocker.patch("data_wrangling_functions.count_sheets", return_value=mock_count_sheets())
+        mock2 = mocker.patch("data_wrangling_functions.wrangle_book")
+        mock3 = mocker.patch("data_wrangling_functions.clean_book_list", return_value=pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0))
+        
+        mocks = [mock1, mock2]
+        
+        actual = book_to_dataframe(b)
+        
+        for mock in mocks:
+            mock.assert_called_once()
+        
+        expected = ("KHA", pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0))
+        
+        assert actual[0] == expected[0], "Book name was not properly extracted! Actual: {}, Expected: KHA".format(actual[0])
+        pd.testing.assert_frame_equal(actual[1], expected[1])
+        
+        # total_replicate_index
+        actual_index = mock2.call_args_list[0][0][-1]
+        expected_index = [1, 2, 3, 1, 2, 3]
+        
+        assert actual_index == expected_index, "Replicate index list was not properly created!"
             
-            dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
-            dfs = [pd.read_excel(df, index_col=0) for df in dfs]
-            
-            return dfs
-        
-        mock_count = mocker.patch("data_wrangling_functions.count_sheets", return_value=return_mock_count())
-        mock_wrangle = mocker.patch("data_wrangling_functions.wrangle_book", return_value=return_mock_wrangle())
-        
-        actual = book_to_dataframe(book)
-        actual_title = actual[0]
-        actual_df = actual[1]
-        
-        expected_title = "KHA"
-        expected_df = pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0)
-        
-        msg = "Actual title: {}, Expected title: {}".format(actual_title, expected_title)
-        assert actual_title == expected_title, msg
-        pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False, check_exact=True)
-    
     # testing assertions for book_to_dataframe
-    def test_book_unequal(self, mocker):
+    def test_book_to_dataframe_unequal(self, mocker):
         ''' Checks whether a ValueError is raised when the number of samples and controls do not match. 
         
         Notes
@@ -168,11 +125,11 @@ class TestDataFrameConversion:
             book_to_dataframe(book)
         
         assert e.match('ERROR: The number of sample sheets is not equal to the number of control sheets in {} please confirm the data in the book is correct.'.format(book))
-                
+         
 class TestCleanBatch:
     """ This class contains all the unit tests relating to the function test_clean_batch_list. """
     
-    def test_clean_batch_list(self):
+    def test_clean_the_batch_list(self):
         """ This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results. 
         
         Notes
@@ -212,7 +169,7 @@ class TestCleanBatch:
 
 class TestExport:
     
-    def test_export_book(self, remove):
+    def test_export_clean_books(self, remove):
         
         name = 'test'
         df = pd.DataFrame({'a':1, 'b':2}, index=['a','b'])
@@ -222,12 +179,12 @@ class TestExport:
         
         assert os.path.isfile(output_dir + "/" + name + "/" + "test_clean_raw_df.xlsx"), "Exported file could not be found."
 
-# separate assertions from equality checkers   
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
     
-    def test_add_attenuation_batch(self, mocker):
-        """ Checks for expected attenuation calculations applied in the batch path.
+    @pytest.mark.parametrize('path', ['book', 'batch'])
+    def test_add_attenuation(self, path, mocker):
+        """ Checks for expected attenuation calculations applied for both book and batch paths.
         
         Notes
         -----
@@ -235,40 +192,21 @@ class TestAttenuation:
         The function attenuation_calc_equality_checker is mocked to return True.
         """
         
-        df = pd.read_excel(input_path + "/att_batch_input.xlsx", index_col=0)
+        df = pd.read_excel(input_path + "/att_" + path + "_input.xlsx", index_col=0)
            
         mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
         
-        actual_true, actual_false = add_attenuation(df, 'batch')
+        actual_true, actual_false = add_attenuation(df, path)
         
-        expected_true = pd.read_excel(expected_path + "/att_batch_true_output.xlsx", index_col=0)
-        expected_false = pd.read_excel(expected_path + "/att_batch_false_output.xlsx", index_col=0)
+        expected_true = pd.read_excel(expected_path + "/att_" + path + "_true_output.xlsx", index_col=0)
+        expected_false = pd.read_excel(expected_path + "/att_" + path + "_false_output.xlsx", index_col=0)
                 
         pd.testing.assert_frame_equal(actual_true, expected_true)
         pd.testing.assert_frame_equal(actual_false, expected_false)
     
-    def test_add_attenuation_book(self, mocker):
-        """ Checks for expected attenuation calculations applied in the book path.
-        
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-5.
-        The function attenuation_calc_equality_checker is mocked to return True.
-        """
-
-        df = pd.read_excel(input_path + "/att_book_input.xlsx", index_col=0)
-        
-        mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
-        
-        actual_true, actual_false = add_attenuation(df)
-        expected_true = pd.read_excel(expected_path + "/att_book_true.xlsx", index_col=0)
-        expected_false = pd.read_excel(expected_path + "/att_book_false.xlsx", index_col=0)
-        
-        pd.testing.assert_frame_equal(actual_true, expected_true)
-        pd.testing.assert_frame_equal(actual_false, expected_false)
-            
-    def test_add_corr_attenuation_batch(self, mocker):
-        """ Checks for expected corrected attenuation calculations applied in the batch path.
+    @pytest.mark.parametrize('path', ['book', 'batch'])
+    def test_add_corr_attenuation(self, path, mocker):
+        """ Checks for expected corrected attenuation calculations applied for both the book and batch paths.
         
         Notes
         -----
@@ -276,97 +214,46 @@ class TestAttenuation:
         The function corrected_attenuation_calc_equality_checker is mocked to return True.
         """  
         
-        df_true = pd.read_excel(input_path + "/corr_att_batch_true_input.xlsx", index_col=0)
-        df_false = pd.read_excel(input_path + "/corr_att_batch_false_input.xlsx", index_col=0)
+        df_true = pd.read_excel(input_path + "/corr_att_" + path + "_true_input.xlsx", index_col=0)
+        df_false = pd.read_excel(input_path + "/corr_att_" + path + "_false_input.xlsx", index_col=0)
         
         mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
                
-        actual = add_corr_attenuation(df_true, df_false, 'batch')
-        expected = pd.read_excel(expected_path + "/corr_att_batch_output.xlsx", index_col=0)
-        
-        pd.testing.assert_frame_equal(actual, expected)
-    
-    def test_add_corr_attenuation_book(self, mocker):
-        """ Checks for expected corrected attenuation calculations applied in the book path.
-        
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-5.
-        The function attenuation_calc_equality_checker is mocked to return True.
-        """
-        
-        df_true = pd.read_excel(input_path + "/att_book_true.xlsx", index_col=0)
-        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0)
-        
-        mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
-        
-        actual = add_corr_attenuation(df_true, df_false)
-        expected = pd.read_excel(expected_path + "/corr_att_book.xlsx", index_col=0)
+        actual = add_corr_attenuation(df_true, df_false, path)
+        expected = pd.read_excel(expected_path + "/corr_att_" + path + "_output.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected)
 
-    # testing assertions for add_attenuation
-    # in creating these unit tests, changes made to Excel file are highlighted in yellow
-    
-    def test_attenuation_diff_shape(self):
-        ''' Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e. missing data). '''
+    # testing assertions
+    def test_add_attenuation_assertion(self, mocker):
+        ''' Checks that a ValueError is raised when the equality checker returns False. '''
         
-        df = pd.read_excel(input_path + "/att_diff_shape_input.xlsx", index_col=0) # last seven rows removed
+        df = pd.read_excel(input_path + "/att_book_input.xlsx", index_col=0)
         
-        with pytest.raises(ValueError) as e:
-            add_attenuation(df)
-        
-        assert e.match("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")
-
-    def test_attenuation_book_subset(self):
-        ''' Checks whether a ValueError is raised when subsets of the true and false irradiated dataframes do not match. '''
-        
-        df = pd.read_excel(input_path + "/att_book_subset_wrong.xlsx", index_col=0)
+        mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=False)
         
         with pytest.raises(ValueError) as e:
             add_attenuation(df)
             
         assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
-    
-    @pytest.mark.parametrize("filename", [f'/att_batch_subset_{i}.xlsx' for i in range(1, 5)])
-    def test_attenuation_batch_subset(self, filename):
-        ''' Checks whether a ValueError is raised when the sample_or_control, replicate, proton_peak_index, and sat_time values in the true and false irradiated dataframes do not match. '''
+
+    def test_add_corr_attenuation_assertion(self, mocker):
+        ''' Checks that a ValueError is raised when the equality checker returns False. '''
         
-        df = pd.read_excel(input_path + filename, index_col=0)
+        df_true = pd.read_excel(input_path + "/corr_att_book_true_input.xlsx", index_col=0)
+        df_false = pd.read_excel(input_path + "/corr_att_book_false_input.xlsx", index_col=0)
+        
+        mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=False)
         
         with pytest.raises(ValueError) as e:
-            add_attenuation(df, 'batch')
+            add_corr_attenuation(df_true, df_false)
             
-        assert e.match("Error, intensity_irrad true and false dataframes are not equal, cannot compute signal attenutation in a one-to-one manner.")
-                
-    # testing assertions for add_corr_attenuation
+        e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")   
     
-    def test_corr_attenuation_diff_shape(self):
-        ''' Checks whether a ValueError is raised when the number of true and false irradiated samples in dataframe do not match (i.e. missing data). '''
-        
-        df_true = pd.read_excel(input_path + "/att_book_true_diff.xlsx", index_col=0) # modified, last 7 rows removed
-        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
-        
-        with pytest.raises(ValueError) as e:
-            add_corr_attenuation(df_true, df_false)
-        
-        assert e.match("Error, corrected % attenuation input dataframes are not the same shape to begin with.")
-
-    @pytest.mark.parametrize("filename", [f'/att_book_true_subset{i}.xlsx' for i in range(1, 4)])
-    def test_corr_attenuation_subset(self, filename):
-        
-        df_true = pd.read_excel(input_path + filename, index_col=0) # modified
-        df_false = pd.read_excel(input_path + "/att_book_false.xlsx", index_col=0) # not modified
-                
-        with pytest.raises(ValueError) as e:
-            add_corr_attenuation(df_true, df_false)
-        
-        assert e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
-
 class TestPlots:
     """ This class contains all the unit tests relating to the plot generation functions."""
     
-    def test_concentration(self, remove):
+    def test_generate_concentration_plot(self, remove):
         """ Checks for whether the expected concentration plot is generated and removes the plot upon teardown.
         
         Notes
@@ -387,7 +274,7 @@ class TestPlots:
         msg = "The generated plot could not be found."
         assert os.path.exists(actual), msg
     
-    def test_ppm(self, remove):
+    def test_generate_ppm_plot(self, remove):
         """ Checks for whether the expected ppm plot is generated and removes the plot upon teardown.
         
         Notes
@@ -407,11 +294,12 @@ class TestPlots:
 
         msg = "The generated plot could not be found."
         assert os.path.exists(actual), msg
-    
+
 class TestPrep:
     """ This class contains all the unit tests relating to the prep functions. """
     
-    def test_prep_mean_book(self):
+    @pytest.mark.parametrize('path', ['book', 'batch'])
+    def test_prep_mean(self, path):
         """ Checks whether an Excel book is prepped for statistical analysis on a "mean" basis.
         
         Notes
@@ -419,39 +307,27 @@ class TestPrep:
         Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.
         """
         
-        input_mean = pd.read_excel(input_path + "/prep_mean_book_input.xlsx", index_col=0)
+        input_mean = pd.read_excel(input_path + "/prep_mean_" + path + "_input.xlsx", index_col=0)
         
-        actual = prep_mean(input_mean)
+        actual = prep_mean(input_mean, path)
         
         # preserve multi-index when reading in Excel file
-        expected_mean_left = pd.read_excel(expected_path + "/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-        expected_mean_right = pd.read_excel(expected_path + "/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-        expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        if path == 'book':
+            expected_mean_left = pd.read_excel(expected_path + "/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            expected_mean_right = pd.read_excel(expected_path + "/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+            expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+        
+        else:
+            expected_mean_left = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            expected_mean_right = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+            expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
         pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
     
-    def test_prep_mean_batch(self):
-        """ Checks whether an Excel batch is prepped for statistical analysis on a "mean" basis.
-        
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.
-        """
-         
-        input_mean = pd.read_excel(input_path + "/prep_mean_batch_input.xlsx", index_col=0)
-        
-        actual = prep_mean(input_mean, 'batch')
-        
-        # preserve multi-index when reading in Excel file
-        expected_mean_left = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-        expected_mean_right = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-        expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-
-        pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
-    
-    def test_prep_replicates_book(self):
+    @pytest.mark.parametrize('path', ['book', 'batch'])
+    def test_prep_replicate(self, path):
         """ Checks whether an Excel book is prepped for statistical analysis per replicate.
         
         Notes
@@ -459,34 +335,18 @@ class TestPrep:
         Equality checking uses a relative tolerance of 1e-5.
         """
 
-        input_replicate = pd.read_excel(input_path + "/prep_replicate_book_input.xlsx", index_col=0)
+        input_replicate = pd.read_excel(input_path + "/prep_replicate_" + path + "_input.xlsx", index_col=0)
         
-        actual = prep_replicate(input_replicate)
+        actual = prep_replicate(input_replicate, path)
         
-        expected = pd.read_excel(expected_path + "/prep_replicate_book_output.xlsx", index_col=0)
+        expected = pd.read_excel(expected_path + "/prep_replicate_" + path + "_output.xlsx", index_col=0)
 
         pd.testing.assert_frame_equal(actual, expected)
     
-    def test_prep_replicates_batch(self):
-        """ Checks whether an Excel batch is prepped for statistical analysis per replicate.
-        
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-5.
-        """
- 
-        input_replicate = pd.read_excel(input_path + "/prep_replicate_batch_input.xlsx", index_col=0)
-        
-        actual = prep_replicate(input_replicate, 'batch')
-        
-        expected = pd.read_excel(expected_path + "/prep_replicate_batch_output.xlsx", index_col=0)
-
-        pd.testing.assert_frame_equal(actual, expected)
-
 class TestT:
     """ This class contains all the unit tests relating to the t-test analysis function. """
     
-    def test_t(self):
+    def test_t_test(self):
         """ Performa a sample t-test and checks whether the expected results were appended to the inputted dataframe.
         
         Notes
@@ -513,7 +373,7 @@ class TestT:
 class TestAF:
     """ This class contains all the unit tests relating to the function compute_af. """
     
-    def test_af(self):
+    def test_compute_af(self):
         """ Checks whether the expected amplication factor was calculated and appended to the dataframe. """
          
         # preserve multi-index when reading in Excel file
@@ -541,7 +401,7 @@ class TestAF:
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     
-    def test_drop_peaks_book(self, remove):
+    def test_drop_bad_peaks_book(self, remove):
         """ Checks whether the expected peaks were dropped and removes any generated files upon teardown. """
         
         # SETUP
@@ -570,7 +430,7 @@ class TestDropBadPeaks:
         
         pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
         
-    def test_drop_peaks_batch(self, remove):     
+    def test_drop_bad_peaks_batch(self, remove):     
         
         # SETUP
         output_dir = remove
@@ -598,12 +458,13 @@ class TestDropBadPeaks:
         pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
         
         pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
-
-# shorten
+'''
+# shorten - decrease input size?
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
+    
     # can split to check for figures separately from df modification
-    def test_curvefit_batch(self, remove):
+    def test_execute_curvefit_batch(self, remove):
         """ Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.
         
         Notes
@@ -693,7 +554,7 @@ class TestCurveFit:
     
     #def test_curvefit_batch_figures(self, remove):
     
-    def test_curvefit_book(self, remove):  
+    def test_execute_curvefit_book(self, remove):  
         """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
         
         Notes
@@ -785,4 +646,4 @@ class TestCurveFit:
                 assert False, msg4
 
     #def test_curvefit_book_figures(self, remove):
-        
+'''

@@ -180,49 +180,36 @@ class TestJoin:
         pd.testing.assert_frame_equal(actual, expected, check_exact=True, check_dtype=False)
         
 class TestMerge:
-    """This class contains all the unit tests relating to the merge function."""
-    
-    # change to test for assertions, no need to test general functionality bc those are dependent on dependencies
-    def test_merge_book(self, remove):
-        """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
-        sheets together into one Dataframe.
+    """ This class contains all the unit tests relating to the merge function."""
+        
+    def test_merge(self, remove, mocker):
+        ''' Checks whether all dependencies are called and that both positive (True) and negative (False) observations are read.
         
         Notes
         -----
-        Equality checking ignores datatype matching.
-        """
+        All dependencies are mocked with pytest-mock.
+        '''
+        source_path = merge_path + "/input/KHA/data_tables_from_KHA"
+        destination_path = source_path
         
-        #SETUP
-        src_path = merge_path + "/input/KHA/data_tables_from_KHA"
-        dst_path = remove
-    
-        actual = merge(src_path, dst_path)
+        mock1 = mocker.patch("data_merging.move")
+        mock2 = mocker.patch("data_merging.clean")
+        mock3 = mocker.patch("data_merging.reformat")
+        mock4 = mocker.patch("data_merging.join")
+                
+        merge(source_path, destination_path)
         
-        expected = pd.read_excel(merge_path + "/expected/merge_book_output.xlsx", index_col=0)
-        expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
-
-        pd.testing.assert_frame_equal(actual, expected, check_dtype=False, check_exact=True)
-    
-    #def test_merge_book_columns(self):
-        ''' Tests that the correct columns are present in the final merged dataframe. '''
-          
-    def test_merge_batch(self, remove):
-        """Testing overall functionality. Takes all Excel sheets from src_path and moves to dst_path, from which the function concatenates all 
-        sheets together into one Dataframe.
+        # checking call count
+        mock1.assert_called_once()
+        assert mock2.call_count == 2
+        assert mock3.call_count == 2
+        mock4.assert_called_once()
         
-        Notes
-        -----
-        Equality checking ignores datatype matching.
-        """
+        # clean and reformat called with True and False each
+        assert mock2.call_args_list[0][0][-1] == True
+        assert mock2.call_args_list[1][0][-1] == False
+        assert mock3.call_args_list[0][0][-1] == True
+        assert mock3.call_args_list[1][0][-1] == False
         
-        #SETUP
-        src_path = merge_path + "/input/merge_batch/*/data_tables_from_*"
-        dst_path = remove
-
-        actual = merge(src_path, dst_path)
-
-        expected = pd.read_excel(merge_path + "/expected/merge_batch_output.xlsx", index_col=0)
-        expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
-
-        pd.testing.assert_frame_equal(actual, expected, check_dtype=False, check_exact=True)
-                   
+        # somehow figure out how to check file names
+        
