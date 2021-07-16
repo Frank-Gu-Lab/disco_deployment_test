@@ -320,7 +320,7 @@ def count_sheets(name_sheets):
 
 # helper for book_to_dataframe
 def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_index):
-    """This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.
+    """ This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.
     
     Parameters
     ----------

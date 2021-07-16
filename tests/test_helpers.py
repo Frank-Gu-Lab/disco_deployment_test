@@ -59,7 +59,7 @@ class TestInitialize:
         
         msg3 = "Excel sheets were not extracted as expected."
         assert actual_sheets == expected_sheets, msg3
-''' can probably decrease input size
+
 class TestWrangle:
     """ This class contains all the unit tests relating to the wrangle functions."""
     
@@ -73,16 +73,14 @@ class TestWrangle:
         
         b = input_path + "/wrangle_batch_input.xlsx"
         
-        name_sheets = open(input_path + "/wrangle_batch_names.txt").readlines()
-        name_sheets = [l.rstrip() for l in name_sheets]
+        name_sheets = ['CMC (2)', 'CMC (3)', 'CMC (4)', 'CMC_ours', 'HEMAcMPC (1)', 'HEMAcMPC (2)', 
+                       'HEMAcMPC (3)', 'HEMAcMPC (4)']
 
-        replicate_index = open(input_path + "/wrangle_batch_index.txt").readlines()
-        replicate_index = [int(l.rstrip()) for l in replicate_index]
+        replicate_index = [1, 2, 3, 1, 1, 2, 3, 4]
         
         actual = wrangle_batch(b, name_sheets, replicate_index)
         
-        df_names = open(expected_path + "/wrangle_batch_output.txt").readlines()
-        df_names = [l.rstrip() for l in df_names]
+        df_names = ['CMC (2)', 'CMC_ours', 'HEMAcMPC (1)'] # correspond to sheet_0.xlsx, sheet_1.xlsx, sheet_2.xlsx in wrangle_batch_output, respectively
         
         dfs = sorted(glob.glob(expected_path + "/wrangle_batch_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order 
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
@@ -103,7 +101,7 @@ class TestWrangle:
             msg2 = "Actual title of dataframe: {}\nExpected title of dataframe: {}".format(actual[i][0], expected[i][0])
             assert actual[i][0] == expected[i][0], msg2
             pd.testing.assert_frame_equal(actual[i][1], expected[i][1], check_dtype=False, check_exact=True)
-     
+    
     def test_wrangle_book(self):
         """ As part of book initialization, checks for whether the expected dataframes from an Excel book are returned in list format.
         
@@ -111,18 +109,15 @@ class TestWrangle:
         -----
         Equality checking ignores datatype matching.
         """
-        
+
         b = input_path + "/wrangle_book_input.xlsx"
-        
-        name_sheets = open(input_path + "/wrangle_book_names.txt").readlines()
-        name_sheets = [l.rstrip() for l in name_sheets]
-        
-        sample_control = open(input_path + "/wrangle_book_sample.txt").readlines()
-        sample_control = [l.rstrip() for l in sample_control]
-        
-        replicate_index = open(input_path + "/wrangle_book_index.txt").readlines()
-        replicate_index = [int(l.rstrip()) for l in replicate_index]
-        
+
+        name_sheets = ['Sample', 'Control']
+                
+        sample_control = ['sample', 'control']
+
+        replicate_index = [1, 1]
+
         actual = wrangle_book(b, name_sheets, sample_control, replicate_index)
         
         dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
@@ -137,19 +132,14 @@ class TestWrangle:
         
         for i in range(len(actual)):
             pd.testing.assert_frame_equal(actual[i], dfs[i], check_dtype=False, check_exact=True)
-'''    
+    
 class TestCount:
     """ This class contains all the unit tests related to the helper function count_sheets."""
     
     def test_count_sheets(self):
         """ Checks for whether the expected number of samples and controls are returned, as well as the expected initializer labels (sameple, control) and their respective indices."""
                 
-        input_list = []
-        
-        # recreating input list
-        with open(input_path + "/count_input.txt") as file:
-            for line in file.readlines():
-                input_list.append(line.rstrip())
+        input_list = ['Sample', 'Sample (2)', 'Sample (3)', 'Control', 'Control (2)', 'Control (3)']
                 
         num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer = count_sheets(input_list)
 
@@ -161,37 +151,23 @@ class TestCount:
         assert num_controls == 3, msg2
         
         # CHECKING SAMPLE AND CONTROL INITIALIZER
-        expected_sample_control = []
-        
-        with open(expected_path + "/sample_control.txt") as file:
-            for line in file.readlines():
-                expected_sample_control.append(line.rstrip())
+        expected_sample_control = ['sample', 'sample', 'sample', 'control', 'control', 'control']
                 
         msg3 = "Sample control initializer list does not contain expected sequence."
         assert sample_control_initializer == expected_sample_control, msg3
 
         # CHECKING SAMPLE REPLICATE INDICES
-        expected_sample_replicate = []
-
-        with open(expected_path + "/sample_replicate.txt") as file:
-            for line in file.readlines():
-                expected_sample_replicate.append(int(line.rstrip()))
+        expected_sample_replicate = [1, 2, 3]
                 
         msg4 = "Sample replicate indices are not ordered as expected."
         assert sample_replicate_initializer == expected_sample_replicate, msg4
         
         # CHECKING CONTROL REPLICATE INDICES
-        expected_control_replicate = []
-        
-        with open(expected_path + "/control_replicate.txt") as file:
-            for line in file.readlines():
-                expected_control_replicate.append(int(line.rstrip()))
+        expected_control_replicate = [1, 2, 3]
                 
         msg5 = "Control replicate indices are not ordered as expected."
         assert control_replicate_initializer == expected_control_replicate, msg5
 
-    #def test_count_modified(self):
-        
 class TestCleanBook:
     
     def test_clean_book_list(self):
@@ -204,7 +180,7 @@ class TestCleanBook:
         expected = pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0)
         
         pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
-        
+
 class TestEqualityChecker:
     """ This class contains all the unit tests related to the attenuation equality checkers."""
     

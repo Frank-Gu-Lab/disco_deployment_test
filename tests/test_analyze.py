@@ -95,12 +95,13 @@ class TestAnalyze:
     
     @pytest.mark.parametrize('path', ['book', 'batch'])
     def test_analyze_data(self, remove, path, mocker):
-        ''' As data_analyze is not a pure function, these unit tests simply check whether the expected dependencies are called. Pytest parametrize tests for both book and batch paths.
+        ''' As data_analyze is not a pure function, these unit tests simply check whether the expected dependencies are called. 
+        Pytest parametrize tests for both book and batch paths.
         
         Notes
         -----
-        Mocked dependencies were given specified return values. These return values are simply a placeholder to maintain functionality and are not the actual 
-        outputs of each dependency (should already have a separate unit test).
+        Mocked dependencies were given specified return values. These return values are simply a placeholder to maintain 
+        functionality and are not the actual outputs of each dependency (should already have a separate unit test).
         '''
         
         df = pd.DataFrame({1:1, 2:2}, index=(1, 2))
