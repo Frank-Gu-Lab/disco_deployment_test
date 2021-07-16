@@ -458,8 +458,7 @@ class TestDropBadPeaks:
         pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
         
         pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
-'''
-# shorten - decrease input size?
+
 class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     
@@ -552,8 +551,6 @@ class TestCurveFit:
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
     
-    #def test_curvefit_batch_figures(self, remove):
-    
     def test_execute_curvefit_book(self, remove):  
         """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
         
@@ -644,6 +641,3 @@ class TestCurveFit:
                 
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
-
-    #def test_curvefit_book_figures(self, remove):
-'''
