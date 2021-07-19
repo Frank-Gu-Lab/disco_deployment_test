@@ -249,51 +249,6 @@ class TestAttenuation:
             add_corr_attenuation(df_true, df_false)
             
         e.match("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")   
-    
-class TestPlots:
-    """ This class contains all the unit tests relating to the plot generation functions."""
-    
-    def test_generate_concentration_plot(self, remove):
-        """ Checks for whether the expected concentration plot is generated and removes the plot upon teardown.
-        
-        Notes
-        -----
-        Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.
-        """
-        
-        # SETUP
-        output_dir = remove
-            
-        current_df_title = "KHA"
-        
-        df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
-        generate_concentration_plot(df, output_dir, current_df_title)
-        
-        actual = path + "/output/exploratory_concentration_plot_from_KHA.png"
-
-        msg = "The generated plot could not be found."
-        assert os.path.exists(actual), msg
-    
-    def test_generate_ppm_plot(self, remove):
-        """ Checks for whether the expected ppm plot is generated and removes the plot upon teardown.
-        
-        Notes
-        -----
-        Simply checks for filepath existence, does not check whether the generated plot matches a baseline due to jitter.
-        """
-         
-        # SETUP
-        output_dir = remove
-            
-        current_df_title = "KHA"        
-    
-        df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
-        generate_ppm_plot(df, output_dir, current_df_title)
-        
-        actual = path + "/output/exploratory_ppm_plot_from_KHA.png"
-
-        msg = "The generated plot could not be found."
-        assert os.path.exists(actual), msg
 
 class TestPrep:
     """ This class contains all the unit tests relating to the prep functions. """
@@ -463,7 +418,7 @@ class TestCurveFit:
     """This class contains all the unit tests relating to the execute_curvefit function."""
     
     # can split to check for figures separately from df modification
-    def test_execute_curvefit_batch(self, remove):
+    def test_execute_curvefit_batch(self, remove, mocker):
         """ Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.
         
         Notes
@@ -480,6 +435,8 @@ class TestCurveFit:
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
+        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plots")
+        
         # Preserve multi-index when reading in Excel file
         df_mean_left = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
         df_mean_right = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
@@ -487,7 +444,10 @@ class TestCurveFit:
         df_mean = pd.merge(df_mean_left, df_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
                 
         df_replicates = pd.read_excel(input_path + "/batch_curve_replicate_input.xlsx", index_col=0)
-        
+        # unique protons [3, 4, 5, 8, 9]
+        # unique concentrations [9]
+        # unique replicates [1, 2, 3]
+
         actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
         
         # Preserve multi-index when reading in Excel file
@@ -501,31 +461,24 @@ class TestCurveFit:
         pd.testing.assert_frame_equal(df_mean, expected_mean, rtol=1e-3)
         pd.testing.assert_frame_equal(df_replicates, expected_replicates, rtol=1e-3)
 
-        # check if the same plots are generated (can only compare filepath/name)
+        # checking if mocked function was called (mean, rep)
+        assert mock1.call_count == 20 # 5 for mean, 15 for rep - no iterations were skipped
+        
+        for i in range(len(mock1.call_args_list)):
+            if i % 4 == 0:
+                assert mock1.call_args_list[i][-1]['mean_or_rep'] == 'mean'
+            else:
+                assert mock1.call_args_list[i][-1]['mean_or_rep'] == 'rep'
 
-        actual_curve = glob.glob(output_curve + "/*")
+        # check if the same tables are generated (can only compare filepath/name)
         actual_table = glob.glob(output_table + "/*")
-        
-        expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_CMC/*")
         expected_table = glob.glob(expected_path + "/data_tables_from_CMC/*")
-        
-        if len(actual_curve) != len(expected_curve):
-            assert len(actual_curve) == len(expected_curve)
         
         if len(actual_table) != len(expected_table):
             assert len(actual_table) == len(expected_table)
-        
-        for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
-            #actual_curve[i] = os.path.basename(actual_curve[i])
-            #expected_curve[i] = os.path.basename(expected_curve[i])
-            
-            #assert actual_curve[i] == expected_curve[i]
-            msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
-            assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
-        
+                
         for i in range(len(actual_table)):
             if "mean" in actual_table[i] and "mean" in expected_table[i]:
-                
                 # Preserve multi-index when reading in Excel file
                 df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
                 df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
@@ -547,11 +500,10 @@ class TestCurveFit:
                 pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
                 
             else:
-                
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
     
-    def test_execute_curvefit_book(self, remove):  
+    def test_execute_curvefit_book(self, remove, mocker):  
         """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
         
         Notes
@@ -568,6 +520,8 @@ class TestCurveFit:
         
         os.mkdir(output_curve)
         os.mkdir(output_table)
+        
+        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plots")
  
         # Preserve multi-index when reading in Excel file
         df_mean = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
@@ -590,33 +544,19 @@ class TestCurveFit:
         pd.testing.assert_frame_equal(actual_mean, expected_mean, rtol=1e-3)
         pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
         
+        # checking if mocked function was called (mean, rep)
+        assert mock1.call_count == 38 # some iterations were skipped
+        
         # check if the same plots are generated (can only compare filepath/name)
-
-        actual_curve = glob.glob(output_curve + "/*")
         actual_table = glob.glob(output_table + "/*")
-        
-        expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_KHA/*")
         expected_table = glob.glob(expected_path + "/data_tables_from_KHA/*")
-        
-        if len(actual_curve) != len(expected_curve):
-            msg1 = "Not all curve plots were generated."
-            assert len(actual_curve) == len(expected_curve), msg1
         
         if len(actual_table) != len(expected_table):
             msg2 = "Not all data tables were generated."
             assert len(actual_table) == len(expected_table), msg2
-        
-        for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
-            #actual_curve[i] = os.path.basename(actual_curve[i])
-            #expected_curve[i] = os.path.basename(expected_curve[i])
-            
-            #assert actual_curve[i] == expected_curve[i]
-            msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
-            assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
-        
+
         for i in range(len(actual_table)):
             if "mean" in actual_table[i] and "mean" in expected_table[i]:
-                
                 # Preserve multi-index when reading in Excel file
                 df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
                 df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
@@ -638,6 +578,5 @@ class TestCurveFit:
                 pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
                 
             else:
-                
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4

@@ -11,6 +11,7 @@ import glob
 
 # import helpers
 from data_wrangling_helpers import *
+from data_plot import *
 
 # define handy shortcut for indexing a multi-index dataframe
 idx = pd.IndexSlice
@@ -328,75 +329,6 @@ def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_b
     else:
         raise ValueError("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
         
-def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
-    '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
-    concentration as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
-    
-    Parameters
-    ----------
-    current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
-        (output from add_attenuation_and_corr_attenuation_to_dataframe).
-    
-    output_directory_exploratory : str
-        File path to directory that contains attenuation data for all polymer samples.
-        
-    cuurent_df_title : str
-        Title of DataFrame.
-    '''
-    a4_dims = (11.7, 8.27)
-    fig1, ax = plt.subplots(figsize = a4_dims)
-    sns.stripplot(ax = ax, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue = 'concentration', palette = 'viridis')
-
-    plt.title("Polymer Sample Attenuation vs Saturation Time")
-    plt.ylabel("Corrected Signal Intensity Attenuation (%)")
-    plt.xlabel("NMR Pulse Saturation Time (s)")
-    
-    # define file name for the concentration plot
-    output_file_name_conc = "{}/exploratory_concentration_plot_from_{}.png".format(output_directory_exploratory, current_df_title)
-    
-    # export to file
-    fig1.savefig(output_file_name_conc, dpi=300)
-
-    return
-
-def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
-    '''This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
-    ppm as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
-    
-    Parameters
-    ----------
-    current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
-        (output from add_attenuation_and_corr_attenuation_to_dataframe).
-    
-    output_directory_exploratory : str
-        File path to directory that contains attenuation data for all polymer samples.
-        
-    cuurent_df_title : str
-        Title of DataFrame.
-    '''
-    
-    a4_dims = (11.7, 8.27)
-    fig2, ax2 = plt.subplots(figsize = a4_dims)
-    sns.scatterplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue ='ppm', palette = 'viridis', y_jitter = True, legend = 'brief')
-
-    # a stripplot looks nicer than this, but its legend is unneccessarily long with each individual ppm, need to use rounded ppm to use the below line
-    # sns.stripplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = corr_p_attenuation_df, hue ='ppm', palette = 'viridis', dodge = True)
-
-    plt.title("Polymer Sample Attenuation vs Saturation Time")
-    plt.ylabel("Corrected Signal Intensity Attenuation  (%) by ppm")
-    plt.xlabel("NMR Pulse Saturation Time (s)")
-    ax2.legend() 
-
-    # define file name for the concentration plot
-    output_file_name_ppm = "{}/exploratory_ppm_plot_from_{}.png".format(output_directory_exploratory, current_df_title)
-
-    # export to file
-    fig2.savefig(output_file_name_ppm, dpi=300)
-        
-    return
-
 def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
@@ -725,7 +657,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     current_df_replicates_passed = current_df_replicates.reset_index()
 
     return current_df_mean_passed, current_df_replicates_passed
-        
+
 def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, output_directory3, current_df_title, batch_or_book = 'book'):
     ''' We are now ready to calculate the nonlinear curve fit models (or "hat" models), 
     for both individual replicate data (via stats_df_replicates), and on a mean (or "bar") basis (via stats_df_mean). 
@@ -797,7 +729,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     for c in unique_concentrations:
         for p in unique_protons:        
 
-            #COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
+            # COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
 
             # subset the df into the data for one graph, via index slice based on the current peak and concentration
             one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)), :]
@@ -824,7 +756,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 ppm_bar = one_graph_data_mean.index.get_level_values(1)[0].astype(float).round(4)
 
             # this will skip the graphing and analysis for cases where an insignificant proton peak has been removed from consideration PREVIOUSLY due to cutoff
-            if all_yikj_bar.size == 0: continue
+            if all_yikj_bar.size == 0: 
+                continue
 
             # initial guess for alpha and beta (applies equally to replicate operations below)
             initial_guess = np.asarray([1, 1])
@@ -849,7 +782,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             
             # define file name for curve fits by mean
             output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
-
+            '''
             # PLOT MEAN DF CURVE FITS with the original data and save to file
             fig1, (ax1) = plt.subplots(1, figsize = (8, 4))
             ax1.plot(all_sat_time, y_hat_fit(all_sat_time, a_kj_bar, b_kj_bar), 'g-', label='model_w_significant_params')
@@ -862,7 +795,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
             # export to file
             fig1.savefig(output_file_name_figsmean, dpi=300)
-
+            '''
+            generate_curvefit_plots(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
             for r in unique_replicates:
 
                 #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
@@ -903,7 +837,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
                 # file name for curve fits by replicate 
                 output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
-                
+                '''
                 # PLOT CURVE FITS with original data per Replicate and save to file
                 fig2, (ax2) = plt.subplots(1, figsize = (8, 4))
                 ax2.plot(sat_time, y_hat_fit(sat_time, *best_param_vals), 'b-', label='data')
@@ -916,7 +850,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
                 #export to file
                 fig2.savefig(output_file_name_figsrep, dpi=300)
-
+                '''
+                generate_curvefit_plots(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
     #export tabulated results to file and return updated dataframes
     output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title) 
 

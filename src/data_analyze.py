@@ -1,6 +1,7 @@
 import os
 
 from data_wrangling_functions import *
+from data_plot import generate_concentration_plot, generate_ppm_plot
 
 def generate_directories(current_df_title, global_output_directory):
     """ This function defines and creates custom output directories for the inputted dataframe.

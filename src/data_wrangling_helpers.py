@@ -720,3 +720,56 @@ def y_hat_fit(t, a, b):
     3) https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html 
     '''
     return a * (1 - np.exp(t * -b))
+
+    '''
+    
+    Parameters
+    ----------
+    sat_time_df : Pandas.DataFrame
+        Dataframe containing saturation time values.
+    
+    y_ikj_df : Pandas.DataFrame
+        Dataframe containing 
+    
+    param_vals : array-like
+        Array-like containing the fitted parameters for curve fitting.
+    
+    r :  default=None
+        __, only used in "rep" path.
+    
+    c :  
+        __, used in both the "mean" and "rep" paths.
+    
+    ppm : float
+    
+    filename : str
+        Path where the exported file is saved.
+    
+    mean_or_rep : str, {'mean', 'rep'}
+        String indicating which path to take.
+    
+    Notes
+    -----
+    Exports plot to file.
+    
+    '''
+    fig, (ax) = plt.subplots(1, figsize = (8, 4))
+    
+    if mean_or_rep == "mean":
+        # PLOT MEAN DF CURVE FITS with the original data and save to file
+        ax.plot(sat_time_df, y_hat_fit(sat_time_df, *param_vals), 'g-', label='model_w_significant_params')
+        ax.plot(sat_time_df, y_ikj_df, 'g*', label='all_raw_data')
+        ax.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c, ppm))
+        
+    else:
+        # PLOT CURVE FITS with original data per Replicate and save to file
+        ax.plot(sat_time_df, y_hat_fit(sat_time_df, *param_vals), 'b-', label='data')
+        ax.plot(sat_time_df, y_ikj_df, 'b*', label='data')
+        ax.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, ppm))
+        
+    ax.set_xlabel('NMR Saturation Time (s)')
+    ax.set_ylabel('I/Io')
+    plt.rcParams.update({'figure.max_open_warning': 0})
+    fig.tight_layout()
+    # export to file
+    fig.savefig(filename, dpi=300)
