@@ -435,7 +435,7 @@ class TestCurveFit:
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
-        #mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plots")
+        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plots")
         
         # Preserve multi-index when reading in Excel file
         df_mean_left = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
@@ -449,7 +449,7 @@ class TestCurveFit:
         # unique replicates [1, 2, 3]
 
         actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
-        
+                
         # Preserve multi-index when reading in Excel file
         expected_mean_left = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
         expected_mean_right = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
@@ -545,7 +545,9 @@ class TestCurveFit:
         pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
         
         # checking if mocked function was called (mean, rep)
-        assert mock1.call_count == 38 # some iterations were skipped
+        for i in range(len(mock1.call_args_list)):
+            print(mock1.call_args_list[i][-1])
+        assert mock1.call_count == 35 # some iterations were skipped
         
         # check if the same plots are generated (can only compare filepath/name)
         actual_table = glob.glob(output_table + "/*")
