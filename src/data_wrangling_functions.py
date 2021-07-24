@@ -745,10 +745,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             #assign ALL datapoints and ALL data times to test_data variables for this ONE GRAPH
             all_yikj_bar = one_graph_data_mean['yikj_bar']
 
-            if batch_or_book == 'book':
-                all_sat_time = np.asarray(all_yikj_bar.index.get_level_values(1))
-            else:
-                all_sat_time = np.asarray(all_yikj_bar.index.get_level_values(0))
+            all_sat_time = np.asarray(all_yikj_bar.index.get_level_values(1))
 
             #apply boolean significance mask to create the data to be used for actual curve fitting/parameter generation
             significant_yikj_bar = all_yikj_bar[boolean_sig_mask]
