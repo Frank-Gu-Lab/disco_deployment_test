@@ -796,6 +796,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             # export to file
             fig1.savefig(output_file_name_figsmean, dpi=300)
             '''
+
             generate_curvefit_plots(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
             for r in unique_replicates:
 

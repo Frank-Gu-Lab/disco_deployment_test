@@ -72,12 +72,12 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
         
     return
 
-def generate_curvefit_plots(sat_time_df, y_ikj_df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
+def generate_curvefit_plots(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
     '''
     
     Parameters
     ----------
-    sat_time_df : Pandas.DataFrame
+    sat_time : NumPy.ndarray
         Dataframe containing saturation time values.
     
     y_ikj_df : Pandas.DataFrame
@@ -87,10 +87,10 @@ def generate_curvefit_plots(sat_time_df, y_ikj_df, param_vals, ppm, filename, c,
         Array-like containing the fitted parameters for curve fitting.
     
     r : int, default=None
-        __, only used in "rep" path.
+        Unique replicate, only used in "rep" path.
     
     c : float
-        __, used in both the "mean" and "rep" paths.
+        Unique concentration, used in both the "mean" and "rep" paths.
     
     ppm : float
     
@@ -110,14 +110,14 @@ def generate_curvefit_plots(sat_time_df, y_ikj_df, param_vals, ppm, filename, c,
     
     if mean_or_rep == "mean":
         # PLOT MEAN DF CURVE FITS with the original data and save to file
-        ax.plot(sat_time_df, y_hat_fit(sat_time_df, *param_vals), 'g-', label='model_w_significant_params')
-        ax.plot(sat_time_df, y_ikj_df, 'g*', label='all_raw_data')
+        ax.plot(sat_time, y_hat_fit(sat_time, *param_vals), 'g-', label='model_w_significant_params')
+        ax.plot(sat_time, y_ikj_df, 'g*', label='all_raw_data')
         ax.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c, ppm))
         
     else:
         # PLOT CURVE FITS with original data per Replicate and save to file
-        ax.plot(sat_time_df, y_hat_fit(sat_time_df, *param_vals), 'b-', label='data')
-        ax.plot(sat_time_df, y_ikj_df, 'b*', label='data')
+        ax.plot(sat_time, y_hat_fit(sat_time, *param_vals), 'b-', label='data')
+        ax.plot(sat_time, y_ikj_df, 'b*', label='data')
         ax.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, ppm))
         
     ax.set_xlabel('NMR Saturation Time (s)')

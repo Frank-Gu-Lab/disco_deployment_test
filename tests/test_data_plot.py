@@ -5,6 +5,7 @@ import glob
 import shutil
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 from contextlib import contextmanager
 
@@ -91,18 +92,37 @@ class TestGeneratePlot:
         msg = "The generated plot could not be found."
         assert os.path.exists(actual), msg
 
-    '''
-    def test_generate_curvefit_plot(self, remove):
+    @pytest.mark.xfail()
+    @pytest.mark.parametrize('path', ['mean', 'rep'])
+    def test_generate_curvefit_plot(self, path, remove):
         
-        actual_curve = glob.glob(output_curve + "/*")
-        expected_curve = glob.glob(expected_path + "/curve_fit_plots_from_CMC/*")
+        output_dir = remove
         
-        for i in range(len(actual_curve)): # uncomment the following and comment the uncommented lines to simple check for existence
-            #actual_curve[i] = os.path.basename(actual_curve[i])
-            #expected_curve[i] = os.path.basename(expected_curve[i])
-            
-            #assert actual_curve[i] == expected_curve[i]
-            msg3 = "The generated plot {} does not match the expected plot.".format(actual_curve[i])
-            assert compare_images(actual_curve[i], expected_curve[i], tol=0.1) is None, msg3 # compare pixel differences in plot
+        if path == "mean":
+            sat_time = np.array([9, 9, 9, 9, 9, 9, 9])
+            y_ikj_df = pd.read_excel(input_path + "/generate_curvefit_plots_yijk_mean_input.xlsx", index_col=[0, 1])
+            param_vals = np.array([0.0223642, 1.       ])
+            ppm = 0.25
+            filename = output_dir + "/mean_conc9_ppm0.25.png"
+            c = 9
+            r = None
+        else:
+            sat_time = np.array([0.25, 0.5, 0.75, 1., 1.25, 1.5, 1.75])
+            y_ikj_df = pd.read_excel(input_path + "/generate_curvefit_plots_yijk_rep_input.xlsx", index_col=0)
+            param_vals = np.array([0.05102798, 1.14774365])
+            ppm = 4.2517
+            filename = output_dir + "/replicate1_conc9_ppm4.2517.png"
+            c = 9
+            r = 1
+                    
+        with assert_plot_added():
+            generate_curvefit_plots(sat_time, y_ikj_df, param_vals, ppm, filename, c, r, mean_or_rep = path)
+        
+        actual_curve = filename
+        expected_curve = expected_path + "/" + os.path.basename(actual_curve)
+        
+        msg = "The generated plot {} does not match the expected plot.".format(actual_curve)
+        assert compare_images(actual_curve, expected_curve, tol=0.1) is None, msg # compare pixel differences in plot
+
         return
-    '''
+        
