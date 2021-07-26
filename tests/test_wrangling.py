@@ -435,7 +435,7 @@ class TestCurveFit:
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
-        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plots")
+        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plot")
         
         # Preserve multi-index when reading in Excel file
         df_mean_left = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
@@ -521,7 +521,7 @@ class TestCurveFit:
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
-        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plots")
+        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plot")
  
         # Preserve multi-index when reading in Excel file
         df_mean = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]

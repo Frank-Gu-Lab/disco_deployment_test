@@ -72,7 +72,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
         
     return
 
-def generate_curvefit_plots(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
+def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
     '''
     
     Parameters

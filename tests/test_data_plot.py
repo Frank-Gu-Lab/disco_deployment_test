@@ -115,7 +115,7 @@ class TestGeneratePlot:
             r = 1
                     
         with assert_plot_added():
-            generate_curvefit_plots(sat_time, y_ikj_df, param_vals, ppm, filename, c, r, mean_or_rep = path)
+            generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r, mean_or_rep = path)
         
         actual_curve = filename
         expected_curve = expected_path + "/" + os.path.basename(actual_curve)

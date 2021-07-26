@@ -732,7 +732,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             # COMPLETE MEAN CURVE FITTING OPERATIONS PER PROTON & PER CONCENTRATION
 
             # subset the df into the data for one graph, via index slice based on the current peak and concentration
-            #one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)), :] # --> slice(c) grabs all the concentrations up to and including c
+            #one_graph_data_mean = stats_df_mean.loc[(slice(c), slice(None), slice(p)), :] # --> slice(c) grabs all the values up to and including c
             
             if p not in stats_df_mean.loc[c].index.get_level_values(1).unique(): # proton peak not significant for this concentration
                 continue
@@ -803,7 +803,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             fig1.savefig(output_file_name_figsmean, dpi=300)
             '''
 
-            generate_curvefit_plots(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
+            generate_curvefit_plot(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
             for r in unique_replicates:
 
                 #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
@@ -859,7 +859,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 fig2.savefig(output_file_name_figsrep, dpi=300)
                 '''
 
-                generate_curvefit_plots(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
+                generate_curvefit_plot(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
     #export tabulated results to file and return updated dataframes
     output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title) 
 
