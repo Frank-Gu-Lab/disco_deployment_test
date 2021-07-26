@@ -8,3 +8,6 @@ output
 archive
 .pytest_cache
 .coverage
+build/
+discoprocess.egg-info/
+dist/
