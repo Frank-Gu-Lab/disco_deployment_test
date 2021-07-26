@@ -22,12 +22,16 @@ If you have a feature you would like to request, or have observed a bug in the c
 - src/disco-data-processing.py (main program)
 - src/data_wrangling_functions.py (pt 1/2)
 - src/data_merging.py (pt 3)
+- src/data_analyze.py
+- src/data_plot.py
+- src/data_wrangling_helpers.py
+- src/\_\_init__.py (package identifier)
 - data/input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
 
 
 The other files in this hub are just exemplary outputs based on the inputs in the input folder.
 
-Prior to running the script, please ensure you have inserted all the books you would like to be analyzed inside the input directory. The code will create custom output folders per polymer experiment based on the name of the input books, so nothing overwrites. This code supports: 
+Prior to running the script, please ensure you have all the required dependencies by running ```pip install -r requirements.txt```. Insert all the books you would like to be analyzed inside the input directory. The code will create custom output folders per polymer experiment based on the name of the input books, so nothing overwrites. This code supports: 
 - "Book" formatted experimental data (See PAA.xlsx in the input folder for example - one polymer per excel book) 
 - "Batch" formatted experimental data (See (Batch 1), (Batch 2) files in the input folder - many polymers per excel book). 
 
@@ -41,6 +45,8 @@ a replicate of the other three, the sheet tabs should be named as follows:
 
 <h3><b> Running the Code </b></h3>   
 Simply run the disco-data-processing.py file after preparing the input as described above on your local machine.
+
+    python disco-data-processing.py
 
 <h3><b> Results </b></h3>
 The ultimate merged dataset will be available ("merged_binding_dataset.xlsx") as an Excel file in output/merged. 
