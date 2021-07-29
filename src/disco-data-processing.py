@@ -32,9 +32,9 @@ import glob
 idx = pd.IndexSlice
 
 # import all data wrangling functions for Pt. 1 & 2, and data merge function for Pt. 3
-from data_wrangling_functions import *
-from data_merging import merge
-from data_analyze import *
+from discoprocess.data_wrangling_functions import *
+from discoprocess.data_merging import merge
+from discoprocess.data_analyze import *
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
 

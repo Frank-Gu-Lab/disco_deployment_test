@@ -7,7 +7,7 @@ import shutil
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '/../src')
 
-from data_wrangling_functions import *
+from discoprocess.data_wrangling_helpers import *
 
 # global testng directories
 path = "./test-files/test_helpers"

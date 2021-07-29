@@ -12,7 +12,7 @@ from contextlib import contextmanager
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '/../src')
 
-from data_plot import *
+from discoprocess.data_plot import *
 from matplotlib.testing.compare import compare_images
 
 # global testing directories

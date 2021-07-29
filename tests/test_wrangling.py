@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '/../src')
 
-from data_wrangling_functions import *
+from discoprocess.data_wrangling_functions import *
 from matplotlib.testing.compare import compare_images
 
 # global testing directories
@@ -43,8 +43,8 @@ class TestDataFrameConversion:
             
             return unique_polymers, unique_polymer_replicates, name_sheets
     
-        mock1 = mocker.patch("data_wrangling_functions.initialize_excel_batch_replicates", return_value=mock_initialize_excel_batch_replicates())
-        mock2 = mocker.patch("data_wrangling_functions.wrangle_batch")
+        mock1 = mocker.patch("discoprocess.data_wrangling_functions.initialize_excel_batch_replicates", return_value=mock_initialize_excel_batch_replicates())
+        mock2 = mocker.patch("discoprocess.data_wrangling_functions.wrangle_batch")
         
         mocks = [mock1, mock2]
         
@@ -73,9 +73,9 @@ class TestDataFrameConversion:
             
             return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
         
-        mock1 = mocker.patch("data_wrangling_functions.count_sheets", return_value=mock_count_sheets())
-        mock2 = mocker.patch("data_wrangling_functions.wrangle_book")
-        mock3 = mocker.patch("data_wrangling_functions.clean_book_list", return_value=pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0))
+        mock1 = mocker.patch("discoprocess.data_wrangling_functions.count_sheets", return_value=mock_count_sheets())
+        mock2 = mocker.patch("discoprocess.data_wrangling_functions.wrangle_book")
+        mock3 = mocker.patch("discoprocess.data_wrangling_functions.clean_book_list", return_value=pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0))
         
         mocks = [mock1, mock2]
         
@@ -119,7 +119,7 @@ class TestDataFrameConversion:
                     
             return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
 
-        mocker.patch("data_wrangling_functions.count_sheets", return_value=return_mock_count())
+        mocker.patch("discoprocess.data_wrangling_functions.count_sheets", return_value=return_mock_count())
         
         with pytest.raises(ValueError) as e:
             book_to_dataframe(book)
@@ -194,7 +194,7 @@ class TestAttenuation:
         
         df = pd.read_excel(input_path + "/att_" + path + "_input.xlsx", index_col=0)
            
-        mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
+        mocker.patch("discoprocess.data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
         
         actual_true, actual_false = add_attenuation(df, path)
         
@@ -217,7 +217,7 @@ class TestAttenuation:
         df_true = pd.read_excel(input_path + "/corr_att_" + path + "_true_input.xlsx", index_col=0)
         df_false = pd.read_excel(input_path + "/corr_att_" + path + "_false_input.xlsx", index_col=0)
         
-        mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
+        mocker.patch("discoprocess.data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
                
         actual = add_corr_attenuation(df_true, df_false, path)
         expected = pd.read_excel(expected_path + "/corr_att_" + path + "_output.xlsx", index_col=0)
@@ -230,7 +230,7 @@ class TestAttenuation:
         
         df = pd.read_excel(input_path + "/att_book_input.xlsx", index_col=0)
         
-        mocker.patch("data_wrangling_functions.attenuation_calc_equality_checker", return_value=False)
+        mocker.patch("discoprocess.data_wrangling_functions.attenuation_calc_equality_checker", return_value=False)
         
         with pytest.raises(ValueError) as e:
             add_attenuation(df)
@@ -243,7 +243,7 @@ class TestAttenuation:
         df_true = pd.read_excel(input_path + "/corr_att_book_true_input.xlsx", index_col=0)
         df_false = pd.read_excel(input_path + "/corr_att_book_false_input.xlsx", index_col=0)
         
-        mocker.patch("data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=False)
+        mocker.patch("discoprocess.data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=False)
         
         with pytest.raises(ValueError) as e:
             add_corr_attenuation(df_true, df_false)
@@ -435,7 +435,7 @@ class TestCurveFit:
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
-        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plot")
+        mock1 = mocker.patch("discoprocess.data_wrangling_functions.generate_curvefit_plot")
         
         # Preserve multi-index when reading in Excel file
         df_mean_left = pd.read_excel(input_path + "/batch_curve_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
@@ -521,7 +521,7 @@ class TestCurveFit:
         os.mkdir(output_curve)
         os.mkdir(output_table)
         
-        mock1 = mocker.patch("data_wrangling_functions.generate_curvefit_plot")
+        mock1 = mocker.patch("discoprocess.data_wrangling_functions.generate_curvefit_plot")
  
         # Preserve multi-index when reading in Excel file
         df_mean = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]

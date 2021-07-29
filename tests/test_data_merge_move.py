@@ -8,7 +8,7 @@ import pandas as pd
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '/../src')
 
-from data_merging import *
+from discoprocess.data_merging import *
 
 # global testing directory
 path = "test-files/test_merge_move"
@@ -192,10 +192,10 @@ class TestMerge:
         source_path = merge_path + "/input/KHA/data_tables_from_KHA"
         destination_path = source_path
         
-        mock1 = mocker.patch("data_merging.move")
-        mock2 = mocker.patch("data_merging.clean")
-        mock3 = mocker.patch("data_merging.reformat")
-        mock4 = mocker.patch("data_merging.join")
+        mock1 = mocker.patch("discoprocess.data_merging.move")
+        mock2 = mocker.patch("discoprocess.data_merging.clean")
+        mock3 = mocker.patch("discoprocess.data_merging.reformat")
+        mock4 = mocker.patch("discoprocess.data_merging.join")
                 
         merge(source_path, destination_path)
         

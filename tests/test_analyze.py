@@ -7,7 +7,7 @@ import shutil
 # appending path to access sibling directory
 sys.path.append(os.getcwd() + '/../src')
 
-from data_analyze import *
+from discoprocess.data_analyze import *
 
 # global testing directories
 path = "./test-files/test_analyze"
@@ -66,12 +66,12 @@ class TestModeling:
         for d in dirs:
             os.mkdir(d)
         
-        mock1 = mocker.patch("data_analyze.prep_mean")
-        mock2 = mocker.patch("data_analyze.prep_replicate")
-        mock3 = mocker.patch("data_analyze.t_test")
-        mock4 = mocker.patch("data_analyze.compute_af", return_value=(df, df))
-        mock5 = mocker.patch("data_analyze.drop_bad_peaks", return_value=(df, df))
-        mock6 = mocker.patch("data_analyze.execute_curvefit", return_value=(df, df))
+        mock1 = mocker.patch("discoprocess.data_analyze.prep_mean")
+        mock2 = mocker.patch("discoprocess.data_analyze.prep_replicate")
+        mock3 = mocker.patch("discoprocess.data_analyze.t_test")
+        mock4 = mocker.patch("discoprocess.data_analyze.compute_af", return_value=(df, df))
+        mock5 = mocker.patch("discoprocess.data_analyze.drop_bad_peaks", return_value=(df, df))
+        mock6 = mocker.patch("discoprocess.data_analyze.execute_curvefit", return_value=(df, df))
         
         modeling_data(df, df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = path)
         
@@ -108,12 +108,12 @@ class TestAnalyze:
         tuple_list = [('Mock', df)]
         global_output_directory = remove
             
-        mock1 = mocker.patch("data_analyze.generate_directories", return_value=[global_output_directory + "/Mock"]*4)
-        mock2 = mocker.patch("data_analyze.add_attenuation", return_value = (df, df))
-        mock3 = mocker.patch("data_analyze.add_corr_attenuation")
-        mock4 = mocker.patch("data_analyze.generate_concentration_plot")
-        mock5 = mocker.patch("data_analyze.generate_ppm_plot")
-        mock6 = mocker.patch("data_analyze.modeling_data", return_value = (df, df))
+        mock1 = mocker.patch("discoprocess.data_analyze.generate_directories", return_value=[global_output_directory + "/Mock"]*4)
+        mock2 = mocker.patch("discoprocess.data_analyze.add_attenuation", return_value = (df, df))
+        mock3 = mocker.patch("discoprocess.data_analyze.add_corr_attenuation")
+        mock4 = mocker.patch("discoprocess.data_analyze.generate_concentration_plot")
+        mock5 = mocker.patch("discoprocess.data_analyze.generate_ppm_plot")
+        mock6 = mocker.patch("discoprocess.data_analyze.modeling_data", return_value = (df, df))
         
         mocks = [mock1, mock2, mock3, mock4, mock5, mock6]
         
