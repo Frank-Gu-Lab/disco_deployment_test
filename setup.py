@@ -1,3 +1,5 @@
+# for when package is released to PyPi?
+
 from setuptools import setup
 
 setup(
