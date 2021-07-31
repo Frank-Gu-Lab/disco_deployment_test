@@ -16,7 +16,7 @@ from discoprocess.data_plot import *
 from matplotlib.testing.compare import compare_images
 
 # global testing directories
-path = "./test-files/test_data_plot"
+path = os.path.dirname(__file__) + "/test-files/test_data_plot"
 input_path = path + "/input"
 expected_path = path + "/expected"
 

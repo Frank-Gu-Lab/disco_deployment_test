@@ -10,7 +10,7 @@ import shutil
 from discoprocess.data_wrangling_helpers import *
 
 # global testng directories
-path = "./test-files/test_helpers"
+path = os.path.dirname(__file__) + "/test-files/test_helpers"
 input_path = path + "/input"
 expected_path = path + "/expected"
 

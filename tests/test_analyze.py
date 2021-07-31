@@ -10,7 +10,7 @@ import shutil
 from discoprocess.data_analyze import *
 
 # global testing directories
-path = "./test-files/test_analyze"
+path = os.path.dirname(__file__) + "/test-files/test_analyze"
 
 @pytest.fixture(scope='function')
 def remove():

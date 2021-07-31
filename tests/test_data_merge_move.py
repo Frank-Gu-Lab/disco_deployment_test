@@ -11,7 +11,7 @@ import pandas as pd
 from discoprocess.data_merging import *
 
 # global testing directory
-path = "test-files/test_merge_move"
+path = os.path.dirname(__file__) + "/test-files/test_merge_move"
 merge_path = path + "/test_merge"
 move_path = path + "test_move"
 

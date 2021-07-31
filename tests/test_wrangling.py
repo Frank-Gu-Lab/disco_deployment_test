@@ -1,6 +1,7 @@
 import pytest
 import sys
 import os
+import re
 import glob
 import shutil
 import matplotlib.pyplot as plt
@@ -12,7 +13,7 @@ from discoprocess.data_wrangling_functions import *
 from matplotlib.testing.compare import compare_images
 
 # global testing directories
-path = "./test-files/test_wrangling"
+path = os.path.dirname(__file__) + "/test-files/test_wrangling"
 input_path = path + "/input"
 expected_path = path + "/expected"
 
@@ -124,7 +125,7 @@ class TestDataFrameConversion:
         with pytest.raises(ValueError) as e:
             book_to_dataframe(book)
         
-        assert e.match('ERROR: The number of sample sheets is not equal to the number of control sheets in {} please confirm the data in the book is correct.'.format(book))
+        assert e.match('ERROR: The number of sample sheets is not equal to the number of control sheets in {} please confirm the data in the book is correct.'.format(re.escape(book)))
          
 class TestCleanBatch:
     """ This class contains all the unit tests relating to the function test_clean_batch_list. """
