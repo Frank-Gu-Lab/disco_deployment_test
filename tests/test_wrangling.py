@@ -5,7 +5,7 @@ import glob
 import shutil
 import matplotlib.pyplot as plt
 
-# appending path to access sibling directory
+# appending path to access sibling directory - uncomment if local package setup doesn't work
 #sys.path.append(os.getcwd() + '/../src')
 
 from discoprocess.data_wrangling_functions import *

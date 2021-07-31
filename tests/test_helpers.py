@@ -4,7 +4,7 @@ import os
 import glob
 import shutil
 
-# appending path to access sibling directory
+# appending path to access sibling directory - uncomment if local package setup doesn't work
 #sys.path.append(os.getcwd() + '/../src')
 
 from discoprocess.data_wrangling_helpers import *
