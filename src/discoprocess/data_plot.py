@@ -73,7 +73,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     return
 
 def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
-    '''
+    ''' This function generates the curve-fitted plots of STD intensity vs saturation time on both a mean and replicate basis.
     
     Parameters
     ----------
@@ -93,6 +93,7 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
         Unique concentration, used in both the "mean" and "rep" paths.
     
     ppm : float
+        Chemical shift of a particular proton.
     
     filename : str
         File path to the output directory where the figures are saved.
@@ -103,7 +104,6 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
     Notes
     -----
     Exports plot to file.
-    
     '''
     
     fig, (ax) = plt.subplots(1, figsize = (8, 4))
@@ -128,3 +128,4 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
     fig.savefig(filename, dpi=300)
     
     return
+    

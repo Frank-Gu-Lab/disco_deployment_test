@@ -130,7 +130,7 @@ class TestDataFrameConversion:
 class TestCleanBatch:
     """ This class contains all the unit tests relating to the function test_clean_batch_list. """
     
-    def test_clean_the_batch_list(self):
+    def test_clean_the_batch_tuple_list(self):
         """ This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results. 
         
         Notes
