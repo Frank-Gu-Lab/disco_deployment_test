@@ -19,19 +19,26 @@ If you have a feature you would like to request, or have observed a bug in the c
 <h3><b> Run Setup </b></h3>
 
 <b>Your Directory Should Look Like:  </b>    
-- src/disco-data-processing.py (main program)
-- src/data_wrangling_functions.py (pt 1/2)
-- src/data_merging.py (pt 3)
-- src/data_analyze.py
-- src/data_plot.py
-- src/data_wrangling_helpers.py
-- src/\_\_init__.py (package identifier)
+- src/disco-data-processing.py <b> (main program) </b>
+- src/discoprocess <b> (package) </b>
+- src/setup.py <b> (package creator) </b>
+- src/requirements.txt <b> (environment setup) </b>
 - data/input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
 
+<b> Modules inside discoprocess include: </b>
+- \_\_init__.py <b> (package identifier) </b>
+- data_wrangling_functions.py
+- data_merging.py
+- data_analyze.py
+- data_plot.py
+- data_wrangling_helpers.py
 
 The other files in this hub are just exemplary outputs based on the inputs in the input folder.
 
-Prior to running the script, please ensure you have all the required dependencies by running ```pip install -r requirements.txt```. Insert all the books you would like to be analyzed inside the input directory. The code will create custom output folders per polymer experiment based on the name of the input books, so nothing overwrites. This code supports: 
+Prior to running the script, please ensure you have all the required dependencies by navigating to the src directory and run ```pip install -r requirements.txt```. This repository also uses a custom package, discoprocess, which can be installed on your local computer/environment by running ```python setup.py install``` in the src directory, which can then be imported from any directory. This will install all the necessary packages to run this repository. Note that by installing discoprocess, any changes in the source code will not be reflected unless the package is uninstalled and reinstalled.
+
+Insert all the books you would like to be analyzed inside the input directory. The code will create custom output folders per polymer experiment based on the name of the input books, so nothing overwrites. This code supports: 
+
 - "Book" formatted experimental data (See PAA.xlsx in the input folder for example - one polymer per excel book) 
 - "Batch" formatted experimental data (See (Batch 1), (Batch 2) files in the input folder - many polymers per excel book). 
 
@@ -53,30 +60,17 @@ The ultimate merged dataset will be available ("merged_binding_dataset.xlsx") as
 
 ## Unit Tests
 <h3><b> Running Pytest </b></h3>
-Currently, dependencies are not packaged and rely on relative import statements. To ensure that relative paths are correct, unit tests must be run from within the tests module.
+If discoprocess is installed on your local computer/environment, pytest can be run from tests or from its parent directory (so long as tests can be found in a recursive search).
+
 To run all tests:
 
-<html>
-  <head>
-   
     python pytest
-   
-</html>
 
  To run a specific module:
  
-<html>
-  <head>
-   
     python pytest <<module.py>>
    
-</html>
-
 To run a specific class/function (substring matching, regex):
  
-<html>
-  <head>
-   
     python pytest -k "class_name or function_name"
    
-</html>
