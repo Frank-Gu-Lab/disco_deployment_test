@@ -186,7 +186,7 @@ def join(df1, df2):
 
     return df
 
-def merge(source_path, destination_path):cd 
+def merge(source_path, destination_path):
     ''' This function generates a merged machine learning ready dataset.
 
     It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.
