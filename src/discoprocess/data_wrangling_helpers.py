@@ -14,6 +14,17 @@ def DropComplete(x):
     -------
     bool
         False if [Cc]omplete is a substring, otherwise True.
+    
+    Examples
+    --------
+    >>> DropComplete("Complete")
+    False
+
+    >>> DropComplete("complete")
+    False
+
+    >>> DropComplete("Other")
+    True
     """
     
     if "omplete" in x: 
@@ -720,3 +731,8 @@ def y_hat_fit(t, a, b):
     3) https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html 
     '''
     return a * (1 - np.exp(t * -b))
+
+# running doctest
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

@@ -14,24 +14,6 @@ path = os.path.dirname(__file__) + "/test-files/test_helpers"
 input_path = path + "/input"
 expected_path = path + "/expected"
 
-class TestDrop:
-    """ This class contains all the unit tests relating to the helper function DropComplete."""
-    
-    def test_DropComplete(self):
-        """ Tests for three different inputs: two of which are expected to return False, and one where the expected result is True."""
-        
-        s = "Complete"
-        
-        assert not DropComplete(s)
-        
-        t = "complete"
-        
-        assert not DropComplete(t)
-
-        u = "another word"
-        
-        assert DropComplete(u)
-
 class TestInitialize:
     """This class contains all the unit tests relating to the function initialize_excel_batch_replicates."""
     
