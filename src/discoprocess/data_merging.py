@@ -186,7 +186,7 @@ def join(df1, df2):
 
     return df
 
-def merge(source_path, destination_path):
+def merge(source_path, destination_path):cd 
     ''' This function generates a merged machine learning ready dataset.
 
     It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.
@@ -216,31 +216,31 @@ def merge(source_path, destination_path):
     indicator3 = 'mean'
 
     # 1) need to merge all the input polymer files with a significant AFo into one tidy longform dataframe 
-    selected_files = [file for file in all_files if indicator3 in file and indicator2 not in file]
-    polymer_names = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in selected_files]
+    selected_files_pos = [file for file in all_files if indicator3 in file and indicator2 not in file]
+    polymer_names_pos = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in selected_files_pos]
     #selected_dataframes = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files]
-    
-    for i in range(len(selected_files)):
+    selected_dataframes = selected_files_pos.copy() 
 
+    for i in range(len(selected_files_pos)):
         try: # ppm in index
             # Preserve multi-index when reading in Excel file
-            df = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-            df_other = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+            df = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+            df_other = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-            selected_files[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+            selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
-        except: # ppm in column
+        except KeyError: # ppm in column
             # Preserve multi-index when reading in Excel file
-            df = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            df_other = pd.read_excel(selected_files[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+            df = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+            df_other = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-            selected_files[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+            selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
     # 1) clean list
     
-    clean(selected_files, polymer_names, True)
+    clean(selected_dataframes, polymer_names_pos, True)
 
-    selected_dataframes_pos = reformat(selected_files, True)
+    selected_dataframes_pos = reformat(selected_dataframes, True)
 
     # to balance the dataset, add BACK in the negative examples in preprocessing dropped due to statistical insignificance with an AFo = 0
 
@@ -248,7 +248,8 @@ def merge(source_path, destination_path):
     selected_files_neg = [file for file in all_files if indicator3 in file and indicator2 in file]
     polymer_names_neg = [re.search('all_(.+?).xlsx', file).group(1).strip() for file in selected_files_neg]
     #selected_dataframes_neg_list = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files_neg]
-    
+    selected_dataframes = selected_files_neg.copy()
+
     for i in range(len(selected_files_neg)):
     
         try: # ppm in index
@@ -256,19 +257,19 @@ def merge(source_path, destination_path):
             df = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
             df_other = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-            selected_files_neg[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+            selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
-        except: # ppm in column
+        except KeyError: # ppm in column
             # Preserve multi-index when reading in Excel file
             df = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
             df_other = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-            selected_files_neg[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
+            selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
     # 2) clean list
     
-    clean(selected_files_neg, polymer_names_neg, False)
+    clean(selected_dataframes, polymer_names_neg, False)
         
-    selected_dataframes_neg = reformat(selected_files_neg, False)
+    selected_dataframes_neg = reformat(selected_dataframes, False)
     
     return join(selected_dataframes_pos, selected_dataframes_neg)

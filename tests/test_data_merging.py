@@ -2,6 +2,7 @@ import pytest
 import sys
 import os
 import shutil
+import re
 import glob
 import pandas as pd
 
@@ -182,20 +183,21 @@ class TestJoin:
 class TestMerge:
     """ This class contains all the unit tests relating to the merge function."""
         
-    def test_merge(self, remove, mocker):
+    def test_merge(self, mocker):
         ''' Checks whether all dependencies are called and that both positive (True) and negative (False) observations are read.
         
         Notes
         -----
         All dependencies are mocked with pytest-mock.
         '''
-        source_path = merge_path + "/input/KHA/data_tables_from_KHA"
+        source_path = merge_path + "/input/merge_input"
         destination_path = source_path
         
         mock1 = mocker.patch("discoprocess.data_merging.move")
         mock2 = mocker.patch("discoprocess.data_merging.clean")
         mock3 = mocker.patch("discoprocess.data_merging.reformat")
         mock4 = mocker.patch("discoprocess.data_merging.join")
+        mock5 = mocker.patch("discoprocess.data_merging.len", return_value=2)
                 
         merge(source_path, destination_path)
         
@@ -211,5 +213,21 @@ class TestMerge:
         assert mock3.call_args_list[0][0][-1] == True
         assert mock3.call_args_list[1][0][-1] == False
         
-        # somehow figure out how to check file names
+        # verifying file names extracted for pos and neg dataframes
+        df_pos_names = mock5.call_args_list[0][0][0]
+        df_pos_names = [os.path.basename(path) for path in df_pos_names]
         
+        assert df_pos_names == ['stats_analysis_output_mean_CMC.xlsx', 'stats_analysis_output_mean_KHA.xlsx']
+
+        df_neg_names = mock5.call_args_list[1][0][0]
+        df_neg_names = [os.path.basename(path) for path in df_neg_names]
+        
+        assert df_neg_names == ['stats_analysis_output_mean_all_CMC.xlsx', 'stats_analysis_output_mean_all_CMC_ours.xlsx', 'stats_analysis_output_mean_all_KHA.xlsx', 'stats_analysis_output_mean_all_pHEMAMPC8020.xlsx']
+
+        # verifying polymer names extracted for pos and neg dataframes
+        polymer_pos_names = mock2.call_args_list[0][0][1]
+        assert polymer_pos_names == ['CMC', 'KHA']
+
+        polymer_neg_names = mock2.call_args_list[1][0][1]
+        assert polymer_neg_names == ['CMC', 'CMC_ours', 'KHA', 'pHEMAMPC8020']
+    
