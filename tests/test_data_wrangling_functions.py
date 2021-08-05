@@ -159,8 +159,8 @@ class TestCleanBatch:
         
         output_list = glob.glob(expected_path + "/clean_batch_output/*")
         
-        msg1 = "Too many or too few dataframes were cleaned and exported."
-        assert len(actual) == len(output_list)
+        msg1 = "{} dataframes were cleaned and exported, expected {}.".format(len(actual), len(output_list))
+        assert len(actual) == len(output_list), msg1
         
         # loop through and check dataframe equality
         for i in range(len(actual)):

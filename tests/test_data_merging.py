@@ -14,7 +14,7 @@ from discoprocess.data_merging import *
 # global testing directory
 path = os.path.dirname(__file__) + "/test-files/test_merge_move"
 merge_path = path + "/test_merge"
-move_path = path + "test_move"
+move_path = path + "/test_move"
 
 @pytest.fixture(scope='function')
 def remove():
@@ -51,14 +51,19 @@ class TestMove:
             
 class TestClean:
     """ This class contains all unit tests relating to the clean function. """
-
-    def test_clean_pos(self):
-        """ Tests whether the dataframes with positive binding observations are cleaned as expected. """
+    @pytest.mark.parametrize('pos_or_neg', ['pos', 'neg'])
+    def test_clean(self, pos_or_neg):
+        """ Tests whether the dataframes with positive and negative binding observations are cleaned as expected. """
         
-        # recreate input list
+        # recreate input list and polymer list
+        dfs = sorted(glob.glob(merge_path + "/input/clean_" + pos_or_neg + "_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
+           
+        if pos_or_neg == 'pos':
+            polymer_list = ['CMC', 'HEMAcMPC', 'HPMCE3', 'KHA', 'PAA', 'pDMASBT', 'pHEMASBT5050']
         
-        dfs = glob.glob(merge_path + "/input/clean_pos_input/*")
-
+        else:
+            polymer_list = ['CMC', 'CMC_ours', 'HEMAcMPC', 'HPMCE3', 'HPMCE4M', 'KHA', 'PAA', 'PDMA', 'PDMAcd', 'pDMAMPC5050', 'pDMASBT', 'PEGHCO', 'pHEMAMPC2080', 'pHEMAMPC8020', 'pHEMASBT5050', 'pMPC', 'pMPC_ours', 'pSBT', 'PTA']
+        
         for i in range(len(dfs)):
         
             try: # ppm in index
@@ -75,91 +80,38 @@ class TestClean:
                 df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
                 dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
-        polymer_list = open(merge_path + "/input/clean_pos_polymer.txt").readlines()
-        polymer_list = [l.rstrip() for l in polymer_list]
-        
         # call function --> original list is modified (mutable)
-        clean(dfs, polymer_list, True)        
+        clean(dfs, polymer_list, pos_or_neg)        
         
         # recreate output list
-        expected_dfspaths = glob.glob(merge_path + "/expected/clean_pos_output/*")
+        expected_dfspaths = sorted(glob.glob(merge_path + "/expected/clean_" + pos_or_neg + "_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
         expected_dfs = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in expected_dfspaths]
 
         # compare
         assert len(dfs) == len(expected_dfs)
 
-        for i in range(len(dfs)):
-            pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
-    
-    def test_clean_neg(self):
-        """ Tests whether the dataframes with negative binding observations are cleaned as expected. """
-
-        # recreate input list        
-        dfs = sorted(glob.glob(merge_path + "/input/clean_neg_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
-
-        for i in range(len(dfs)):
-            
-            try: # ppm in index
-                # Preserve multi-index when reading in Excel file
-                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
-
-            except: # ppm in column
-                # Preserve multi-index when reading in Excel file
-                df = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                df_other = pd.read_excel(dfs[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-                dfs[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-        polymer_list = open(merge_path + "/input/clean_neg_polymer.txt").readlines()
-        polymer_list = [l.rstrip() for l in polymer_list]
-        
-        # call function --> original list is modified (mutable)
-        clean(dfs, polymer_list, False)        
-        
-        # recreate output list
-        expected_dfspaths = sorted(glob.glob(merge_path + "/expected/clean_neg_output/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
-        expected_dfs = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in expected_dfspaths]
-
-        # compare
-        assert len(dfs) == len(expected_dfs)
-        
         for i in range(len(dfs)):
             pd.testing.assert_frame_equal(dfs[i], expected_dfs[i])
 
 class TestReformat:
     """ This class contains all the unit tests relating to the reformt functions. """
     
-    def test_reformat_pos(self):
-        """ Takes in a list of dataframes containing positive binding data, concatenates them, and returns the reformatted dataframe. """
-         
+    @pytest.mark.parametrize('pos_or_neg', ['pos', 'neg'])
+    def test_reformat(self, pos_or_neg):
+        """ Takes in a list of dataframes containing positive (or negative) binding data, concatenates them, and returns the reformatted dataframe. """
+        
         # recreating input list
-        df_list = glob.glob(merge_path + "/input/reformat_pos_input/*")
+        df_list = sorted(glob.glob(merge_path + "/input/reformat_" + pos_or_neg + "_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
         df_list = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in df_list]
-        
-        actual = reformat(df_list, True)
-        
-        expected = pd.read_excel(merge_path + "/expected/reformat_pos_output.xlsx", index_col=0)
+
+        actual = reformat(df_list, pos_or_neg)
+
+        expected = pd.read_excel(merge_path + "/expected/reformat_" + pos_or_neg + "_output.xlsx", index_col=0)
+
         expected.columns.names = ['index'] # column name not included when reading in Excel file
-        
-        pd.testing.assert_frame_equal(actual, expected, check_exact=True)
-        
-    def test_reformat_neg(self):  
-        """ Takes in a list of dataframes containing negative binding data, concatenates them, and returns the reformatted dataframe. """
-         
-        # recreating input list
-        df_list = sorted(glob.glob(merge_path + "/input/reformat_neg_input/*"), key=lambda x : int(os.path.basename(x)[6:-5]))
-        df_list = [pd.read_excel(df, index_col=[0, 1, 2, 3]) for df in df_list]
-
-        actual = reformat(df_list, False)
-
-        expected = pd.read_excel(merge_path + "/expected/reformat_neg_output.xlsx", index_col=0)
-        expected.columns.name = 'index' # column.name attribute not saved when exported to Excel file
 
         pd.testing.assert_frame_equal(actual, expected, check_exact=True)
-        
+ 
 class TestJoin:
     """ This class contains all the unit tests relating to the join function. """
     

@@ -41,7 +41,7 @@ def move(source_path, destination_path):
     
     return print("Files for merging have been moved to the destination directory.")
 
-def clean(df_list, polymer_list, pos : bool):
+def clean(df_list, polymer_list, pos_or_neg = 'pos'):
     """This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column, 
     and drops the appropriate columns to the index level.
     
@@ -74,7 +74,7 @@ def clean(df_list, polymer_list, pos : bool):
         # drop extra level
         df_list[i] = df_list[i].droplevel(1, axis = 1)
 
-        if pos:
+        if pos_or_neg == 'pos':
             # drop extra columns
             drop_data = df_list[i].loc[:, ['corr_%_attenuation','dofs', 'amp_factor', 'yikj_bar','SSE_bar']]
             
@@ -84,7 +84,7 @@ def clean(df_list, polymer_list, pos : bool):
         
         df_list[i] = df_list[i].drop(drop_data.columns, axis = 1)
         
-def reformat(df_list, pos : bool):
+def reformat(df_list, pos_or_neg = 'pos'):
     """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame. 
     
     Parameters
@@ -103,7 +103,7 @@ def reformat(df_list, pos : bool):
     # concatenate
     df = pd.concat(df_list)
 
-    if pos:
+    if pos_or_neg == 'pos':
         
         # 1) drop sat time from index
         df.index = df.index.droplevel(1)

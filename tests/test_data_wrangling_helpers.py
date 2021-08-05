@@ -24,15 +24,14 @@ class TestInitialize:
         
         actual_polymers, actual_replicates, actual_sheets = initialize_excel_batch_replicates(b)
         
-        expected_polymers = open(expected_path + "/unique_polymer_output.txt").readlines()
-        expected_polymers = [l.rstrip() for l in expected_polymers]
-        
-        expected_replicates = open(expected_path + "/unique_polymer_replicate_output.txt").readlines()
-        expected_replicates = np.array([float(word) for word in expected_replicates])
-        
-        expected_sheets = open(expected_path + "/all_sheets_output.txt").readlines()
-        expected_sheets = [l.rstrip() for l in expected_sheets]
-        
+        expected_polymers = ['CMC', 'CMC_ours', 'HEMAcMPC', 'HPMC E3', 'HPMC E4M', 'PDMA', 'PDMAcd', 'PEGHCO', 'PTA']
+
+        expected_replicates = np.array([3, 1, 4, 3, 3, 3, 3, 1, 3])
+
+        expected_sheets = ['CMC (2)', 'CMC (3)', 'CMC (4)', 'CMC_ours', 'HEMAcMPC (1)', 'HEMAcMPC (2)', 'HEMAcMPC (3)', 
+                            'HEMAcMPC (4)', 'HPMC E3', 'HPMC E3 (2)', 'HPMC E3 (3)', 'HPMC E4M', 'HPMC E4M (2)', 'HPMC E4M (3)', 'PDMA (1)', 
+                            'PDMA (2)', 'PDMA (3)', 'PDMAcd (1)', 'PDMAcd (2)', 'PDMAcd (3)', 'PEGHCO', 'PTA (1)', 'PTA (2)', 'PTA (3)']
+
         msg1 = "Polymer names were not extracted as expected."
         assert actual_polymers == expected_polymers, msg1
         
@@ -72,11 +71,7 @@ class TestWrangle:
         for i in range(len(df_names)):
             expected.append((df_names[i], dfs[i]))
             
-        if len(actual) < len(expected):
-            msg1 = "Not enough dataframes appended to output list."
-        else:
-            msg1 = "Too many dataframes appended to output list."
-
+        msg1 = "{} dataframes were initialized, expected {}.".format(len(actual), len(expected))
         assert len(actual) == len(expected), msg1
         
         for i in range(len(actual)):
@@ -105,11 +100,7 @@ class TestWrangle:
         dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
         dfs = [pd.read_excel(df, index_col=0) for df in dfs]
         
-        if len(actual) > len(dfs):
-            msg1 = "Too many dataframes appended to output list."
-        else:
-            msg1 = "Too few dataframes appended to output list."
-            
+        msg1 = "{} dataframes were initialized, expected {}.".format(len(actual), len(dfs))
         assert len(actual) == len(dfs), msg1
         
         for i in range(len(actual)):
@@ -254,15 +245,18 @@ class TestDofs:
     def test_get_dofs(self):
         """ Given a list of peaks, checks for whether the expected dofs are returned."""
         
-        peak_list = open(input_path + "/dof_input.txt").readlines()    
-        peak_list = [int(word.rstrip()) for word in peak_list]
+        peak_list = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 
+                        3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 
+                        4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 
+                        7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 
+                        1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7]
         
         peak_input = np.array(peak_list)
         
         actual = get_dofs(peak_input)
         
-        expected = open(expected_path + "/dof_output.txt").readlines()    
-        expected = [int(word.rstrip()) for word in expected]
+        expected = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
+                        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
         
         msg = "Dofs were not identifed as expected."
         assert actual == expected, msg
