@@ -68,10 +68,7 @@ def book_to_dataframe(b):
     ----------
     b : str
         The file path to the excel book of interest.
-        
-    global_output_directory : str
-        The file path to the directory containing all output cleaned dataframes.
-    
+
     Returns
     -------
     clean_tuple : tuple
@@ -788,20 +785,6 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             
             # define file name for curve fits by mean
             output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
-            '''
-            # PLOT MEAN DF CURVE FITS with the original data and save to file
-            fig1, (ax1) = plt.subplots(1, figsize = (8, 4))
-            ax1.plot(all_sat_time, y_hat_fit(all_sat_time, a_kj_bar, b_kj_bar), 'g-', label='model_w_significant_params')
-            ax1.plot(all_sat_time, all_yikj_bar, 'g*', label='all_raw_data')
-            ax1.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c,ppm_bar))
-            ax1.set_xlabel('NMR Saturation Time (s)')
-            ax1.set_ylabel('I/Io')
-            plt.rcParams.update({'figure.max_open_warning': 0})
-            fig1.tight_layout()
-
-            # export to file
-            fig1.savefig(output_file_name_figsmean, dpi=300)
-            '''
 
             generate_curvefit_plot(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
             for r in unique_replicates:
@@ -844,20 +827,6 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
                 # file name for curve fits by replicate 
                 output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
-                '''
-                # PLOT CURVE FITS with original data per Replicate and save to file
-                fig2, (ax2) = plt.subplots(1, figsize = (8, 4))
-                ax2.plot(sat_time, y_hat_fit(sat_time, *best_param_vals), 'b-', label='data')
-                ax2.plot(sat_time, y_ikj, 'b*', label='data')
-                ax2.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, mean_current_ppm))
-                ax2.set_xlabel('NMR Saturation Time (s)')
-                ax2.set_ylabel('I/Io')
-                plt.rcParams.update({'figure.max_open_warning': 0})
-                fig2.tight_layout()
-
-                #export to file
-                fig2.savefig(output_file_name_figsrep, dpi=300)
-                '''
 
                 generate_curvefit_plot(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
     #export tabulated results to file and return updated dataframes
