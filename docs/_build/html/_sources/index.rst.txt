@@ -9,7 +9,6 @@ Welcome to disco-data-processing's documentation!
 .. toctree::
    :maxdepth: 2
 
-   usage
    source/src_modules/modules.rst
    source/test_modules/modules.rst
 

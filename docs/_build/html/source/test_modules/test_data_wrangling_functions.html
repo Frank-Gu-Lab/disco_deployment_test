@@ -1,0 +1,555 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>test_data_wrangling_functions module &mdash; disco-data-processing 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="test_data_wrangling_helpers module" href="test_data_wrangling_helpers.html" />
+    <link rel="prev" title="test_data_plot module" href="test_data_plot.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> disco-data-processing
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../src_modules/modules.html">discoprocess</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">tests</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="test_data_analyze.html">test_data_analyze module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_data_merging.html">test_data_merging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_data_plot.html">test_data_plot module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">test_data_wrangling_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_data_wrangling_helpers.html">test_data_wrangling_helpers module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">disco-data-processing</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">tests</a> &raquo;</li>
+        
+      <li>test_data_wrangling_functions module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/source/test_modules/test_data_wrangling_functions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-test_data_wrangling_functions">
+<span id="test-data-wrangling-functions-module"></span><h1>test_data_wrangling_functions module<a class="headerlink" href="#module-test_data_wrangling_functions" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAF">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestAF</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestAF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the function compute_af.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestAF.test_compute_af" title="test_data_wrangling_functions.TestAF.test_compute_af"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_compute_af</span></code></a>()</p></td>
+<td><p>Checks whether the expected amplication factor was calculated and appended to the dataframe.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAF.test_compute_af">
+<span class="sig-name descname"><span class="pre">test_compute_af</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestAF.test_compute_af" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the expected amplication factor was calculated and appended to the dataframe.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAttenuation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestAttenuation</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestAttenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestAttenuation.test_add_attenuation" title="test_data_wrangling_functions.TestAttenuation.test_add_attenuation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_attenuation</span></code></a>(path, mocker)</p></td>
+<td><p>Checks for expected attenuation calculations applied for both book and batch paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestAttenuation.test_add_attenuation_assertion" title="test_data_wrangling_functions.TestAttenuation.test_add_attenuation_assertion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_attenuation_assertion</span></code></a>(mocker)</p></td>
+<td><p>Checks that a ValueError is raised when the equality checker returns False.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation" title="test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_corr_attenuation</span></code></a>(path, mocker)</p></td>
+<td><p>Checks for expected corrected attenuation calculations applied for both the book and batch paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation_assertion" title="test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation_assertion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_add_corr_attenuation_assertion</span></code></a>(mocker)</p></td>
+<td><p>Checks that a ValueError is raised when the equality checker returns False.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAttenuation.test_add_attenuation">
+<span class="sig-name descname"><span class="pre">test_add_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestAttenuation.test_add_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected attenuation calculations applied for both book and batch paths.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.
+The function attenuation_calc_equality_checker is mocked to return True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAttenuation.test_add_attenuation_assertion">
+<span class="sig-name descname"><span class="pre">test_add_attenuation_assertion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestAttenuation.test_add_attenuation_assertion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that a ValueError is raised when the equality checker returns False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation">
+<span class="sig-name descname"><span class="pre">test_add_corr_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for expected corrected attenuation calculations applied for both the book and batch paths.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.
+The function corrected_attenuation_calc_equality_checker is mocked to return True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation_assertion">
+<span class="sig-name descname"><span class="pre">test_add_corr_attenuation_assertion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestAttenuation.test_add_corr_attenuation_assertion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that a ValueError is raised when the equality checker returns False.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestCleanBatch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestCleanBatch</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestCleanBatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the function test_clean_batch_list.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestCleanBatch.test_clean_the_batch_tuple_list" title="test_data_wrangling_functions.TestCleanBatch.test_clean_the_batch_tuple_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_clean_the_batch_tuple_list</span></code></a>()</p></td>
+<td><p>This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestCleanBatch.test_clean_the_batch_tuple_list">
+<span class="sig-name descname"><span class="pre">test_clean_the_batch_tuple_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestCleanBatch.test_clean_the_batch_tuple_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function recreates the input dataframe list and checks whether the resulting cleaned dataframes match the expected results.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestCurveFit">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestCurveFit</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestCurveFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the execute_curvefit function.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_batch" title="test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_execute_curvefit_batch</span></code></a>(remove, mocker)</p></td>
+<td><p>Checks for whether the curvefit was executed as expected; batch path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_book" title="test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_execute_curvefit_book</span></code></a>(remove, mocker)</p></td>
+<td><p>Checks for whether the curvefit was executed as expected; book path.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_batch">
+<span class="sig-name descname"><span class="pre">test_execute_curvefit_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for whether the curvefit was executed as expected; batch path. Removes all generated plots during teardown.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-3.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_book">
+<span class="sig-name descname"><span class="pre">test_execute_curvefit_book</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestCurveFit.test_execute_curvefit_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-3. 
+Simply checks for filepath existence.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDataFrameConversion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestDataFrameConversion</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestDataFrameConversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the dataframe conversion functions, batch_to_dataframe and book_to_dataframe.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestDataFrameConversion.test_book_to_dataframe_unequal" title="test_data_wrangling_functions.TestDataFrameConversion.test_book_to_dataframe_unequal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_book_to_dataframe_unequal</span></code></a>(mocker)</p></td>
+<td><p>Checks whether a ValueError is raised when the number of samples and controls do not match.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 73%" />
+<col style="width: 27%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>test_batch_to_dataframe</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>test_book_to_dataframe</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDataFrameConversion.test_batch_to_dataframe">
+<span class="sig-name descname"><span class="pre">test_batch_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestDataFrameConversion.test_batch_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDataFrameConversion.test_book_to_dataframe">
+<span class="sig-name descname"><span class="pre">test_book_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestDataFrameConversion.test_book_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDataFrameConversion.test_book_to_dataframe_unequal">
+<span class="sig-name descname"><span class="pre">test_book_to_dataframe_unequal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mocker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestDataFrameConversion.test_book_to_dataframe_unequal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a ValueError is raised when the number of samples and controls do not match.</p>
+<p class="rubric">Notes</p>
+<p>Mocker modifies the output for count_sheets from num_controls = 3 to num_controls = 2.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDropBadPeaks">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestDropBadPeaks</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestDropBadPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the execute_curvefit function.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestDropBadPeaks.test_drop_bad_peaks_book" title="test_data_wrangling_functions.TestDropBadPeaks.test_drop_bad_peaks_book"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_drop_bad_peaks_book</span></code></a>(remove)</p></td>
+<td><p>Checks whether the expected peaks were dropped and removes any generated files upon teardown.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 74%" />
+<col style="width: 26%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>test_drop_bad_peaks_batch</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDropBadPeaks.test_drop_bad_peaks_batch">
+<span class="sig-name descname"><span class="pre">test_drop_bad_peaks_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestDropBadPeaks.test_drop_bad_peaks_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestDropBadPeaks.test_drop_bad_peaks_book">
+<span class="sig-name descname"><span class="pre">test_drop_bad_peaks_book</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestDropBadPeaks.test_drop_bad_peaks_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the expected peaks were dropped and removes any generated files upon teardown.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestExport">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestExport</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestExport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 73%" />
+<col style="width: 27%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>test_export_clean_books</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestExport.test_export_clean_books">
+<span class="sig-name descname"><span class="pre">test_export_clean_books</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestExport.test_export_clean_books" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestPrep">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestPrep</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestPrep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the prep functions.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestPrep.test_prep_mean" title="test_data_wrangling_functions.TestPrep.test_prep_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_prep_mean</span></code></a>(path)</p></td>
+<td><p>Checks whether an Excel book is prepped for statistical analysis on a “mean” basis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestPrep.test_prep_replicate" title="test_data_wrangling_functions.TestPrep.test_prep_replicate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_prep_replicate</span></code></a>(path)</p></td>
+<td><p>Checks whether an Excel book is prepped for statistical analysis per replicate.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestPrep.test_prep_mean">
+<span class="sig-name descname"><span class="pre">test_prep_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestPrep.test_prep_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an Excel book is prepped for statistical analysis on a “mean” basis.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5 and ignores datatype matching.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestPrep.test_prep_replicate">
+<span class="sig-name descname"><span class="pre">test_prep_replicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestPrep.test_prep_replicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether an Excel book is prepped for statistical analysis per replicate.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestT">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">TestT</span></span><a class="headerlink" href="#test_data_wrangling_functions.TestT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the unit tests relating to the t-test analysis function.</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#test_data_wrangling_functions.TestT.test_t_test" title="test_data_wrangling_functions.TestT.test_t_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_t_test</span></code></a>()</p></td>
+<td><p>Performa a sample t-test and checks whether the expected results were appended to the inputted dataframe.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.TestT.test_t_test">
+<span class="sig-name descname"><span class="pre">test_t_test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.TestT.test_t_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performa a sample t-test and checks whether the expected results were appended to the inputted dataframe.</p>
+<p class="rubric">Notes</p>
+<p>Equality checking uses a relative tolerance of 1e-5.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_data_wrangling_functions.remove">
+<span class="sig-prename descclassname"><span class="pre">test_data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_data_wrangling_functions.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="test_data_wrangling_helpers.html" class="btn btn-neutral float-right" title="test_data_wrangling_helpers module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="test_data_plot.html" class="btn btn-neutral float-left" title="test_data_plot module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jeffrey Watchorn, Samantha Stuart, Jennifer Tram Su.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

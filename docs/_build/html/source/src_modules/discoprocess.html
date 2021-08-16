@@ -1,0 +1,1099 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>discoprocess package &mdash; disco-data-processing 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="discoprocess" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> disco-data-processing
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">discoprocess</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">discoprocess package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-discoprocess.data_analyze">discoprocess.data_analyze module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-discoprocess.data_merging">discoprocess.data_merging module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-discoprocess.data_plot">discoprocess.data_plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-discoprocess.data_wrangling_functions">discoprocess.data_wrangling_functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-discoprocess.data_wrangling_helpers">discoprocess.data_wrangling_helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-discoprocess">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">disco-data-processing</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">discoprocess</a> &raquo;</li>
+        
+      <li>discoprocess package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/source/src_modules/discoprocess.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="discoprocess-package">
+<h1>discoprocess package<a class="headerlink" href="#discoprocess-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-discoprocess.data_analyze">
+<span id="discoprocess-data-analyze-module"></span><h2>discoprocess.data_analyze module<a class="headerlink" href="#module-discoprocess.data_analyze" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_analyze.analyze_data">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_analyze.</span></span><span class="sig-name descname"><span class="pre">analyze_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tuple_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_analyze.analyze_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function outlines the full data visualization and modeling processing for a list of dataframes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>tuple_list</strong><span class="classifier">list</span></dt><dd><p>List of tuples of the form (df_title, Pandas.DataFrame).</p>
+</dd>
+<dt><strong>global_output_directory</strong><span class="classifier">str</span></dt><dd><p>Output directory for the main program, where the custom output directories of the all the inputted dataframes will be stored.</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_analyze.generate_directories">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_analyze.</span></span><span class="sig-name descname"><span class="pre">generate_directories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_df_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_output_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_analyze.generate_directories" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function defines and creates custom output directories for the inputted dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_df_title</strong><span class="classifier">str</span></dt><dd><p>Title of the dataframe being handled.</p>
+</dd>
+<dt><strong>global_output_directory</strong><span class="classifier">str</span></dt><dd><p>Output directory for the main program, where the custom output directories of the inputted dataframes will be stored.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>output_directory_exploratory</strong><span class="classifier">str</span></dt><dd><p>Filepath to the directory where all exploratory plots for the inputted dataframe will be stored.</p>
+</dd>
+<dt><strong>output_directory_curve</strong><span class="classifier">str</span></dt><dd><p>Filepath to the directory where all the curve fit plots for the inputted dataframe will be stored.</p>
+</dd>
+<dt><strong>output_directory_tables</strong><span class="classifier">str</span></dt><dd><p>Filepath to the directory where the final fully-processed dataframe created from the input dataframe will be stored.</p>
+</dd>
+<dt><strong>output_directory</strong><span class="classifier">str</span></dt><dd><p>Filepath to the custom directory for the inputted dataframe, where the above directories will be located.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_analyze.modeling_data">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_analyze.</span></span><span class="sig-name descname"><span class="pre">modeling_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_df_attenuation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_df_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory_curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory_tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_analyze.modeling_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function outlines the full data-modeling procedure for the inputted dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_df_attenuation</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>An updated dataframe that includes the attenuation and corr_%_attenuation columns; the dataframe to be prepared for statistical analysis.</p>
+</dd>
+<dt><strong>current_df_title</strong><span class="classifier">str</span></dt><dd><p>Title of the dataframe being handled.</p>
+</dd>
+<dt><strong>output_directory</strong><span class="classifier">str</span></dt><dd><p>Filepath to the custom directory for the inputted dataframe, where the above directories will be located.</p>
+</dd>
+<dt><strong>output_directory_curve</strong><span class="classifier">str</span></dt><dd><p>Filepath to the directory where all the curve fit plots for the inputted dataframe will be stored.</p>
+</dd>
+<dt><strong>output_directory_tables</strong><span class="classifier">str</span></dt><dd><p>Filepath to the directory where the final fully-processed dataframe created from the input dataframe will be stored.</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>current_df_mean, current_df_replicates</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The final fully-processed dataframes with curve fitting results appended to table.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-discoprocess.data_merging">
+<span id="discoprocess-data-merging-module"></span><h2>discoprocess.data_merging module<a class="headerlink" href="#module-discoprocess.data_merging" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_merging.clean">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_merging.</span></span><span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polymer_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_or_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pos'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_merging.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column, 
+and drops the appropriate columns to the index level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df_list</strong><span class="classifier">list</span></dt><dd><p>List of Pandas DataFrames to be cleaned.</p>
+</dd>
+<dt><strong>polymer_list</strong><span class="classifier">list</span></dt><dd><p>List of polymer names contained in the passed DataFrames.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">bool</span></dt><dd><p>True for positive binding observations, False for negative binding observations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_merging.join">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_merging.</span></span><span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_merging.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in two cleaned DataFrames and merges them in a way that makes sense.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df1, df2</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Cleaned dataframes containing positive and negative binding observations, respectively.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Final merged dataframe containing the merged dataset and positive and negative observations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_merging.merge">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_merging.</span></span><span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_merging.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a merged machine learning ready dataset.</p>
+<p>It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>source_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.</p>
+</dd>
+<dt><strong>destination_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of destination directory.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Pandas.DataFrame</dt><dd><p>DataFrame containing the resulting merged datafiles from destination_path.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_merging.move">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_merging.</span></span><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_merging.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
+where the merging of positive and negative observations into one dataset will occur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>source_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.</p>
+</dd>
+<dt><strong>destination_path</strong><span class="classifier">str</span></dt><dd><p>String containing path of destination directory.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_merging.reformat">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_merging.</span></span><span class="sig-name descname"><span class="pre">reformat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_or_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pos'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_merging.reformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df_list</strong><span class="classifier">list</span></dt><dd><p>List of Pandas DataFrames to be concatenated and reformatted.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">bool</span></dt><dd><p>True for positive binding observations, False for negative binding observations.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Final reformatted DataFrame.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-discoprocess.data_plot">
+<span id="discoprocess-data-plot-module"></span><h2>discoprocess.data_plot module<a class="headerlink" href="#module-discoprocess.data_plot" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_plot.generate_concentration_plot">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_plot.</span></span><span class="sig-name descname"><span class="pre">generate_concentration_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_df_attenuation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory_exploratory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_df_title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_plot.generate_concentration_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
+concentration as a “hue” to differentiate points. This function also saves the plot to a custom output folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_df_attenuation</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
+(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
+</dd>
+<dt><strong>output_directory_exploratory</strong><span class="classifier">str</span></dt><dd><p>File path to directory that contains attenuation data for all polymer samples.</p>
+</dd>
+<dt><strong>cuurent_df_title</strong><span class="classifier">str</span></dt><dd><p>Title of DataFrame.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_plot.generate_curvefit_plot">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_plot.</span></span><span class="sig-name descname"><span class="pre">generate_curvefit_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sat_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_ikj_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_or_rep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_plot.generate_curvefit_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates the curve-fitted plots of STD intensity vs saturation time on both a mean and replicate basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sat_time</strong><span class="classifier">NumPy.ndarray</span></dt><dd><p>Dataframe containing saturation time values.</p>
+</dd>
+<dt><strong>y_ikj_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe containing</p>
+</dd>
+<dt><strong>param_vals</strong><span class="classifier">array-like</span></dt><dd><p>Array-like containing the fitted parameters for curve fitting.</p>
+</dd>
+<dt><strong>r</strong><span class="classifier">int, default=None</span></dt><dd><p>Unique replicate, only used in “rep” path.</p>
+</dd>
+<dt><strong>c</strong><span class="classifier">float</span></dt><dd><p>Unique concentration, used in both the “mean” and “rep” paths.</p>
+</dd>
+<dt><strong>ppm</strong><span class="classifier">float</span></dt><dd><p>Chemical shift of a particular proton.</p>
+</dd>
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>File path to the output directory where the figures are saved.</p>
+</dd>
+<dt><strong>mean_or_rep</strong><span class="classifier">str, {‘mean’, ‘rep’}</span></dt><dd><p>String indicating which path to take.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Exports plot to file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_plot.generate_ppm_plot">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_plot.</span></span><span class="sig-name descname"><span class="pre">generate_ppm_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_df_attenuation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory_exploratory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_df_title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_plot.generate_ppm_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
+ppm as a “hue” to differentiate points. This function also saves the plot to a custom output folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_df_attenuation</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
+(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
+</dd>
+<dt><strong>output_directory_exploratory</strong><span class="classifier">str</span></dt><dd><p>File path to directory that contains attenuation data for all polymer samples.</p>
+</dd>
+<dt><strong>cuurent_df_title</strong><span class="classifier">str</span></dt><dd><p>Title of DataFrame.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-discoprocess.data_wrangling_functions">
+<span id="discoprocess-data-wrangling-functions-module"></span><h2>discoprocess.data_wrangling_functions module<a class="headerlink" href="#module-discoprocess.data_wrangling_functions" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.add_attenuation">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">add_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_book</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.add_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the attenuation if the dataframe passes all checks
+(based on the order of items) by means of simple arithmetic operations.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_book</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The dataframe output from the convert_excel_to_dataframe() function. (Or batch processing equivalent)</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Default is book, but it will run the batch path if ‘batch’ is passed to function as the second arg.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>intensity_irrad_true</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><blockquote>
+<div><p>An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>intensity_irrad_false<span class="classifier">Pandas.DataFrame</span></dt><dd><p>A dataframe containing the non-irradiated intensity datapoints.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the subset dataframes ((corrected) true and false irrad dataframes) are not equal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.add_corr_attenuation">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">add_corr_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensity_irrad_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_irrad_false</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.add_corr_attenuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the corr_%_attenuation if the dataframe passes all checks
+(based on the order of items) by means of simple arithmetic operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>intensity_irrad_true</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.</p>
+</dd>
+<dt><strong>intensity_irrad_false</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>A dataframe containing the non-irradiated intensity datapoints</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Default is book, but it will run the batch path if ‘batch’ is passed to function as the second arg.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>An updated dataframe that includes the attenuation and corr_%_attenuation columns.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the subset dataframes ((corrected) true and false irrad dataframes) are not equal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.batch_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">batch_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.batch_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts and cleans excel books of type “Batch” (containing many polymers in one book) into dataframes for further analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>list_of_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
+Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:
+current_book_title, a string containing the title of the current excel input book
+And the value (at index 1 of the tuple) is:
+clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.book_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">book_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.book_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts raw Excel books containing outputs from DISCO-NMR experiments into cleaned and 
+organized Pandas DataFrames for further processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>The file path to the excel book of interest.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>clean_tuple</strong><span class="classifier">tuple</span></dt><dd><p>Returned as a “key-value pair format”, where the key (at index 0 of the tuple) is:
+current_book_title, a string containing the title of the current excel input book
+And the value (at index 1 of the tuple) is:
+clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.clean_the_batch_tuple_list">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">clean_the_batch_tuple_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_clean_dfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.clean_the_batch_tuple_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently 
+on inputs of batch or individual data formats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>list_of_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of dataframes to be cleaned.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>final_clean_polymer_df_list</strong><span class="classifier">list</span></dt><dd><p>List of clean polymer dataframes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.compute_af">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">compute_af</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_mean_stats_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_replicate_stats_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af_denominator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.compute_af" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes an amplification factor for the mean stats df and the replicate stats df.
+Each polymer may have a different denominator to consider for the amp factor calculation, so it
+is passed into this function as a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mean_stats_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe with t-test values and results appended (output from get_t_test_results).</p>
+</dd>
+<dt><strong>replicates_stats_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe from prep_replicate_data_for_stats.</p>
+</dd>
+<dt><strong>af_denominator</strong><span class="classifier">int</span></dt><dd><p>The denominator for amp factor calculation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>current_mean_stats_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The mean_stats_df dataframe with the amp factor column appended.</p>
+</dd>
+<dt><strong>current_replicates_stats_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The replicates_stats_df dataframe with the amp factor column appended.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For each concentration, compute the amplification factor AFconc = Cj/10.</p>
+<p>Defaults to book path but will take batch path if ‘batch’ is passed.</p>
+<p>Might need to do some further work with custom af_denominators</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.drop_bad_peaks">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">drop_bad_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_df_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_df_replicates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_df_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.drop_bad_peaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function identifies whether proton peaks pass or fail an acceptance criterion to allow
+them to be further analyzed. If the peaks fail, they are dropped from further analysis.</p>
+<p>Further consideration: If more than two proton peak datapoints are flagged as not significant in the mean dataframe 
+WITHIN a given concentration, the associated proton peak is removed from further analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_df_mean</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modifed dataframe from compute_amplification_factor.</p>
+</dd>
+<dt><strong>current_df_replicates</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe from compute_amplification_factor.</p>
+</dd>
+<dt><strong>current_df_title</strong><span class="classifier">str</span></dt><dd><p>Title of the dataframe of interest.</p>
+</dd>
+<dt><strong>output_directory</strong><span class="classifier">str</span></dt><dd><p>File path to the output directory where the text file containing the dropped points is saved.</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Default is book, but it will run the batch path if ‘batch’ is passed to function.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>current_df_mean_passed</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The current_df_mean dataframe with the insignificant proton peaks removed.</p>
+</dd>
+<dt><strong>current_df_replicates_passed</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The current_df_replicates dataframe with the insignificant proton peaks removed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Function also saves a text file of which points have been dropped.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.execute_curvefit">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">execute_curvefit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats_df_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_df_replicates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_df_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.execute_curvefit" title="Permalink to this definition">¶</a></dt>
+<dd><p>We are now ready to calculate the nonlinear curve fit models (or “hat” models), 
+for both individual replicate data (via stats_df_replicates), and on a mean (or “bar”) basis (via stats_df_mean).</p>
+<p>This function carries out the curve fitting process for the current dataframe.
+It calculates the nonlinear curve fit, then the SSE and AFo on a mean and replicate basis using only significant points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>stats_df_mean</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Fully pre-processed dataframe.</p>
+</dd>
+<dt><strong>stats_df_replicates</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Fully pre-processed dataframe.</p>
+</dd>
+<dt><strong>output_directory2</strong><span class="classifier">str</span></dt><dd><p>File path to the output directory where the figures are saved.</p>
+</dd>
+<dt><strong>output_directory3</strong><span class="classifier">str</span></dt><dd><p>File path to the output directory where the final Excel files are saved.</p>
+</dd>
+<dt><strong>current_df_title</strong><span class="classifier">str</span></dt><dd><p>Title of current dataframe.</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Default is book, but it will run the batch path if ‘batch’ is passed to function.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>stats_df_mean</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The input stats_df_mean dataframe with results from curve fitting appended to table.</p>
+</dd>
+<dt><strong>stats_df_replicates</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The input stats_df_replicates dataframe with results from curve fitting appended to table.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Figures are displayed and saved as a file in custom directory. Dataframes are also saved to Excel files with final results.</p>
+<p>Mean, average, and bar are used equivalently in this part of the code.</p>
+<p>ikj sub-scripts are used in this script to keep track of the fixed experimental variables pertinent to this analysis. 
+For clarity:
+i = NMR saturation time (sat_time) column
+k = Sample proton peak index (proton_peak_index) column
+j = Sample concentration (concentration) column</p>
+<p>yikj = response model (Amp Factor x Corr % Attenuation) on a per replicate basis (not mean), fits with stats_df_replicates
+yikj_bar = response model (Amp Factor x Corr % Attenuation) on an average basis, fits with stats_df_mean
+yikj_hat = the fitted nonlinear model according to the levenburg marquadt minimization of least squares algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.export_clean_books">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">export_clean_books</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_book_title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_output_directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.export_clean_books" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there were Excel files passed as ‘Book’ format, this function will take those cleaned dataframes and export it to
+a custom directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>current_book_title</strong><span class="classifier">str</span></dt><dd><p>Title of the dataframe being handled.</p>
+</dd>
+<dt><strong>clean_df</strong><span class="classifier">Pandas.Dataframe</span></dt><dd><p>Cleaned dataframe to be exported.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.prep_mean">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">prep_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_p_attenuation_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.prep_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
+columns have been added.</p>
+<p>Statisical analysis is performed on a “mean” basis, across many experimental replicates.
+This code prepares the per-observation data accordingly, and outputs the mean_df_for_stats.</p>
+<p>It drops the columns and rows not required for stats, calculates the mean and std of parameters we do 
+care about, and also appends the degrees of freedom and sample size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
+(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
+</dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>mean_corr_attenuation_ppm</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of 
+interest are appended.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.prep_replicate">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">prep_replicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_p_attenuation_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.prep_replicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
+columns have been added.</p>
+<p>This code prepares the per-observation data accordingly, and outputs the replicate_df_for_stats.</p>
+<p>It drops the columns and rows not required for stats, and adds the proton peak index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>corr_p_attenuation_df</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
+(output from add_attenuation_and_corr_attenuation_to_dataframe).</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>Defaults to book processing path, but if ‘batch’ is passed to function will pursue batch path.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>replicate_df_for_stats</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe, where columns not required for statistical modelling are dropped and the column for proton peak index
+is appended.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_functions.t_test">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_functions.</span></span><span class="sig-name descname"><span class="pre">t_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_corr_attenuation_ppm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_functions.t_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Procedure followed from: <a class="reference external" href="https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/">https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/</a></p>
+<p>One sample t test: tests whether the mean of a population is significantly different than a sample mean.
+A proper t-test analysis performs calculations to help infer what the expected population mean (that 
+contains the sample) given just a sample mean. (Inferential statistics).</p>
+<p>Null Hypothesis: population mean = sample mean (avg corr % attenuation for a proton peak of N replicates at fixed experimental parameters)
+Alternative Hypothesis: population mean &gt;= sample mean (avg corr % attenuation for a proton peak of N replicates at fixed experimental parameters)</p>
+<p>Population parameters used are that of the student’s t distribution.
+Alpha = 0.1 for statistical significance.</p>
+<p>Still theoretically need to validate sample data meets assumptions for one sample t test: normal dist, homegeneity of variance, &amp; no outliers. **</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mean_corr_attenuation_ppm</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>Modified dataframe that has been prepared for statistical modelling (output from prep_mean_data_for_stats).</p>
+</dd>
+<dt><strong>p</strong><span class="classifier">float, default=0.95</span></dt><dd><p>Cumulative probability (1 - alpha)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>mean_corr_attenuation_ppm</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>The input dataframe, now with the t-test values and results appended.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Book and batch paths are the same.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-discoprocess.data_wrangling_helpers">
+<span id="discoprocess-data-wrangling-helpers-module"></span><h2>discoprocess.data_wrangling_helpers module<a class="headerlink" href="#module-discoprocess.data_wrangling_helpers" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.DropComplete">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">DropComplete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.DropComplete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if [Cc]omplete is a substring of x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">str</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>False if [Cc]omplete is a substring, otherwise True.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DropComplete</span><span class="p">(</span><span class="s2">&quot;Complete&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DropComplete</span><span class="p">(</span><span class="s2">&quot;complete&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DropComplete</span><span class="p">(</span><span class="s2">&quot;Other&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.attenuation_calc_equality_checker">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">attenuation_calc_equality_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_or_book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.attenuation_calc_equality_checker" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order 
+in terms of their fixed experimental parameters: ‘sample_or_control’, ‘replicate’, ‘title_string’, ‘concentration’, and
+‘sat_time’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df1, df2</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.</p>
+</dd>
+<dt><strong>batch_or_book</strong><span class="classifier">str, {‘book’, ‘batch’}</span></dt><dd><p>String indicating the DataFrame’s format. The default runs the ‘book’ path, but will run the ‘batch’ path 
+if indicated in the third argument.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Returns True if the subset dataframes are equal, otherwise False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the passed dataframes do not have the same shape.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.clean_book_list">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">clean_book_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_book_title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.clean_book_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenates and cleans a list of dataframes extracted from an Excel book by removing redundant rows.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.corrected_attenuation_calc_equality_checker">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">corrected_attenuation_calc_equality_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.corrected_attenuation_calc_equality_checker" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
+are equal and in the same order in terms of their shared fixed experimental parameters: ‘replicate’, ‘concentration’, and
+‘sat_time’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df1, df2, df3</strong><span class="classifier">Pandas.DataFrame</span></dt><dd><p>DataFrames involved in the corrected attenuation calculation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Returns True if the subset dataframes are equal, otherwise False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If the passed dataframes do not have the same shape.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.count_sheets">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">count_sheets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_sheets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.count_sheets" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function counts the number of sample and control datasheets from which data will be extracted for further processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name_sheets</strong><span class="classifier">list</span></dt><dd><p>List of sheet names.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>num_samples</strong><span class="classifier">int</span></dt><dd><p>Number of sheets containing sample data.</p>
+</dd>
+<dt><strong>num_controls</strong><span class="classifier">int</span></dt><dd><p>Number of sheets containing control data.</p>
+</dd>
+<dt><strong>sample_control_initializer</strong><span class="classifier">list</span></dt><dd><p>List of Excel sheets containing all sample and control data.</p>
+</dd>
+<dt><strong>sample_replicate_initializer</strong><span class="classifier">list</span></dt><dd><p>List of integers containing the replicate number of each sample sheet in sample_control_initializer.</p>
+</dd>
+<dt><strong>control_replicate_initializer</strong><span class="classifier">list</span></dt><dd><p>List of integers containing the replicate number of each control sheet in sample_control_initializer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.get_dofs">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">get_dofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peak_indices_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.get_dofs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the number of degrees of freedom (i.e. number of experimental replicates minus one) for statistical calculations 
+using the “indices array” of a given experimenal set as input.</p>
+<p>Input should be in the format: (in format: 11111 22222 3333 … (specifically, it should be the proton_peak_index column from the “regrouped_df” above)
+where the count of each repeated digit minus one represents the degrees of freedom for that peak (i.e. the number of replicates -1).
+With zero based indexing, the function below generates the DOFs for the input array of proton_peak_index directly, in a format
+that can be directly appended to the stats table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>peak_indices_array</strong><span class="classifier">NumPy.array</span></dt><dd><p>NumPy array representing the proton_peak_index column from the “regrouped_df” from prep_mean_data_for_stats.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dof_list</strong><span class="classifier">list</span></dt><dd><p>List containing the DOFs for peak_indices_array.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.initialize_excel_batch_replicates">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">initialize_excel_batch_replicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.initialize_excel_batch_replicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function determines the unique polymers contained in an excel book, the number of replicates of those polymers, 
+and also returns an iterable of the sheet names without Complete in them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>Path file to the Excel Batch file of interest.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>unique_polymers</strong><span class="classifier">list</span></dt><dd><p>List of unique polymer names contained in b.</p>
+</dd>
+<dt><strong>unique_polymer_replicates</strong><span class="classifier">list</span></dt><dd><p>List of number of replicates for each unique polymer.</p>
+</dd>
+<dt><strong>all_sheets_complete_removed</strong><span class="classifier">list</span></dt><dd><p>List of sheet names in b without Complete in them.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.wrangle_batch">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">wrangle_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_sheets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replicate_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.wrangle_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>Path file to the Excel Batch file of interest.</p>
+</dd>
+<dt><strong>name_sheets</strong><span class="classifier">list</span></dt><dd><p>List of sheet names in b without Complete in them.</p>
+</dd>
+<dt><strong>replicate_index</strong><span class="classifier">list</span></dt><dd><p>List of integers representing the replicate index of the Excel sheets in name_sheets.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>list_of_clean_dfs</strong><span class="classifier">list</span></dt><dd><p>List of tuples, where each tuple contains (‘polymer_name’, CleanPolymerDataFrame)
+Tuples are in a “key-value pair format”, where the key (at index 0 of the tuple) is:
+current_book_title, a string containing the title of the current excel input book
+And the value (at index 1 of the tuple) is:
+clean_df, the cleaned pandas dataframe corresponding to that book title!</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.wrangle_book">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">wrangle_book</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_sheets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_control_initializer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_replicate_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.wrangle_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">str</span></dt><dd><p>Path file to the Excel Batch file of interest.</p>
+</dd>
+<dt><strong>name_sheets</strong><span class="classifier">list</span></dt><dd><p>List of sheet names in b without Complete in them.</p>
+</dd>
+<dt><strong>sample_control_initializer</strong><span class="classifier">list</span></dt><dd><p>List of sheets with control data to be initialized into a Pandas.DataFrame.</p>
+</dd>
+<dt><strong>total_replicate_index</strong><span class="classifier">list</span></dt><dd><p>List of integers representing the replicate index of each sheet in sample_control_initializer.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>df_list</strong><span class="classifier">list</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="discoprocess.data_wrangling_helpers.y_hat_fit">
+<span class="sig-prename descclassname"><span class="pre">discoprocess.data_wrangling_helpers.</span></span><span class="sig-name descname"><span class="pre">y_hat_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#discoprocess.data_wrangling_helpers.y_hat_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns y_ikj_hat as the fit model based on alpha and beta.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>t</strong><span class="classifier">NumPy.array</span></dt><dd><p>NumPy array representing all the variable saturation times for each unique proton.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Least-squares curve fitting parameter, represents STDmax. the asymptomic maximum of the build-up curve.</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">float</span></dt><dd><p>Least-squares curve fitting parameter, represents -k_sat, the negative of the rate constant related to the relaxation
+properties of a given proton.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>NumPy.array</dt><dd><p>NumPy array representing the output values of the fit model based on alpha and beta.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Some useful scipy example references for curve fitting:
+1) <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares">https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares</a>
+2) <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html">https://lmfit.github.io/lmfit-py/model.html</a>
+3) <a class="reference external" href="https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html">https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html</a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-discoprocess">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-discoprocess" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="modules.html" class="btn btn-neutral float-left" title="discoprocess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jeffrey Watchorn, Samantha Stuart, Jennifer Tram Su.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
