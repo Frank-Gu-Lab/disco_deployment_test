@@ -160,10 +160,10 @@ class TestMerge:
         mock4.assert_called_once()
         
         # clean and reformat called with True and False each
-        assert mock2.call_args_list[0][0][-1] == True
-        assert mock2.call_args_list[1][0][-1] == False
-        assert mock3.call_args_list[0][0][-1] == True
-        assert mock3.call_args_list[1][0][-1] == False
+        assert mock2.call_args_list[0][0][-1] == 'pos'
+        assert mock2.call_args_list[1][0][-1] == 'neg'
+        assert mock3.call_args_list[0][0][-1] == 'pos'
+        assert mock3.call_args_list[1][0][-1] == 'neg'
         
         # verifying file names extracted for pos and neg dataframes
         df_pos_names = mock5.call_args_list[0][0][0]
