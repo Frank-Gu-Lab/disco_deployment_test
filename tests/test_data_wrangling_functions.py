@@ -7,7 +7,7 @@ import shutil
 import matplotlib.pyplot as plt
 
 # appending path to access sibling directory - uncomment if local package setup doesn't work
-#sys.path.append(os.getcwd() + '/../src')
+sys.path.append(os.getcwd() + '/../src')
 
 from discoprocess.data_wrangling_functions import *
 from matplotlib.testing.compare import compare_images

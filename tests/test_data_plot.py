@@ -10,7 +10,7 @@ import numpy as np
 from contextlib import contextmanager
 
 # appending path to access sibling directory - uncomment if local package setup doesn't work
-#sys.path.append(os.getcwd() + '/../src')
+sys.path.append(os.getcwd() + '/../src')
 
 from discoprocess.data_plot import *
 from matplotlib.testing.compare import compare_images
