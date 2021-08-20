@@ -119,10 +119,6 @@ def reformat(df_list, pos_or_neg = 'pos'):
         
     else:
     
-        # 2) drop extra ppm column that (sometimes) gets created from combining multi indices
-        
-        df = df.loc[:, :"significance"]
-
         # 2) drop sat time from index
         df.index = df.index.droplevel(1)
 
