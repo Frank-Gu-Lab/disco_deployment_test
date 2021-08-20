@@ -350,7 +350,7 @@ def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_ind
     Returns
     -------
     df_list : list
-
+        Experimental dataframes to be concatenated.
     """            
     # initialize a list to contain the mini experimental dataframes collected from within the current book, which will be concatenated at the end to create one dataframe "organized_df" that represents this book
     df_list = []
@@ -502,6 +502,18 @@ def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_ind
 def clean_book_list(df_list, current_book_title):
     ''' Concatenates and cleans a list of dataframes extracted from an Excel book by removing redundant rows.
     
+    Parameters
+    ----------
+    df_list : list
+        List of mini dataframes to be concatenated.
+
+    current_book_title : str
+        Title of current Excel book.
+
+    Returns
+    -------
+    clean_df : Pandas.Dataframes
+        Cleaned, concatenated dataframe for current_book_title.
     '''
     
     # concatenate the mini dataframes appended to the df_list into one big organized dataframe for this book!

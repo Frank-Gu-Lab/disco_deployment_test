@@ -9,7 +9,6 @@ import re
 import shutil
 
 def move(source_path, destination_path):
-
     ''' Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
     where the merging of positive and negative observations into one dataset will occur.
     
@@ -37,9 +36,10 @@ def move(source_path, destination_path):
             if check_df.shape[0] > 1:
                 # copy the excel files in the source filepath into the destination
                 shutil.copy(file, destination_path)
-
     
-    return print("Files for merging have been moved to the destination directory.")
+    print("Files for merging have been moved to the destination directory.")
+
+    return
 
 def clean(df_list, polymer_list, pos_or_neg = 'pos'):
     """This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column, 
@@ -53,8 +53,12 @@ def clean(df_list, polymer_list, pos_or_neg = 'pos'):
     polymer_list : list
         List of polymer names contained in the passed DataFrames.
     
-    pos : bool
-        True for positive binding observations, False for negative binding observations.
+    pos_or_neg : str, {'pos', 'neg'}
+        String to indicate path for positive binding observations (pos) or for negative binding observations (neg).
+
+    Notes
+    -----
+    Relies on mutability nature of list.
     """
     # 1) clean list
     for i in range(len(df_list)):
@@ -92,8 +96,8 @@ def reformat(df_list, pos_or_neg = 'pos'):
     df_list : list
         List of Pandas DataFrames to be concatenated and reformatted.
     
-    pos : bool
-        True for positive binding observations, False for negative binding observations.
+    pos_or_neg : str, {'pos', 'neg'}
+        String to indicate path for positive binding observations (pos) or for negative binding observations (neg).
         
     Returns
     -------

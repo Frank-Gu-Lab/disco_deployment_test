@@ -199,6 +199,9 @@ def export_clean_books(current_book_title, clean_df, global_output_directory):
     
     clean_df : Pandas.Dataframe
         Cleaned dataframe to be exported.    
+
+    global_output_directory : str
+        Output directory for the main program, where the custom output directories of the inputted dataframes will be stored.
     """
     print("Beginning excel export for {}.".format(current_book_title))
 
@@ -213,6 +216,8 @@ def export_clean_books(current_book_title, clean_df, global_output_directory):
     clean_df.to_excel(os.path.join(output_directory, output_file_name))
 
     print('Excel export complete! Navigate to output directory to see the clean Excel file.\n')
+
+    return
 
 def add_attenuation(current_book, batch_or_book = 'book'):
     ''' This function calculates the attenuation if the dataframe passes all checks
@@ -231,7 +236,7 @@ def add_attenuation(current_book, batch_or_book = 'book'):
     intensity_irrad_true : Pandas.DataFrame
         An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.
     
-     intensity_irrad_false : Pandas.DataFrame
+    intensity_irrad_false : Pandas.DataFrame
         A dataframe containing the non-irradiated intensity datapoints.
 
     Raises
@@ -499,10 +504,10 @@ def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator
     
     Parameters
     ----------
-    mean_stats_df : Pandas.DataFrame
+    current_mean_stats_df : Pandas.DataFrame
         Modified dataframe with t-test values and results appended (output from get_t_test_results).
     
-    replicates_stats_df : Pandas.DataFrame
+    current_replicate_stats_df : Pandas.DataFrame
         Modified dataframe from prep_replicate_data_for_stats.
     
     af_denominator : int
@@ -668,11 +673,8 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     
     Parameters
     ----------
-    stats_df_mean : Pandas.DataFrame
-        Fully pre-processed dataframe.
-    
-    stats_df_replicates : Pandas.DataFrame
-        Fully pre-processed dataframe.
+    stats_df_mean, stats_df_replicates : Pandas.DataFrame
+        Fully pre-processed dataframes.
     
     output_directory2 : str
         File path to the output directory where the figures are saved.
