@@ -10,8 +10,12 @@ import os
 import glob
 
 # import helpers
-from .data_wrangling_helpers import *
-from .data_plot import *
+try:
+    from .data_wrangling_helpers import *
+    from .data_plot import *
+except:
+    from data_wrangling_helpers import *
+    from data_plot import *
 
 # define handy shortcut for indexing a multi-index dataframe
 idx = pd.IndexSlice

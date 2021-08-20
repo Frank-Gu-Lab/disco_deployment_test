@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt    
 import seaborn as sns
 
-from .data_wrangling_helpers import y_hat_fit
-        
+try:
+    from .data_wrangling_helpers import y_hat_fit
+except:
+    from data_wrangling_helpers import y_hat_fit
+
 def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
     '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
     concentration as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
