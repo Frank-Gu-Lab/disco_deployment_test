@@ -74,3 +74,9 @@ To run a specific class/function (substring matching, regex):
  
     python pytest -k "class_name or function_name"
    
+<h3><b> Running Doctest </b></h3>
+Doctests are written within the function docstring itself. The modules in the repository that contain doctests include make_dataset.py, crossval.py, build_features.py, and split.py. To run the doctests of a specific module:
+
+    python <<module_name>>.py
+
+If nothing is printed to the terminal, the tests all passed successfully.
