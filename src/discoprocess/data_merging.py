@@ -234,9 +234,9 @@ def merge(source_path, destination_path):
 
     # 1) clean list
     
-    clean(selected_dataframes, polymer_names_pos, True)
+    clean(selected_dataframes, polymer_names_pos, 'pos')
 
-    selected_dataframes_pos = reformat(selected_dataframes, True)
+    selected_dataframes_pos = reformat(selected_dataframes, 'pos')
 
     # to balance the dataset, add BACK in the negative examples in preprocessing dropped due to statistical insignificance with an AFo = 0
 
@@ -264,8 +264,8 @@ def merge(source_path, destination_path):
 
     # 2) clean list
     
-    clean(selected_dataframes, polymer_names_neg, False)
+    clean(selected_dataframes, polymer_names_neg, 'neg')
         
-    selected_dataframes_neg = reformat(selected_dataframes, False)
+    selected_dataframes_neg = reformat(selected_dataframes, 'neg')
     
     return join(selected_dataframes_pos, selected_dataframes_neg)
