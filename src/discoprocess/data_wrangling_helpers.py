@@ -722,6 +722,19 @@ def y_hat_fit(t, a, b):
     NumPy.array
         NumPy array representing the output values of the fit model based on alpha and beta.
     
+    Examples
+    --------
+    >>> import numpy as np
+    >>> t = np.array([0.25, 0.5, 0.75])
+    >>> a = 0.5
+    >>> b = 0.5
+    >>> y_hat_fit(t, a, b)
+    array([0.05875155, 0.11059961, 0.15635536])
+
+    >>> a = 0
+    >>> y_hat_fit(t, a, b)
+    array([0., 0., 0.])
+    
     Notes
     -----
     
