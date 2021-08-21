@@ -14,7 +14,8 @@ path = os.path.dirname(__file__) + "/test-files/test_analyze"
 
 @pytest.fixture(scope='function')
 def remove():
-    
+    ''' Pytest fixture that yields the filepath to the output directory and removes it upon teardown. '''
+
     output_dir = path + "/output"
     os.mkdir(output_dir)
     
@@ -27,7 +28,8 @@ class TestGenerateDirectory:
     
     def test_generate_directories(self, remove):
         """This function tests for overall functionality. Takes in a dataframe title (polymer)
-        and a global output directory, and returns custom directories for the specific polymer. Removes all generated directories in teardown. """
+        and a global output directory, and asserts whether custom directories for the specific polymer were successfully made. 
+        Removes all generated directories in teardown. """
         
         #SETUP
         current_df_title = "KHA"
