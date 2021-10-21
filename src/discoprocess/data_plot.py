@@ -1,5 +1,16 @@
-import matplotlib.pyplot as plt    
+from math import sqrt
+import matplotlib.pyplot as plt   
+from matplotlib import rc
 import seaborn as sns
+import os
+import numpy as np
+
+plt.style.use(['science'])
+plt.rcParams.update({'font.family':'sans-serif'})
+plt.rcParams.update({'font.size':12})
+
+# must install LaTex before Science Plots
+os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
 
 try:
     from .data_wrangling_helpers import y_hat_fit
@@ -31,7 +42,7 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     plt.xlabel("NMR Pulse Saturation Time (s)")
     
     # define file name for the concentration plot
-    output_file_name_conc = "{}/exploratory_concentration_plot_from_{}.png".format(output_directory_exploratory, current_df_title)
+    output_file_name_conc = "{}/conc_{}.png".format(output_directory_exploratory, current_df_title)
     
     # export to file
     fig1.savefig(output_file_name_conc, dpi=300)
@@ -68,7 +79,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     ax2.legend() 
 
     # define file name for the concentration plot
-    output_file_name_ppm = "{}/exploratory_ppm_plot_from_{}.png".format(output_directory_exploratory, current_df_title)
+    output_file_name_ppm = "{}/ppm_{}.png".format(output_directory_exploratory, current_df_title)
 
     # export to file
     fig2.savefig(output_file_name_ppm, dpi=300)
@@ -132,3 +143,42 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
     
     return
     
+def generate_buildup_curve(df):
+    '''Generates the formal STD buildup curve for the figure.
+    
+    Parameters:
+    -----------
+    df : Pandas.Dataframe
+        the mean stats analysis output for one polymer in the library
+   
+    Returns:
+    -------
+    None, outputs formal figures
+    '''
+
+    fig, (ax) = plt.subplots(1, figsize=(8, 4))
+
+    # Disco Effect
+    y = df['corr_%_attenuation']['mean']
+
+    y_stderr = df['corr_%_attenuation']['std'] / sqrt(df['sample_size']['Unnamed: 7_level_1'])
+
+    # saturation times
+    x = np.unique(df.index.get_level_values(1))
+
+    # line
+    # ax.plot(x, y, ls='-', color='#377eb8',
+    #         label=f'{c}$\\mu$M - {ppm} ppm')
+
+    # raw points
+    ax.plot(x, y, marker='.', ls='', color='#377eb8',
+            markeredgecolor='k', markeredgewidth=0.25, label=f'{c}$\\mu$M - {ppm} ppm')
+
+    # TO DO: ADD STD ERROR
+    ax.fill_between(x,np.array(y)+np.array(y_stderr),np.array(y)-np.array(y_stderr),facecolor = '#377eb8', alpha=0.25)
+
+    plt.show()
+
+
+    return
+

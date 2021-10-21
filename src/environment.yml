@@ -1,0 +1,14 @@
+name: discoprocess
+channels:
+  - conda-forge
+dependencies:
+  - matplotlib
+  - seaborn
+  - numpy
+  - pandas
+  - pytest
+  - pytest-mock
+  - pytest-cov
+  - openpyxl
+
+# +SciencePlots (via pip install)

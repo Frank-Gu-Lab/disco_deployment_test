@@ -11,11 +11,11 @@ import glob
 
 # import helpers
 try:
-    from .data_wrangling_helpers import *
-    from .data_plot import *
-except:
     from data_wrangling_helpers import *
     from data_plot import *
+except:
+    from .data_wrangling_helpers import *
+    from .data_plot import *
 
 # define handy shortcut for indexing a multi-index dataframe
 idx = pd.IndexSlice
@@ -395,8 +395,9 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'book'):
         
     # Calculate degrees of freedom and sample size for each datapoint using function above
     peak_index_array = np.array(input_for_dofs)
-    dofs = get_dofs(peak_index_array)
 
+    dofs = get_dofs(peak_index_array, regrouped_df)
+    
     # append a new column with the calculated degrees of freedom to the table for each proton peak index
     mean_corr_attenuation_ppm['dofs'] = dofs
     mean_corr_attenuation_ppm['sample_size'] = np.asarray(dofs) + 1
@@ -443,28 +444,20 @@ def prep_replicate(corr_p_attenuation_df, batch_or_book = 'book'):
     
     return replicate_df_for_stats
 
-def t_test(mean_corr_attenuation_ppm, p=0.95):
-    ''' Procedure followed from: https://machinelearningmastery.com/critical-values-for-statistical-hypothesis-testing/ 
+def t_test(mean_corr_attenuation_ppm, p=0.05):
+    ''' Two sample Student's t-test formulated as a confidence interval. Tests to see if mean corr attenuation is statistically significantly different from zero.
 
-        One sample t test: tests whether the mean of a population is significantly different than a sample mean.
-        A proper t-test analysis performs calculations to help infer what the expected population mean (that 
-        contains the sample) given just a sample mean. (Inferential statistics).
+        Null Hypothesis: mean corr attenuation = 0
 
-        Null Hypothesis: population mean = sample mean (avg corr % attenuation for a proton peak of N replicates at fixed experimental parameters)
-        Alternative Hypothesis: population mean >= sample mean (avg corr % attenuation for a proton peak of N replicates at fixed experimental parameters)
-
-        Population parameters used are that of the student's t distribution.
-        Alpha = 0.1 for statistical significance. 
-
-        Still theoretically need to validate sample data meets assumptions for one sample t test: normal dist, homegeneity of variance, & no outliers. **
+        Alternative Hypothesis: mean corr attenuation != 0
         
         Parameters
         ----------
         mean_corr_attenuation_ppm : Pandas.DataFrame
             Modified dataframe that has been prepared for statistical modelling (output from prep_mean_data_for_stats).
 
-        p : float, default=0.95
-            Cumulative probability (1 - alpha)
+        p : float, default=0.05
+            Threshold for statistical significance
 
         Returns
         -------
@@ -481,13 +474,9 @@ def t_test(mean_corr_attenuation_ppm, p=0.95):
     std_t = mean_corr_attenuation_ppm['corr_%_attenuation']['std']
     sample_size_t = mean_corr_attenuation_ppm['sample_size']
 
-    # retrieve value <= probability from t distribution, based on DOF for sample 
-    crit_t_value = t.ppf(p, dof)
+    # retrieve value critical value 
+    crit_t_value = t.ppf(q = 1-(p/2), df = dof)
     # print(crit_t_value)
-
-    # confirm the p value with cdf, for sanity checking 
-    # p = t.cdf(crit_t_value, dof)
-    # print(p)
 
     #perform one sample t-test for significance, significant if t_test_results < 0 
     t_test_results =  mean_t - crit_t_value * (std_t/(np.sqrt(sample_size_t)))
@@ -620,10 +609,16 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
                 if len(subset_insignificant) > 2:
                     
                     # recreate the corresponding parent multi index based on the identified points to drop to feed to parent dataframe
-                    index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(0))
-                    index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(1))
+                    # index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(0))
+                    # index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(1))
+                    # index_to_drop_conc = np.full(len(index_to_drop_sat_time), c)
+                    # index_to_drop_proton_peak = np.full(len(index_to_drop_sat_time), p)
+                    
+                    index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(1))
+                    index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(3))
                     index_to_drop_conc = np.full(len(index_to_drop_sat_time), c)
                     index_to_drop_proton_peak = np.full(len(index_to_drop_sat_time), p)
+                    
 
                     array_indexes_to_drop = [index_to_drop_conc, index_to_drop_sat_time, index_to_drop_proton_peak, index_to_drop_ppm]
                     multi_index_to_drop_input = list(zip(*array_indexes_to_drop))
@@ -758,7 +753,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             if batch_or_book == 'book':
                 ppm_bar = one_graph_data_mean['ppm']['mean'].values.mean().astype(float).round(4)
             else:
-                ppm_bar = one_graph_data_mean.index.get_level_values(1)[0].astype(float).round(4)
+                ppm_bar = np.round(one_graph_data_mean.index.get_level_values(3)[0].astype(float),4)
 
             # this will skip the graphing and analysis for cases where an insignificant proton peak has been removed from consideration PREVIOUSLY due to cutoff
             if all_yikj_bar.size == 0: 
@@ -792,7 +787,10 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             # define file name for curve fits by mean
             output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
 
+
+            # then - update format to match Science Plots
             generate_curvefit_plot(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
+            
             for r in unique_replicates:
 
                 #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
@@ -828,13 +826,14 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name
                 if batch_or_book == 'book':
                     mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].mean().astype(float).round(4)    
-                else:
+                else: 
                     mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)    
 
                 # file name for curve fits by replicate 
                 output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
 
                 generate_curvefit_plot(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
+    
     #export tabulated results to file and return updated dataframes
     output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title) 
 

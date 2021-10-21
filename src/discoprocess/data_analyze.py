@@ -42,21 +42,21 @@ def generate_directories(current_df_title, global_output_directory):
         os.makedirs(output_directory)
 
     # Define an output exploratory directory for the exploratory plots 
-    output_directory_exploratory = "{}/exploratory_plots_from_{}".format(output_directory, current_df_title)
+    output_directory_exploratory = "{}/exploratory_{}".format(output_directory, current_df_title)
 
     # make directory if there isn't already one for exploratory output 
     if not os.path.exists(output_directory_exploratory):
         os.makedirs(output_directory_exploratory)
 
     # Define an output directory for the curve fit plots for the current df title
-    output_directory_curve = "{}/curve_fit_plots_from_{}".format(output_directory, current_df_title)
+    output_directory_curve = "{}/plots_{}".format(output_directory, current_df_title)
 
     # make this directory if there isn't already one for the curve_fit_plots
     if not os.path.exists(output_directory_curve):
         os.makedirs(output_directory_curve)  
 
     # Define an output directory for the final data tables after curve fitting and stats
-    output_directory_tables = "{}/data_tables_from_{}".format(output_directory, current_df_title)
+    output_directory_tables = "{}/tables_{}".format(output_directory, current_df_title)
 
     # make this directory if there isn't already one for the data tables
     if not os.path.exists(output_directory_tables):
@@ -98,7 +98,7 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
     current_df_replicates = prep_replicate(current_df_attenuation, batch_or_book)
 
     # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
-    current_df_mean = t_test(current_df_mean, p=0.95)
+    current_df_mean = t_test(current_df_mean, p=0.05)
 
     # STEP 3 OF 5 - Compute amplification factor -----------------------------------------
     # note, for batch: if AF denominators are different for each polymer, should make a list of all values for all polymers, then pass list[i] to af_denominator here

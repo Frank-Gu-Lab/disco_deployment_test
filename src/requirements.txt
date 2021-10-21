@@ -1,7 +1,9 @@
-matplotlib==3.3.3
-numpy==1.19.4
-pandas==1.2.4
-pytest==6.2.4
-pytest-mock==3.6.1
-pytest-cov==2.12.1
-openpyxl==3.0.7
+matplotlib
+seaborn
+numpy
+pandas
+pytest
+pytest-mock
+pytest-cov
+openpyxl
+SciencePlots #1.0.9
