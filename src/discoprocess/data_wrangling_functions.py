@@ -787,9 +787,7 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             # define file name for curve fits by mean
             output_file_name_figsmean = "{}/mean_conc{}_ppm{}.png".format(output_directory2, c, ppm_bar)
 
-
-            # then - update format to match Science Plots
-            generate_curvefit_plot(all_sat_time, all_yikj_bar, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
+            generate_curvefit_plot(all_sat_time, one_graph_data_mean, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
             
             for r in unique_replicates:
 

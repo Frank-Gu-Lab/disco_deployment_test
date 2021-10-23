@@ -11,3 +11,4 @@ archive
 build/
 discoprocess.egg-info/
 dist/
+draft_plotting.ipynb

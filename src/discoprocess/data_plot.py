@@ -1,6 +1,7 @@
 from math import sqrt
 import matplotlib.pyplot as plt   
 from matplotlib import rc
+import pandas as pd
 import seaborn as sns
 import os
 import numpy as np
@@ -86,7 +87,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
         
     return
 
-def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
+def generate_curvefit_plot(sat_time, df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
     ''' This function generates the curve-fitted plots of STD intensity vs saturation time on both a mean and replicate basis.
     
     Parameters
@@ -94,8 +95,8 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
     sat_time : NumPy.ndarray
         Dataframe containing saturation time values.
     
-    y_ikj_df : Pandas.DataFrame
-        Dataframe containing 
+    df : Pandas.DataFrame
+        Dataframe containing one graph data, mean
     
     param_vals : array-like
         Array-like containing the fitted parameters for curve fitting.
@@ -119,23 +120,43 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
     -----
     Exports plot to file.
     '''
-    
-    fig, (ax) = plt.subplots(1, figsize = (8, 4))
+
+    fig, (ax) = plt.subplots(1, figsize=(8, 4))
     
     if mean_or_rep == "mean":
+        fig, (ax) = plt.subplots(2, figsize=(8, 4))
+
         # PLOT MEAN DF CURVE FITS with the original data and save to file
-        ax.plot(sat_time, y_hat_fit(sat_time, *param_vals), 'g-', label='model_w_significant_params')
-        ax.plot(sat_time, y_ikj_df, 'g*', label='all_raw_data')
-        ax.set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c, ppm))
-        
+        model = y_hat_fit(sat_time, *param_vals)
+        disco_effect = df['corr_%_attenuation']['mean']
+        std_err = df['corr_%_attenuation']['std'] / np.sqrt(df['sample_size'])
+
+        ax[0].plot(sat_time, model, 'g-', label='model_w_significant_params')
+        ax[0].plot(sat_time, df['yikj_bar'], 'g.', label='all_raw_data',
+                markeredgecolor='k', markeredgewidth=0.25)
+
+        # y_hat_fit(significant_sat_time, *best_param_vals_bar) - significant_yikj_bar
+        ax[0].set_title('Mean Curve Fit, Concentration = {} µmolar, ppm = {}'.format(c, ppm))
+        ax[0].set_xlabel('NMR Saturation Time (s)')
+        ax[0].set_ylabel('I/Io')
+
+        # v2
+        ax[1].plot(sat_time, disco_effect, '.', markeredgecolor='k', markeredgewidth=0.25, label='model_w_significant_params')
+        ax[1].fill_between(sat_time, disco_effect+std_err,
+                         disco_effect-std_err, facecolor='#377eb8', alpha=0.25)
+        ax[1].set_title('Buildup Curve, Concentration = {} µmolar, ppm = {}'.format(c, ppm))
+        ax[1].set_xlabel('NMR Saturation Time (s)')
+        ax[1].set_ylabel('Disco Effect')
+
+
     else:
         # PLOT CURVE FITS with original data per Replicate and save to file
         ax.plot(sat_time, y_hat_fit(sat_time, *param_vals), 'b-', label='data')
-        ax.plot(sat_time, y_ikj_df, 'b*', label='data')
-        ax.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, ppm))
-        
-    ax.set_xlabel('NMR Saturation Time (s)')
-    ax.set_ylabel('I/Io')
+        ax.plot(sat_time, df, 'b.', label='data')
+        ax.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, ppm)) 
+        ax.set_xlabel('NMR Saturation Time (s)')
+        ax.set_ylabel('I/Io')
+
     plt.rcParams.update({'figure.max_open_warning': 0})
     fig.tight_layout()
     # export to file
@@ -143,13 +164,19 @@ def generate_curvefit_plot(sat_time, y_ikj_df, param_vals, ppm, filename, c, r=N
     
     return
     
-def generate_buildup_curve(df):
-    '''Generates the formal STD buildup curve for the figure.
+def generate_buildup_curve(df, polymer_name, output_directory):
+    '''Generates the formal Disco Effect STD buildup curve for the figure.
     
     Parameters:
     -----------
     df : Pandas.Dataframe
-        the mean stats analysis output for one polymer in the library
+        dataframe containing one polymer's DISCO Effect information for the build up curve
+
+    polymer_name: string
+        string containing the identifier of the polymer 
+    
+    output_directory: string
+        file path to desired output directory for saved plots
    
     Returns:
     -------
@@ -157,28 +184,92 @@ def generate_buildup_curve(df):
     '''
 
     fig, (ax) = plt.subplots(1, figsize=(8, 4))
+    polymer_name_plot = polymer_name.replace("_", " ")
 
-    # Disco Effect
-    y = df['corr_%_attenuation']['mean']
+    if "PAA" not in polymer_name:
+        # for grouping information to plot
+        concentration = df.index.get_level_values(0)
+        ppm = df.index.get_level_values(3)
 
-    y_stderr = df['corr_%_attenuation']['std'] / sqrt(df['sample_size']['Unnamed: 7_level_1'])
+        # colour build up curves differently by ppm
+        labels = np.round(ppm, 2)
+        groups = df.groupby(labels)
 
-    # saturation times
-    x = np.unique(df.index.get_level_values(1))
+        # plot DISCO effect build up curve
+        for name, group in groups:
+            sat_time = group.index.get_level_values(1)
+            disco_effect = group['corr_%_attenuation']['mean'].values
+            std = group['corr_%_attenuation']['std'].values
+            n = group['sample_size']['Unnamed: 7_level_1'].values
+            std_err = std/np.sqrt(n)
 
-    # line
-    # ax.plot(x, y, ls='-', color='#377eb8',
-    #         label=f'{c}$\\mu$M - {ppm} ppm')
+            y1 = np.subtract(disco_effect, std_err)
+            y2 = np.add(disco_effect, std_err)
 
-    # raw points
-    ax.plot(x, y, marker='.', ls='', color='#377eb8',
-            markeredgecolor='k', markeredgewidth=0.25, label=f'{c}$\\mu$M - {ppm} ppm')
+            ax.plot(sat_time, disco_effect,
+                    marker='o', linestyle='', ms=12, label=name)
+            ax.fill_between(sat_time, y1, y2,
+                            alpha=0.25)
+            ax.legend(loc='best', bbox_to_anchor=(
+                0.6, 0.3, 0.6, 0.6), title="Delta ppm",)
 
-    # TO DO: ADD STD ERROR
-    ax.fill_between(x,np.array(y)+np.array(y_stderr),np.array(y)-np.array(y_stderr),facecolor = '#377eb8', alpha=0.25)
+        
 
-    plt.show()
+        ax.set_title(f'DISCO Effect Buildup Curve - {polymer_name_plot}')
+        ax.set_xlabel('NMR Saturation Time (s)')
+        ax.set_ylabel('Disco Effect')
 
+        # define file name 
+        output_file_name = f"{output_directory}/disco-effect-{polymer_name}.png"
 
-    return
+        # export to file
+        fig.savefig(output_file_name, dpi=300)
+    
+    # workaround for different PAA format
+    else: 
+
+        #subset to only 20 uM conc
+        df = df.iloc[df.index.get_level_values(0) == 20].copy()
+
+        # controls
+        concentration = df.index.get_level_values(0)
+        sat_time = df.index.get_level_values(1)
+        proton_peak_index = df.index.get_level_values(2)
+        ppm = df.index.get_level_values(3)
+
+        # 1: Disco Effect Build-up Curves - one plot for one polymer, all peaks - from stats df mean
+        fig, (ax) = plt.subplots(1, figsize=(8, 4))
+        labels = np.round(ppm, 2)
+        groups = df.groupby(labels)
+        # print(groups)
+
+        # plot DISCO effect build up curve
+        for name, group in groups:
+            sat_time = group.index.get_level_values(1)
+            disco_effect = group['corr_%_attenuation']['mean'].values
+            std = group['corr_%_attenuation']['std'].values
+            n = group['sample_size']['Unnamed: 8_level_1'].values
+            std_err = std/np.sqrt(n)
+
+            y1 = np.subtract(disco_effect, std_err)
+            y2 = np.add(disco_effect, std_err)
+
+            ax.plot(sat_time, disco_effect,
+                    marker='o', linestyle='', ms=12, label=name)
+            ax.fill_between(sat_time, y1, y2,
+                            alpha=0.25)
+            ax.legend(loc='best', bbox_to_anchor=(
+                0.6, 0.3, 0.6, 0.6), title="Delta ppm",)
+
+        ax.set_title(f'DISCO Effect Buildup Curve - {polymer_name_plot}')
+        ax.set_xlabel('NMR Saturation Time (s)')
+        ax.set_ylabel('Disco Effect')
+
+        # define file name
+        output_file_name = f"{output_directory}/disco-effect-{polymer_name}.png"
+
+        # export to file
+        fig.savefig(output_file_name, dpi=300)
+    
+        return 
 
