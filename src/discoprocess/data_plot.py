@@ -342,7 +342,6 @@ def generate_fingerprint(mean_df, replicate_df, polymer_name, output_directory):
     
     x_ax = np.arange(0,len(ppm))
 
-
     # generate barplot
     # ax.bar(x_ax, height=afo_bar, yerr=sse_bar, tick_label=ppm, color = (0,0,0,0), edgecolor = colors)
     ax.bar(x_ax, height=afo_bar, yerr=sse_bar, tick_label=ppm, color = (0,0,0,0), edgecolor = 'k')
@@ -363,11 +362,12 @@ def generate_fingerprint(mean_df, replicate_df, polymer_name, output_directory):
     ax.set_ylabel("DISCO $AF_0$")
 
     # reformat x axis
-    ax.invert_xaxis()  # invert to match NMR spectrum
+    # ax.invert_xaxis()  # invert to match NMR spectrum (problem w/this)
 
     # define file name
     output_file_name = f"{output_directory}/{polymer_name}-fingerprint.png"
 
+    # export fig to file
     fig.savefig(output_file_name, dpi=500)
 
     plt.close('all')
