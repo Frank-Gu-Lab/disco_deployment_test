@@ -87,7 +87,38 @@ def clean(df_list, polymer_list, pos_or_neg = 'pos'):
             drop_data = df_list[i].loc[:, ['corr_%_attenuation', 'dofs', 'amp_factor']]
         
         df_list[i] = df_list[i].drop(drop_data.columns, axis = 1)
+
+def clean_replicates(df_list, polymer_list):
+    '''Cleans replicate dataframes to ensure consistent schema.
+
+    Parameters:
+    -----------
+    df_list: list of Pandas.DataFrames
+        individual polymer data 
+
+    polymer_list: list
+        polymer names that correspond to dataframes
+    
+    Returns: None
+    -------
+
+    Notes:
+    ------
+    Operations performed in place
+    '''
+
+    for i, df in enumerate(df_list):
         
+        # ensure polymer name in replicate table schema
+        if 'polymer_name' not in df.columns:
+            df.insert(loc=0, column='polymer_name', value=polymer_list[i])
+        
+        # remove ppm range from schema                
+        if 'ppm_range' in df.columns:
+            df = df.drop(columns=['ppm_range'])
+
+    return 
+
 def reformat(df_list, pos_or_neg = 'pos'):
     """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame. 
     
@@ -144,6 +175,18 @@ def reformat(df_list, pos_or_neg = 'pos'):
 
     return df
 
+def reformat_replicates(df_list):
+    ''' Concatenates true positive replicate binding data into one data table.
+    Performs other reformatting operations as required.'''
+    
+    df = pd.concat(df_list)
+
+    # drop duplicates from saturation time
+    df = df.drop(columns=['sat_time', 'amp_factor', 'yikj', 'corr_%_attenuation', 'index','ppm_range'])
+    df = df.drop_duplicates()
+
+    return df
+
 def join(df1, df2):
     """This function takes in two cleaned DataFrames and merges them in a way that makes sense.
     
@@ -157,27 +200,26 @@ def join(df1, df2):
     df : Pandas.DataFrame
         Final merged dataframe containing the merged dataset and positive and negative observations.
     """
-    # 3) now need to JOIN data from the two tables in a way that makes sense
 
     key = ['concentration','proton_peak_index','ppm','polymer_name','sample_size','t_results','significance'] # combo of values that define a unique observation in each table
 
-    # 3) first - need to join ALL the data from the two tables
-    # 3) Outer Join A and B on the Key for unique observations, and include which table they were merged from for filtering
+    # first - need to join ALL the data from the two tables
+    # Outer Join A and B on the Key for unique observations, and include which table they were merged from for filtering
 
     df = pd.merge(left = df1, right = df2, how = 'outer', on = key, indicator = True, suffixes = ("_a","_b"))
 
-    # 3) allocate the correct AFo_bar values from each table 
+    # allocate the correct AFo_bar values from each table 
     df.loc[np.isnan(df['AFo_bar_a']) == False, ('AFo_bar')] = df['AFo_bar_a'] # assigns AFo_bar_a values to observations where they exist
     df.loc[np.isnan(df['AFo_bar_a']) != False, ('AFo_bar')] = df['AFo_bar_b'] # assigns AFo_bar_b where no AFo_bar_a value does not exist (i.e. polymer was all non)
 
-    # 3) remaining NaNs in table_c have significance = True, 
+    # remaining NaNs in table_c have significance = True, 
     # BUT these were not used in Curve Fitting AFo calculations, due to strict drop criterion in preprocessing. 
     # Therefore should still drop them here, as we don't know their true AFo as they weren't considered in curve fitting
 
     drop_subset = df.loc[np.isnan(df['AFo_bar'])==True]
     df = df.drop(drop_subset.index)
 
-    # 3) now can drop the extra columns AFo_bar_a, AFo_bar_b, _merge
+    # now can drop the extra columns AFo_bar_a, AFo_bar_b, _merge
     df = df.drop(columns = ["AFo_bar_a", "AFo_bar_b", "_merge"])
     
     # extra column usually added for book input only
@@ -185,6 +227,88 @@ def join(df1, df2):
         df = df.drop('level_2', axis=1)
 
     return df
+
+def join_replicates(df1, df2):
+    '''One to many join the replicate specific AFo replicate data into global dataset.
+
+    Parameters:
+    ----------
+    df1: pandas.DataFrame
+        the "one" dataframe
+
+    df2: pandas.DataFrame
+        the "many" dataframe
+
+    Returns:
+    -------
+    merged_df: pandas.DataFrame
+        the df after the join
+    '''
+    # set df1 schema
+    df1 = df1[['concentration', 'proton_peak_index', 'ppm',
+               'polymer_name', 'sample_size','AFo_bar']]
+
+    # match schema of df1 + new cols
+    df2 = df2[['concentration', 'proton_peak_index', 'ppm',
+               'polymer_name', 'replicate','AFo','SSE']]
+
+    # define primary key for the join
+    key = ['concentration', 'proton_peak_index', 'polymer_name']
+
+    merged_df = pd.merge(df1, df2, on = key, how = 'left')
+
+    # clean redundant ppm noise - proton peak index ensures correct mappings during join
+    merged_df = merged_df.drop(columns='ppm_y')
+    merged_df = merged_df.drop_duplicates()
+
+    return merged_df.rename(columns={'ppm_x': 'ppm'})
+
+def summarize(df):
+    ''' Takes a proton-specific dataframe and summarizes it in terms of summary statistics per experiment.
+    Parameters:
+    -----------
+    df: Pandas.Dataframe
+        contains proton-specific dataframe (output of join_replicates)
+
+    Returns:
+    -------
+    summary_df: Pandas.Dataframe
+        summary statistics of the experiment
+    '''
+
+    polymers = df['polymer_name'].unique()
+
+    snapshot_list = []
+
+    for polymer in polymers:
+
+        polymer_df = df.loc[df['polymer_name']==polymer].copy()
+        concentrations = polymer_df['concentration'].unique()
+        peaks = polymer_df['proton_peak_index'].unique()
+
+        for c in concentrations:
+            for p in peaks:
+                print("polymer", polymer)
+                print("conc:", c)
+                print("peak", p)
+                snapshot_df = polymer_df.loc[(polymer_df['concentration'] == c) & (polymer_df['proton_peak_index'] == p)].copy()
+
+                # if any of the AF0_bar values are NON zero, means the snapshot is a binding snapshot
+                binding_flag = snapshot_df['AFo_bar'].any()
+
+                if binding_flag == True: # reduce data to only the statistical binding summary for binding observations
+
+                    drop_index = snapshot_df.loc[snapshot_df['AFo_bar']==0].index
+                    snapshot_df = snapshot_df.drop(index = drop_index)
+                    snapshot_df = snapshot_df.drop_duplicates(subset = ['concentration', 'proton_peak_index', 'polymer_name', 'sample_size', 'AFo_bar', 'replicate', 'AFo', 'SSE'])
+                    
+                # append to snapshot list
+                snapshot_list.append(snapshot_df)
+
+            
+    summary_df = pd.concat(snapshot_list)
+
+    return summary_df
 
 def merge(source_path, destination_path):
     ''' This function generates a merged machine learning ready dataset.
@@ -201,8 +325,14 @@ def merge(source_path, destination_path):
         
     Returns
     -------
-    Pandas.DataFrame
-        DataFrame containing the resulting merged datafiles from destination_path.
+    mean_df: Pandas.DataFrame
+        useful for binary classification, shows individual observations and statistical test results with labels suitable for binary encoding
+    
+    replicates_df: Pandas.DataFrame
+        mean_df including average results of each underlying replicate
+    
+    summary_df: Pandas.DataFrame
+        data reduced to the statistical summary of each experiment
     '''
 
     # Move relevant preprocessed Excel files from Pt. 1 and Pt. 2 to a central destination folder for data merging
@@ -210,18 +340,26 @@ def merge(source_path, destination_path):
 
     all_files = glob.glob("{}/*.xlsx".format(destination_path))
 
-    # 1 & 2) indicate which data format, mean based or replicate based, (from the output of the preprocessing) will be used for machine learning
+    # flags for data table selection
     indicator1 = 'replicate'
     indicator2 = 'all'
     indicator3 = 'mean'
 
-    # 1) need to merge all the input polymer files with a significant AFo into one tidy longform dataframe 
+    # Merge all the "mean" input polymer files with a significant AFo bar into one tidy longform dataframe 
     selected_files_pos = [file for file in all_files if indicator3 in file and indicator2 not in file]
     polymer_names_pos = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in selected_files_pos]
     #selected_dataframes = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files]
     selected_dataframes = selected_files_pos.copy() 
 
+    # Grab replicate files for future join, same number of replicate files as mean files
+    selected_files_pos_rep = [file for file in all_files if indicator1 in file and indicator2 not in file]
+    polymer_names_pos_rep = [re.search('replicate_(.+?).xlsx', file).group(1).strip() for file in selected_files_pos_rep]
+    selected_dataframes_rep = selected_files_pos_rep.copy()
+
+    # generate lists of true positive dataframes
     for i in range(len(selected_files_pos)):
+
+        # mean dataframes across polymers
         try: # ppm in index
             # Preserve multi-index when reading in Excel file
             df = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
@@ -235,16 +373,20 @@ def merge(source_path, destination_path):
             df_other = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
             selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-    # 1) clean list
     
+        # replicate dataframes across polymers
+        selected_dataframes_rep[i] = pd.read_excel(selected_files_pos_rep[i], header = [0], index_col = [0])
+        
+
     clean(selected_dataframes, polymer_names_pos, 'pos')
+
+    clean_replicates(selected_dataframes_rep, polymer_names_pos_rep)
 
     selected_dataframes_pos = reformat(selected_dataframes, 'pos')
 
-    # to balance the dataset, add BACK in the negative examples in preprocessing dropped due to statistical insignificance with an AFo = 0
+    selected_dataframes_pos_rep = reformat_replicates(selected_dataframes_rep)
 
-    # 2) need to merge all the input polymer observations (significant and not) into a dataframe (mean all)
+    # to balance the dataset, add back in the negative examples in preprocessing dropped due to statistical insignificance (AFo bar = 0)
     selected_files_neg = [file for file in all_files if indicator3 in file and indicator2 in file]
     polymer_names_neg = [re.search('all_(.+?).xlsx', file).group(1).strip() for file in selected_files_neg]
     #selected_dataframes_neg_list = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files_neg]
@@ -266,10 +408,17 @@ def merge(source_path, destination_path):
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
             selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
-    # 2) clean list
-    
     clean(selected_dataframes, polymer_names_neg, 'neg')
         
     selected_dataframes_neg = reformat(selected_dataframes, 'neg')
+
+    # high level proton-specific data from true positive and true negatives in terms of AFo bar, can use for binary classification
+    mean_df = join(selected_dataframes_pos, selected_dataframes_neg)
+
+    # add in replicate specific AFo and SSE
+    replicates_df = join_replicates(mean_df, selected_dataframes_pos_rep)
     
-    return join(selected_dataframes_pos, selected_dataframes_neg)
+    # snapshot of the clean summary of each experiment (drops proton-specific information)
+    summary_df = summarize(replicates_df)
+
+    return mean_df, replicates_df, summary_df
