@@ -33,7 +33,7 @@ idx = pd.IndexSlice
 
 # import all data wrangling functions for Pt. 1 & 2, and data merge function for Pt. 3
 from discoprocess.data_wrangling_functions import *
-from discoprocess.data_merging import merge
+from discoprocess.data_merging import merge, etl
 from discoprocess.data_analyze import *
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
@@ -122,10 +122,15 @@ source_path = '{}/*/tables_*'.format(global_output_directory)
 destination_path = '{}'.format(merge_output_directory)
 
 # call data merging function and write complete dataset to file
-binaryclf_df, multiclf_df, summary_df = merge(source_path, destination_path)
+# binaryclf_df = merge(source_path, destination_path)
 
-binaryclf_df.to_excel(os.path.join(merge_output_directory, "binaryclf_dataset.xlsx"))
-multiclf_df.to_excel(os.path.join(merge_output_directory, "multiclf_dataset.xlsx"))
-summary_df.to_excel(os.path.join(merge_output_directory, "stat_summary_dataset.xlsx"))
+df1 = etl(source_path, destination_path)
 
-print("Data processing completed! Merged_binding_dataset.xlsx file available in the output directory under merged.")
+# binaryclf_df.to_excel(os.path.join(merge_output_directory, "binaryclf_dataset.xlsx"))
+# summary_df1.to_excel(os.path.join(merge_output_directory, "summary_dataset1.xlsx"))
+
+# work in progress
+df1.to_excel(os.path.join(merge_output_directory, "summary_df.xlsx"))
+# df2.to_excel(os.path.join(merge_output_directory, "mean_bind_merged.xlsx"))
+
+print("Data processing completed! Summary dataset files are available in the output directory under merged.")

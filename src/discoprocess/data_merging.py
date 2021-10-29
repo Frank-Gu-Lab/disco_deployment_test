@@ -326,13 +326,7 @@ def merge(source_path, destination_path):
     Returns
     -------
     mean_df: Pandas.DataFrame
-        useful for binary classification, shows individual observations and statistical test results with labels suitable for binary encoding
-    
-    replicates_df: Pandas.DataFrame
-        mean_df including average results of each underlying replicate
-    
-    summary_df: Pandas.DataFrame
-        data reduced to the statistical summary of each experiment
+        used for binary classification in May '21, shows individual observations and statistical test results with labels suitable for binary encoding
     '''
 
     # Move relevant preprocessed Excel files from Pt. 1 and Pt. 2 to a central destination folder for data merging
@@ -421,4 +415,139 @@ def merge(source_path, destination_path):
     # snapshot of the clean summary of each experiment (drops proton-specific information)
     summary_df = summarize(replicates_df)
 
-    return mean_df, replicates_df, summary_df
+    return mean_df
+
+def filepath_to_dfs(df_file_paths, polymer_names):
+    '''Reads df file path list, cleans and converts to list of dataframes, 
+    set schemas to be consistent according to desired columns.
+    
+    Parameters:
+    -----------
+    df_file_paths: list
+        list of filepaths to data
+
+    polymer_names: string
+        list of strings that correspond to the polymer names
+
+    Returns:
+    --------
+    df_list: list
+        list of dataframes containing polymer info
+    '''
+
+    df_list = []
+
+    for ix, file in enumerate(df_file_paths):
+
+        if "mean" in file and "all" not in file:
+            try:  # ppm in index
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(file, header=[
+                                0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                df_other = pd.read_excel(file, header=[0, 1], index_col=[
+                                        0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product(
+                    [df_other.columns, ['']])
+                clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=(
+                    "concentration", "sat_time", "proton_peak_index", "ppm"))
+
+            except KeyError: # ppm in column
+                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_other = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))        
+
+        elif "replicate" in file:
+            clean_df = pd.read_excel(file)
+
+        if "polymer_name" not in clean_df.columns:
+            clean_df['polymer_name'] = polymer_names[ix]
+
+        df_list.append(clean_df)
+
+    return df_list
+
+def set_schemas(df_file_paths, polymer_names, core_schema):
+    ''' Read DF file paths
+    
+    '''
+
+    # , polymer_names, desired_columns
+    df_list = [pd.read_excel(file) for file in df_file_paths]
+
+    # enforce consistent schemas in df lists
+    df_list = set_schemas(df_file_paths, polymer_names, desired_columns)
+
+    
+
+    df_list = []
+
+    return df_list
+
+def etl(source_path, destination_path):
+    ''' This function extracts, transforms, and loads data into a merged machine learning ready dataset of DISCO experiments.
+    
+    Parameters
+    ----------
+    source_path : str
+        String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
+    
+    destination_path : str
+        String containing path of destination directory.
+        
+    Returns
+    -------   
+    summary_df: Pandas.DataFrame
+        data reduced to the statistical summary of each experiment
+    '''
+   
+    # move relevant preprocessed Excel files to central folder for data ETL
+    move(source_path, destination_path)
+
+    all_files = glob.glob("{}/*.xlsx".format(destination_path))
+    
+    # grab list of filepaths for:
+    # - all replicates (bind and not bind), 
+    # - binding only replicates (with individual AFo & SSE) 
+    # - mean binding only data tables (AFo_bar and SSE_bar)
+
+    rep_all = [file for file in all_files if 'replicate_all' in file]
+    rep_bind = [file for file in all_files if 'replicate' in file and 'all' not in file]
+    mean_bind = [file for file in all_files if 'mean' in file and 'all' not in file]
+    
+    # grab polymer names
+    polymer_names_rep = [re.search('replicate_all_(.+?).xlsx', file).group(1).strip() for file in rep_all]
+    polymer_names_rep_bind = [re.search('replicate_(.+?).xlsx', file).group(1).strip() for file in rep_bind]
+    polymer_names_mean = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in mean_bind]
+
+    # define keys and values for final table ETL
+    primary_key_rep = ["polymer_name", "concentration", "proton_peak_index", "replicate"]
+    primary_key_mean = ["polymer_name", "concentration", "proton_peak_index"]
+
+    rep_all = filepath_to_dfs(rep_all, polymer_names_rep)
+    rep_bind = filepath_to_dfs(rep_bind, polymer_names_rep_bind)
+    mean_bind = filepath_to_dfs(mean_bind, polymer_names_mean)
+    
+    # concatenate polymer specific data of each type into cross-polymer tables
+    rep_all_df = pd.concat(rep_all) 
+    rep_bind_df = pd.concat(rep_bind) 
+    mean_bind_df = pd.concat(mean_bind).reset_index() # make tidy
+    
+    
+    # subset replicates to unique values of interest
+    rep_all_df = rep_all_df[["polymer_name","concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates()
+    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates()
+    mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "SSE_bar", "AFo_bar"]].drop_duplicates().droplevel(1, axis=1)
+
+    # join replicate-specific AFo and SSE, clean noise from ppm
+    midpoint_df = pd.merge(rep_all_df, rep_bind_df, how = 'left', on = primary_key_rep).drop(columns=['ppm_y']).rename(columns = {'ppm_x':'ppm'})
+    
+    # fill non-binding replicate peaks with zeros
+    midpoint_df['AFo'] = midpoint_df['AFo'].fillna(0)
+    midpoint_df['SSE'] = midpoint_df['SSE'].fillna(0)
+
+    # join AFobar and SSEbar 
+    summary_df = pd.merge(midpoint_df, mean_bind_df, how = 'left', on = primary_key_mean)
+
+    return summary_df
