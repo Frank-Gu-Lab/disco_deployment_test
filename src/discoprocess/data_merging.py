@@ -468,23 +468,6 @@ def filepath_to_dfs(df_file_paths, polymer_names):
 
     return df_list
 
-def set_schemas(df_file_paths, polymer_names, core_schema):
-    ''' Read DF file paths
-    
-    '''
-
-    # , polymer_names, desired_columns
-    df_list = [pd.read_excel(file) for file in df_file_paths]
-
-    # enforce consistent schemas in df lists
-    df_list = set_schemas(df_file_paths, polymer_names, desired_columns)
-
-    
-
-    df_list = []
-
-    return df_list
-
 def etl(source_path, destination_path):
     ''' This function extracts, transforms, and loads data into a merged machine learning ready dataset of DISCO experiments.
     
@@ -547,7 +530,25 @@ def etl(source_path, destination_path):
     midpoint_df['AFo'] = midpoint_df['AFo'].fillna(0)
     midpoint_df['SSE'] = midpoint_df['SSE'].fillna(0)
 
+    # ensure consistent data types in primary key
+    midpoint_df['polymer_name'] = midpoint_df['polymer_name'].astype(str)
+    mean_bind_df['polymer_name'] = mean_bind_df['polymer_name'].astype(str)
+
+    # print(midpoint_df['polymer_name'].dtype, mean_bind_df['polymer_name'].dtype)
+    # print(midpoint_df['concentration'].dtype, mean_bind_df['concentration'].dtype)
+    # print(midpoint_df['proton_peak_index'].dtype, mean_bind_df['proton_peak_index'].dtype)
+
+
     # join AFobar and SSEbar 
-    summary_df = pd.merge(midpoint_df, mean_bind_df, how = 'left', on = primary_key_mean)
+    summary_df = pd.merge(midpoint_df, mean_bind_df, how = 'outer', on = primary_key_mean)
+
+    # fill values: TO DO
+    
+    # iterate by polymer, conc, peak, grab SSE bar and AFo bar and backfill for binding protons where the merge failed
+
+    # for non binding, fill with zeros
+
+    # fill sample size in all cases
+
 
     return summary_df
