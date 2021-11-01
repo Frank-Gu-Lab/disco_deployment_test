@@ -552,6 +552,24 @@ def etl(source_path, destination_path):
     summary_df = pd.merge(midpoint_df, mean_bind_df, how='left', on = primary_key_mean)
   
     # for non binding, fill with zeros
-    summary_df[['sample_size', 'SSE_bar','AFo_bar']] = summary_df[['sample_size', 'SSE_bar','AFo_bar']].fillna(0)
+    summary_df[['SSE_bar','AFo_bar']] = summary_df[['SSE_bar','AFo_bar']].fillna(0)
+
+    # fill in sample size if have data, if not calculate based on max num replicates
+    sample_size_mapper = summary_df[['polymer_name','concentration', 'sample_size']].drop_duplicates()
+    replicate_mapper = summary_df[['polymer_name', 'concentration', 'replicate']].drop_duplicates()
+    
+    for row in sample_size_mapper.itertuples():
+        polymer = row[1]
+        conc = row[2]
+        sample_size = row[3]
+
+        if pd.isna(sample_size):
+            # grab max num replicates for that polymer and conc
+            max_nrep = replicate_mapper.loc[(replicate_mapper['polymer_name'] == polymer) & (replicate_mapper['concentration'] == conc), ('replicate')].max()
+            summary_df.loc[(summary_df['polymer_name'] == polymer) & (summary_df['concentration'] == conc), ('sample_size')] = max_nrep
+
+        else: 
+            summary_df.loc[(summary_df['polymer_name'] == polymer) & (summary_df['concentration'] == conc), ('sample_size')] = sample_size
+    
 
     return summary_df
