@@ -177,7 +177,9 @@ def reformat(df_list, pos_or_neg = 'pos'):
 
 def reformat_replicates(df_list):
     ''' Concatenates true positive replicate binding data into one data table.
-    Performs other reformatting operations as required.'''
+    Performs other reformatting operations as required.
+    
+    Note - obsolete, remove in future'''
     
     df = pd.concat(df_list)
 
@@ -230,6 +232,7 @@ def join(df1, df2):
 
 def join_replicates(df1, df2):
     '''One to many join the replicate specific AFo replicate data into global dataset.
+    Note - obsolete - remove in future
 
     Parameters:
     ----------
@@ -274,6 +277,7 @@ def summarize(df):
     -------
     summary_df: Pandas.Dataframe
         summary statistics of the experiment
+    Note: obsolete - remove in future
     '''
 
     polymers = df['polymer_name'].unique()
@@ -327,6 +331,7 @@ def merge(source_path, destination_path):
     -------
     mean_df: Pandas.DataFrame
         used for binary classification in May '21, shows individual observations and statistical test results with labels suitable for binary encoding
+        Note: observed data is likely confounded by sat time, not handled properly, use ETL function instead
     '''
 
     # Move relevant preprocessed Excel files from Pt. 1 and Pt. 2 to a central destination folder for data merging
@@ -406,14 +411,12 @@ def merge(source_path, destination_path):
         
     selected_dataframes_neg = reformat(selected_dataframes, 'neg')
 
-    # high level proton-specific data from true positive and true negatives in terms of AFo bar, can use for binary classification
+    # high level proton-specific data from true positive and true negatives in terms of AFo bar
     mean_df = join(selected_dataframes_pos, selected_dataframes_neg)
 
-    # add in replicate specific AFo and SSE
-    replicates_df = join_replicates(mean_df, selected_dataframes_pos_rep)
+    # replicates_df = join_replicates(mean_df, selected_dataframes_pos_rep)
     
-    # snapshot of the clean summary of each experiment (drops proton-specific information)
-    summary_df = summarize(replicates_df)
+    # summary_df = summarize(replicates_df)
 
     return mean_df
 
@@ -517,38 +520,38 @@ def etl(source_path, destination_path):
     rep_bind_df = pd.concat(rep_bind) 
     mean_bind_df = pd.concat(mean_bind).reset_index() # make tidy
     
+    # round away ppm noise
+    rep_all_df['ppm'] = rep_all_df['ppm'].round(2)
+    rep_bind_df['ppm'] = rep_bind_df['ppm'].round(2)
     
     # subset replicates to unique values of interest
-    rep_all_df = rep_all_df[["polymer_name","concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates()
-    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates()
+    rep_all_df = rep_all_df[["polymer_name","concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates(subset = ["polymer_name","concentration", "proton_peak_index", "replicate", "amp_factor"])
+    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates(subset = ["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE"])
     mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "SSE_bar", "AFo_bar"]].drop_duplicates().droplevel(1, axis=1)
-
+    
     # join replicate-specific AFo and SSE, clean noise from ppm
     midpoint_df = pd.merge(rep_all_df, rep_bind_df, how = 'left', on = primary_key_rep).drop(columns=['ppm_y']).rename(columns = {'ppm_x':'ppm'})
     
     # fill non-binding replicate peaks with zeros
     midpoint_df['AFo'] = midpoint_df['AFo'].fillna(0)
     midpoint_df['SSE'] = midpoint_df['SSE'].fillna(0)
+    
+    # ensure consistent data types in primary key 
+    midpoint_df.polymer_name = midpoint_df.polymer_name.astype(str).str.replace(' ', '')
+    mean_bind_df.polymer_name = mean_bind_df.polymer_name.astype(str).str.replace(' ', '')
+    midpoint_df.concentration = midpoint_df.concentration.astype(float)
+    mean_bind_df.concentration = mean_bind_df.concentration.astype(float)
+    midpoint_df.proton_peak_index = midpoint_df.proton_peak_index.astype(int)
+    mean_bind_df.proton_peak_index = mean_bind_df.proton_peak_index.astype(int)
 
-    # ensure consistent data types in primary key
-    midpoint_df['polymer_name'] = midpoint_df['polymer_name'].astype(str)
-    mean_bind_df['polymer_name'] = mean_bind_df['polymer_name'].astype(str)
-
-    # print(midpoint_df['polymer_name'].dtype, mean_bind_df['polymer_name'].dtype)
-    # print(midpoint_df['concentration'].dtype, mean_bind_df['concentration'].dtype)
-    # print(midpoint_df['proton_peak_index'].dtype, mean_bind_df['proton_peak_index'].dtype)
-
+    # sort values
+    midpoint_df = midpoint_df.sort_values(by = primary_key_mean)
+    mean_bind_df = mean_bind_df.sort_values(by = primary_key_mean)
 
     # join AFobar and SSEbar 
-    summary_df = pd.merge(midpoint_df, mean_bind_df, how = 'outer', on = primary_key_mean)
-
-    # fill values: TO DO
-    
-    # iterate by polymer, conc, peak, grab SSE bar and AFo bar and backfill for binding protons where the merge failed
-
+    summary_df = pd.merge(midpoint_df, mean_bind_df, how='left', on = primary_key_mean)
+  
     # for non binding, fill with zeros
-
-    # fill sample size in all cases
-
+    summary_df[['sample_size', 'SSE_bar','AFo_bar']] = summary_df[['sample_size', 'SSE_bar','AFo_bar']].fillna(0)
 
     return summary_df
