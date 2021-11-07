@@ -571,5 +571,4 @@ def etl(source_path, destination_path):
         else: 
             summary_df.loc[(summary_df['polymer_name'] == polymer) & (summary_df['concentration'] == conc), ('sample_size')] = sample_size
     
-
     return summary_df

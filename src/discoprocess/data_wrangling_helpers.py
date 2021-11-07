@@ -725,6 +725,7 @@ def get_dofs(peak_indices_array, df):
     else:
         dof_list = get_dofs_one_peak(df)
 
+    # print(dof_list)
     return dof_list
     
 def get_dofs_one_peak(df):
