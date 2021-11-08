@@ -373,4 +373,196 @@ def generate_fingerprint(mean_df, replicate_df, polymer_name, output_directory):
     plt.close('all')
     return
 
+def generate_custom_buildup_curve(df, polymer_name, output_directory):
+    '''For the user to modify, generate custom buildup curves.
+    
+    Parameters:
+    -----------
+    df : Pandas.Dataframe
+        dataframe containing one polymer's DISCO Effect information for the build up curve
 
+    polymer_name: string
+        string containing the identifier of the polymer 
+    
+    output_directory: string
+        file path to desired output directory for saved plots
+   
+    Returns:
+    -------
+    None, outputs formal figures
+    '''
+
+    fig, (ax) = plt.subplots(1, figsize=(8, 4))
+    polymer_name_plot = polymer_name.replace("_", " ")
+
+    if "PAA" not in polymer_name:
+        # for grouping information to plot
+        concentration = df.index.get_level_values(0)
+        ppm = df.index.get_level_values(3)
+
+        # colour build up curves differently by ppm
+        labels = np.round(ppm, 2)
+        groups = df.groupby(labels)
+
+        # plot DISCO effect build up curve
+        for name, group in groups:
+            sat_time = group.index.get_level_values(1)
+            disco_effect = group['corr_%_attenuation']['mean'].values
+            std = group['corr_%_attenuation']['std'].values
+            n = group['sample_size']['Unnamed: 7_level_1'].values
+            std_err = std/np.sqrt(n)
+
+            y1 = np.subtract(disco_effect, std_err)
+            y2 = np.add(disco_effect, std_err)
+
+            ax.plot(sat_time, disco_effect, markeredgecolor='k', markeredgewidth=0.25,
+                    marker='o', linestyle='', ms=8, label=name)
+            # ax.fill_between(sat_time, y1, y2,
+                            # alpha=0.25)
+            ax.legend(loc='best', bbox_to_anchor=(
+                0.6, 0.3, 0.6, 0.6), title="Delta ppm",)
+
+        ax.set_title(f'DISCO Effect Buildup Curve - {polymer_name_plot}')
+        ax.set_xlabel('NMR Saturation Time (s)')
+        ax.set_ylabel('Disco Effect')
+
+        # define file name
+        output_file_name = f"{output_directory}/{polymer_name}-disco-curve.png"
+
+        # export to file
+        fig.savefig(output_file_name, dpi=300)
+
+    # workaround for different PAA format
+    else:
+
+        #subset to only 20 uM conc
+        df = df.iloc[df.index.get_level_values(0) == 20].copy()
+
+        # controls
+        concentration = df.index.get_level_values(0)
+        sat_time = df.index.get_level_values(1)
+        proton_peak_index = df.index.get_level_values(2)
+        ppm = df.index.get_level_values(3)
+
+        # 1: Disco Effect Build-up Curves - one plot for one polymer, all peaks - from stats df mean
+        fig, (ax) = plt.subplots(1, figsize=(8, 4))
+        labels = np.round(ppm, 2)
+        groups = df.groupby(labels)
+        # print(groups)
+
+        # plot DISCO effect build up curve
+        for name, group in groups:
+            sat_time = group.index.get_level_values(1)
+            disco_effect = group['corr_%_attenuation']['mean'].values
+            std = group['corr_%_attenuation']['std'].values
+            n = group['sample_size']['Unnamed: 8_level_1'].values
+            std_err = std/np.sqrt(n)
+
+            y1 = np.subtract(disco_effect, std_err)
+            y2 = np.add(disco_effect, std_err)
+
+            ax.plot(sat_time, disco_effect, markeredgecolor='k', markeredgewidth=0.25,
+                    marker='o', linestyle='', ms=8, label=name)
+            # ax.fill_between(sat_time, y1, y2,
+                            # alpha=0.25)
+            ax.legend(loc='best', bbox_to_anchor=(
+                0.6, 0.3, 0.6, 0.6), title="Delta ppm",)
+
+        ax.set_title(f'DISCO Effect Buildup Curve - {polymer_name_plot}')
+        ax.set_xlabel('NMR Saturation Time (s)')
+        ax.set_ylabel('Disco Effect')
+
+        # define file name
+        output_file_name = f"{output_directory}/{polymer_name}-disco-curve.png"
+
+        # export to file
+        fig.savefig(output_file_name, dpi=300)
+
+        plt.close('all')
+        return
+
+def generate_custom_fingerprint(mean_df, replicate_df, polymer_name, output_directory):
+    ''' For the user to modify: generate custom binding fingerprint plots.
+
+    Parameters:
+    -----------
+    mean_df : Pandas.DataFrame
+        dataframe containing one polymer's mean DISCO AF0 bar values
+    
+    replicate_df : Pandas.Dataframe
+        dataframe containing one polymer's replicate specific DISCO AF0 values
+
+    polymer_name: string
+        string containing the identifier of the polymer 
+    
+    output_directory: string
+        file path to desired output directory for saved plots
+   
+    Returns:
+    -------
+    None, outputs formal figures
+    '''
+
+    fig, (ax) = plt.subplots(1, figsize=(4, 4))
+    polymer_name_plot = polymer_name.replace("_", " ")
+    
+    # grab variables for bar plot
+    afo_bar = np.unique(mean_df['AFo_bar'].values)
+    sse_bar = np.unique(mean_df['SSE_bar'].values)
+    ppm = np.round(np.unique(replicate_df['ppm'].values),2)
+    ppm_ix = np.unique(replicate_df['proton_peak_index'].values)
+
+    # grab response variables for the overlaid scatter plot, drop excess data
+    afo_df = replicate_df.copy()
+    afo_df = afo_df.drop(columns = ['index','sat_time','corr_%_attenuation','amp_factor','yikj'])
+    afo_df['ppm'] = afo_df['ppm'].round(2)
+
+    # accounting for PAA format difference
+    if 'ppm_range' in afo_df.columns:
+        afo_df = afo_df.drop(columns = ['ppm_range'])
+
+    afo_df = afo_df.drop_duplicates()
+
+    # For PAA subset to 20uM concentration, access values in other format
+    if "PAA" in polymer_name:
+        mean_df = mean_df.iloc[mean_df.index.get_level_values(0) == 20].copy()
+        replicate_df = replicate_df.loc[replicate_df['concentration'] == 20].copy(
+        )
+        afo_df = afo_df.loc[afo_df['concentration'] == 20].copy()
+        afo_bar = np.unique(mean_df['AFo_bar']['Unnamed: 14_level_1'].values)
+        sse_bar = np.unique(mean_df['SSE_bar']['Unnamed: 13_level_1'].values)   
+        ppm = np.round(mean_df.index.get_level_values(3),2).unique()
+    
+    x_ax = np.arange(0,len(ppm))
+
+    # generate barplot
+    # ax.bar(x_ax, height=afo_bar, yerr=sse_bar, tick_label=ppm, color = (0,0,0,0), edgecolor = colors)
+    ax.bar(x_ax, height=afo_bar, yerr=sse_bar, tick_label=ppm, color = (0,0,0,0), edgecolor = 'k')
+    
+    # generate overlaid scatterplot
+    for i, peak in enumerate(ppm_ix):
+
+        afo_datapoints = afo_df.loc[afo_df['proton_peak_index'] == peak]['AFo'].values
+ 
+        for _, datapoint in enumerate(afo_datapoints):
+            # ax.scatter(x_ax[i], datapoint, marker='.', color = colors[i], edgecolor='k', linewidths=0.25)
+            ax.scatter(x_ax[i], datapoint, marker='.', edgecolor='k', color = 'k', linewidths=0.25)
+            
+   
+    # format plot 
+    ax.set_title(f'Binding Fingerprint - {polymer_name_plot}')
+    ax.set_xlabel("Peak ($\delta$, ppm)")
+    ax.set_ylabel("DISCO $AF_0$")
+    ax.set_ylim(0.0, 0.3)
+
+    # reformat x axis
+    # ax.invert_xaxis()  # invert to match NMR spectrum (problem w/this)
+
+    # define file name
+    output_file_name = f"{output_directory}/{polymer_name}-fingerprint.png"
+
+    # export fig to file
+    fig.savefig(output_file_name, dpi=500)
+
+    plt.close('all')
+    return
