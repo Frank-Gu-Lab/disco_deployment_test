@@ -444,22 +444,29 @@ def filepath_to_dfs(df_file_paths, polymer_names):
 
         if "mean" in file and "all" not in file:
             try:  # ppm in index
-                # Preserve multi-index when reading in Excel file
+                df = pd.read_excel(file, header=[0, 1], index_col=[0, 1, 2, 3])
                 df = pd.read_excel(file, header=[
                                 0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
                 df_other = pd.read_excel(file, header=[0, 1], index_col=[
                                         0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-                df_other.columns = pd.MultiIndex.from_product(
-                    [df_other.columns, ['']])
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
                 clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=(
                     "concentration", "sat_time", "proton_peak_index", "ppm"))
+                
 
             except KeyError: # ppm in column
+                df = pd.read_excel(file, header=[0, 1], index_col=[0, 1, 2])
+                df_ppm = df['ppm']['mean'] # grab mean ppm 
+                df = df.drop(columns='ppm', level=0) # drop extra vals
+                df['ppm'] = df_ppm # leave only mean ppm 
+                df.set_index('ppm', append=True, inplace=True)
+                clean_df = df
+
                 # Preserve multi-index when reading in Excel file
-                df = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                df_other = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-                clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))        
+                # df = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                # df_other = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                # df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                # clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))        
 
         elif "replicate" in file:
             clean_df = pd.read_excel(file)
@@ -502,6 +509,7 @@ def etl(source_path, destination_path):
     rep_bind = [file for file in all_files if 'replicate' in file and 'all' not in file]
     mean_bind = [file for file in all_files if 'mean' in file and 'all' not in file]
     
+    
     # grab polymer names
     polymer_names_rep = [re.search('replicate_all_(.+?).xlsx', file).group(1).strip() for file in rep_all]
     polymer_names_rep_bind = [re.search('replicate_(.+?).xlsx', file).group(1).strip() for file in rep_bind]
@@ -523,10 +531,12 @@ def etl(source_path, destination_path):
     # round away ppm noise
     rep_all_df['ppm'] = rep_all_df['ppm'].round(2)
     rep_bind_df['ppm'] = rep_bind_df['ppm'].round(2)
-    
+
     # subset replicates to unique values of interest
-    rep_all_df = rep_all_df[["polymer_name","concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates(subset = ["polymer_name","concentration", "proton_peak_index", "replicate", "amp_factor"])
-    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates(subset = ["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE"])
+    rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates(
+        subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "amp_factor"])
+    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates(
+        subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE"])
     mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "SSE_bar", "AFo_bar"]].drop_duplicates().droplevel(1, axis=1)
     
     # join replicate-specific AFo and SSE, clean noise from ppm
