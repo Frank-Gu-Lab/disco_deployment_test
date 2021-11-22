@@ -10,5 +10,6 @@ dependencies:
   - pytest-mock
   - pytest-cov
   - openpyxl
+  - scikit-learn # sklearn
 
 # +SciencePlots (via pip install)

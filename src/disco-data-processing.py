@@ -126,7 +126,6 @@ destination_path = '{}'.format(merge_output_directory)
 # binaryclf_df.to_excel(os.path.join(merge_output_directory, "binaryclf_dataset.xlsx"))
 
 summary_df = etl(source_path, destination_path)
-# work in progress
 summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
 
 print("Data processing completed! Summary dataset files are available in the output directory under merged.")

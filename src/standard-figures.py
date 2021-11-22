@@ -22,7 +22,7 @@ auto generate DISCO paper figures for all experiments
 import pandas as pd
 import glob
 import os
-
+from sklearn.preprocessing import MaxAbsScaler
 from discoprocess.data_plot import generate_buildup_curve
 from discoprocess.data_plot import generate_fingerprint
 
@@ -34,6 +34,8 @@ polymer_library_all = glob.glob("../data/output/merged/stats_analysis_output_mea
 
 polymer_library_replicates = glob.glob(
     "../data/output/merged/stats_analysis_output_replicate_*")
+
+merged_bind_dataset = pd.read_excel("../data/output/merged/merged_binding_dataset.xlsx")
 
 # Define a custom output directory for formal figures
 output_directory = "../data/output/publications" 
@@ -80,12 +82,6 @@ for polymer in polymer_library_binding:
     
     generate_buildup_curve(polymer_df, polymer_name, binding_directory)
 
-    # Plot DISCO AFo Fingerprints for the binding peaks in each polymer
-    polymer_replicate = f"../data/output/merged/stats_analysis_output_replicate_{polymer_name}.xlsx"
-
-    polymer_replicate_df = pd.read_excel(polymer_replicate, index_col=[0], header=[0])
-
-    generate_fingerprint(polymer_df, polymer_replicate_df, polymer_name, binding_directory)
 
 
 
@@ -106,7 +102,25 @@ for polymer in polymer_library_all:
     generate_buildup_curve(polymer_df, polymer_name, binding_directory2)
 
 
+# plot binding fingerprints
+binding_directory = f"{output_directory}/binding"
+
+unique_bind_polymers = merged_bind_dataset.loc[merged_bind_dataset['AFo'] != 0, ('polymer_name')].unique()
+
+# iterate through figures per polymer
+for polymer in unique_bind_polymers:
+
+    plot_df = merged_bind_dataset.loc[(merged_bind_dataset['polymer_name'] == polymer) & (merged_bind_dataset['AFo'] != 0)].copy()
     
+    # normalize AFo in the plot df 
+    scaler = MaxAbsScaler()
+    plot_df['AFo_bar_norm'] = scaler.fit_transform(plot_df['AFo_bar'].values.reshape(-1,1))
+    plot_df['SSE_bar_norm'] = scaler.transform(plot_df['SSE_bar'].values.reshape(-1, 1))
+    plot_df['AFo_norm'] = scaler.transform(plot_df['AFo'].values.reshape(-1, 1))
+    plot_df['SSE_norm'] = scaler.transform(plot_df['SSE'].values.reshape(-1, 1))
+    
+
+    generate_fingerprint(plot_df, polymer, binding_directory)
 
     
     
