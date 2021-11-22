@@ -444,9 +444,8 @@ def filepath_to_dfs(df_file_paths, polymer_names):
 
         if "mean" in file and "all" not in file:
             try:  # ppm in index
-                df = pd.read_excel(file, header=[0, 1], index_col=[0, 1, 2, 3])
-                df = pd.read_excel(file, header=[
-                                0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+                # clear default "unnamed" column names in multi index
+                df = pd.read_excel(file, header=[0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
                 df_other = pd.read_excel(file, header=[0, 1], index_col=[
                                         0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
                 df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
@@ -455,18 +454,18 @@ def filepath_to_dfs(df_file_paths, polymer_names):
                 
 
             except KeyError: # ppm in column
-                df = pd.read_excel(file, header=[0, 1], index_col=[0, 1, 2])
-                df_ppm = df['ppm']['mean'] # grab mean ppm 
-                df = df.drop(columns='ppm', level=0) # drop extra vals
-                df['ppm'] = df_ppm # leave only mean ppm 
-                df.set_index('ppm', append=True, inplace=True)
-                clean_df = df
 
-                # Preserve multi-index when reading in Excel file
-                # df = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                # df_other = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                # df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-                # clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))        
+                # clear default "unnamed" column names in multi index
+                df = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
+                df_other = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
+                df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
+                clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))    
+
+                # add ppm back to index
+                df_ppm = clean_df['ppm']['mean']  # grab mean ppm
+                clean_df = clean_df.drop(columns='ppm', level=0)  # drop extra vals
+                clean_df['ppm'] = df_ppm  # leave only mean ppm
+                clean_df.set_index('ppm', append=True, inplace=True)
 
         elif "replicate" in file:
             clean_df = pd.read_excel(file)
