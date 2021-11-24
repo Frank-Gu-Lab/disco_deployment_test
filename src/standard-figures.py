@@ -4,19 +4,8 @@ Created on Thursday Oct 21 14:39 2021
 
 @author: Samantha Stuart
 
-Standard publication plots generated from processed DISCO data. 
-
-TO DO:
-------
-- write plotting wrapper script to read data outputs from data processing code, and 
-auto generate DISCO paper figures for all experiments
-
-    - DISCO effect build-up curves w/Std error, overlaid for a given binding site
-        - modify v2 from the mean plotting graph - bring out here (mean data)
-
-    - DISCO polymer fingerprints (need replicate AF0 data + AF0_bar)
-        - modify Jeffs code, read data from replicate tables for a given polymer
-        - automatically indicate outliers ?
+Manipulates source data into formats for plotting.
+Generates standard publication plots from processed DISCO data.
 
 """
 import pandas as pd
@@ -25,6 +14,7 @@ import os
 from sklearn.preprocessing import MaxAbsScaler
 from discoprocess.data_plot import generate_buildup_curve
 from discoprocess.data_plot import generate_fingerprint
+from discoprocess.data_plot_helpers import tukey_fence
 
 # for only the peaks with a significant disco effect
 polymer_library_binding = set(glob.glob("../data/output/merged/stats_analysis_output_mean_*")) - set(glob.glob("../data/output/merged/stats_analysis_output_mean_all_*"))
@@ -83,8 +73,6 @@ for polymer in polymer_library_binding:
     generate_buildup_curve(polymer_df, polymer_name, binding_directory)
 
 
-
-
 # plot DISCO Effect build up curves with insignificant and significant peaks overlaid
 for polymer in polymer_library_all:
 
@@ -112,15 +100,24 @@ for polymer in unique_bind_polymers:
 
     plot_df = merged_bind_dataset.loc[(merged_bind_dataset['polymer_name'] == polymer) & (merged_bind_dataset['AFo'] != 0)].copy()
     
-    # normalize AFo in the plot df 
-    scaler = MaxAbsScaler()
-    plot_df['AFo_bar_norm'] = scaler.fit_transform(plot_df['AFo_bar'].values.reshape(-1,1))
-    plot_df['SSE_bar_norm'] = scaler.transform(plot_df['SSE_bar'].values.reshape(-1, 1))
-    plot_df['AFo_norm'] = scaler.transform(plot_df['AFo'].values.reshape(-1, 1))
-    plot_df['SSE_norm'] = scaler.transform(plot_df['SSE'].values.reshape(-1, 1))
-    
+    # identify univariate outliers in plot_df using Tukey-Fence method
+    plot_df_outliers = tukey_fence(plot_df, 'AFo')
+    # print(plot_df_outliers)
 
-    generate_fingerprint(plot_df, polymer, binding_directory)
+    # subset df to remove probable outliers 
+    plot_df_no_outliers = plot_df_outliers[plot_df_outliers['outlier_prob'] == False]
+
+    # fit normalizer to AFo in the plot df after outliers removed
+    scaler = MaxAbsScaler()
+    plot_df_outliers['AFo_norm'] = scaler.fit(abs(plot_df_no_outliers['AFo'].values).reshape(-1,1))
+
+    # transform all data (including outliers) and mark flagged outliers on plot, so outliers not used as normalization ref point
+    plot_df_outliers['AFo_norm'] = scaler.transform(abs(plot_df_outliers['AFo'].values).reshape(-1,1))
+    plot_df_outliers['SSE_bar_norm'] = scaler.transform(abs(plot_df_outliers['SSE_bar'].values).reshape(-1, 1))
+    plot_df_outliers['AFo_bar_norm'] = scaler.transform(abs(plot_df_outliers['AFo_bar'].values).reshape(-1, 1))
+    plot_df_outliers['SSE_norm'] = scaler.transform(abs(plot_df_outliers['SSE'].values).reshape(-1, 1))
+    
+    generate_fingerprint(plot_df_outliers, polymer, binding_directory)
 
     
     

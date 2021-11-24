@@ -16,6 +16,7 @@ import numpy as np
 plt.style.use(['science', 'disco'])
 plt.rcParams.update({'font.family':'sans-serif'})
 plt.rcParams.update({'font.size':12})
+# rc("text", usetex=False)
 
 # must install LaTex before Science Plots
 os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
@@ -36,8 +37,10 @@ os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
 
 try:
     from .data_wrangling_helpers import y_hat_fit
+    from .data_plot_helpers import * 
 except:
     from data_wrangling_helpers import y_hat_fit
+    from data_plot_helpers import *
 
 def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
     '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
@@ -312,6 +315,9 @@ def generate_fingerprint(df, polymer_name, output_directory):
 
     fig, (ax) = plt.subplots(1, figsize=(4, 4))
 
+    # reset index
+    df = df.reset_index(drop = True)
+
     if df['concentration'].nunique() > 1: # if more than one conc per polymer, choose 20 uM version (for PAA data)
         df = df.loc[df['concentration'] == 20].copy()
 
@@ -330,13 +336,24 @@ def generate_fingerprint(df, polymer_name, output_directory):
     # map ppm to proton peak index incase multi ppms per proton peak index
     ppm_mapper = dict(zip(ppm_ix,ppm))
     df['ppm'] = df['proton_peak_index'].map(ppm_mapper)
-    
+    df['point_size'] = df['outlier_prob'].map({False: 4.0, True: 2.0})
+    sizes = df['point_size'].values
+    # print(df['AFo_norm'])
+    # print(df['point_size'])
+    # print(df)
+    # print(type(df['ppm']))
+    # print(type(sizes))
+    # temp = df[some_filter]
+    # temp.plot.scatter(x='x', y='y', s=temp['s'])
     # generate barplot
-    # ax.bar(x_ax, height=afo_bar, yerr=sse_bar, tick_label=ppm, color = (0,0,0,0), edgecolor = colors)
-    # ax.bar(x_ax, height=afo_bar, yerr=sse_bar, tick_label=ppm_ix, color=(0, 0, 0, 0), edgecolor='k')
-    # ax.bar(x_ax, height=afo_bar_norm, yerr=sse_bar, tick_label=ppm, color = (0,0,0,0), edgecolor = 'k')
-    sns.barplot(data = df, x = 'ppm', y = 'AFo', ax = ax, edgecolor = 'k')
-    sns.stripplot(data = df, x = 'ppm', y = 'AFo', ax = ax, edgecolor = 'k', linewidth = 0.5)
+
+    sns.barplot(data = df, x = 'ppm', y = 'AFo_norm', ax = ax, edgecolor = 'k')
+     # df.plot.scatter(x = 'ppm', y = 'AFo_norm', s ='point_size')
+    sns.stripplot(data= df, x= 'ppm', y= 'AFo_norm', ax= ax, edgecolor='k',
+                  linewidth=0.5)
+    
+    # sns.boxplot(data = df, x = 'ppm', y = 'AFo_norm', ax = ax)
+
 
     # format plot
     ax.set_title(f'Binding Fingerprint - {polymer_name_plot}')
