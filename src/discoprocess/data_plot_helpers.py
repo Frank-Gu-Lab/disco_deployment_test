@@ -65,6 +65,7 @@ def tukey_fence(df, variable):
             
         elif x <= inner_fence_le or x >= inner_fence_ue: # flag if possible outlier
             df.loc[index, ('outlier_poss')] = True
+            df.loc[index, ('outlier_prob')] = False
         
         else:
             df.loc[index, ('outlier_prob')] = False # indicate if neither

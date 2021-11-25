@@ -348,12 +348,19 @@ def generate_fingerprint(df, polymer_name, output_directory):
     # generate barplot
 
     sns.barplot(data = df, x = 'ppm', y = 'AFo_norm', ax = ax, edgecolor = 'k')
-     # df.plot.scatter(x = 'ppm', y = 'AFo_norm', s ='point_size')
-    sns.stripplot(data= df, x= 'ppm', y= 'AFo_norm', ax= ax, edgecolor='k',
-                  linewidth=0.5)
+    # df.plot.scatter(x = 'ppm', y = 'AFo_norm', s ='point_size')
+    # print(df['point_size'].isna())
+    sns.stripplot(data= df, x= 'ppm', y= 'AFo_norm', ax= ax, edgecolor='k', linewidth=0.5)
     
     # sns.boxplot(data = df, x = 'ppm', y = 'AFo_norm', ax = ax)
 
+    # annotate outliers
+    for ix, flag in df['outlier_prob'].items():
+        if flag == True:
+            # print("Worked", flag)
+            # print(df)
+            ax.annotate("$\\diamond$", (df.loc[ix, 'proton_peak_index'], df.loc[ix, 'AFo_norm']+0.0001), size=7)
+    
 
     # format plot
     ax.set_title(f'Binding Fingerprint - {polymer_name_plot}')
