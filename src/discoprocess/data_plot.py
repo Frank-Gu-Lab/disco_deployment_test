@@ -365,7 +365,7 @@ def generate_fingerprint(df, polymer_name, output_directory):
     # format plot
     ax.set_title(f'Binding Fingerprint - {polymer_name_plot}')
     ax.set_xlabel("Peak ($\delta$, ppm)")
-    ax.set_ylabel("DISCO $AF_0$")
+    ax.set_ylabel("Normalized DISCO $AF_0$")
 
     # reformat x axis
     ax.invert_xaxis()  # invert to match NMR spectrum
