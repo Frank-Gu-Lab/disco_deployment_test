@@ -39,7 +39,7 @@ from discoprocess.data_analyze import *
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
 
 #assign the local path to the raw Excel books 
-raw_book_path = os.path.abspath('input')
+raw_book_path = os.path.abspath('../data/input')
 print('Searching in directory:', raw_book_path, '\n')
 
 #list all raw books in file
