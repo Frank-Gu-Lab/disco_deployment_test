@@ -445,12 +445,9 @@ def prep_replicate(corr_p_attenuation_df, batch_or_book = 'book'):
     return replicate_df_for_stats
 
 def t_test(mean_corr_attenuation_ppm, p=0.05):
-    ''' Two sample Student's t-test formulated as a confidence interval. Tests to see if mean corr attenuation is statistically significantly different from zero.
+    ''' Tests to see if mean corr attenuation (DISCO effect) is statistically significantly different from zero
+        at a given peak and saturation time point. One sample, two-sided t-test.
 
-        Null Hypothesis: mean corr attenuation = 0
-
-        Alternative Hypothesis: mean corr attenuation != 0
-        
         Parameters
         ----------
         mean_corr_attenuation_ppm : Pandas.DataFrame
@@ -467,6 +464,16 @@ def t_test(mean_corr_attenuation_ppm, p=0.05):
         Notes
         -----
         Book and batch paths are the same.
+
+        Theory:
+        ------
+        Two sided Null/Alt Hyp
+        --> H0: disco effect = 0 | H1: disco effect !=0
+        
+        Rejection Criteria for Fixed-Level Test
+        --> |t0| > tcrit(alpha/2, n-1)
+        --> abs(mean) - x0 / std/(sqrt(n)) > tcrit | here x0 = 0
+        --> if abs(mean) - tcrit * (std/(sqrt(n))) > 0, reject null
     '''
     # Initialize Relevant t test Parameters
     dof = mean_corr_attenuation_ppm['dofs']
@@ -474,13 +481,12 @@ def t_test(mean_corr_attenuation_ppm, p=0.05):
     std_t = mean_corr_attenuation_ppm['corr_%_attenuation']['std']
     sample_size_t = mean_corr_attenuation_ppm['sample_size']
 
-    # retrieve value critical value 
+    # retrieve value critical value, two sided test 
     crit_t_value = t.ppf(q = 1-(p/2), df = dof)
-    # print(crit_t_value)
 
-    #perform one sample t-test for significance, significant if t_test_results < 0 
-    t_test_results =  mean_t - crit_t_value * (std_t/(np.sqrt(sample_size_t)))
-    mean_corr_attenuation_ppm['t_results'] = t_test_results
+    t_results =  mean_t - crit_t_value * (std_t/(np.sqrt(sample_size_t)))
+
+    mean_corr_attenuation_ppm['t_results'] = t_results
     mean_corr_attenuation_ppm['significance'] = mean_corr_attenuation_ppm['t_results'] > 0
 
     #Return the dataframe with the new t test columns appended

@@ -354,12 +354,12 @@ def generate_fingerprint(df, polymer_name, output_directory):
     
     # sns.boxplot(data = df, x = 'ppm', y = 'AFo_norm', ax = ax)
 
-    # annotate outliers
-    for ix, flag in df['outlier_prob'].items():
-        if flag == True:
-            # print("Worked", flag)
-            # print(df)
-            ax.annotate("$\\diamond$", (df.loc[ix, 'proton_peak_index'], df.loc[ix, 'AFo_norm']+0.0001), size=7)
+    # # annotate outliers - PAA does this work?
+    # for ix, flag in df['outlier_prob'].items():
+    #     if flag == True:
+    #         # print("Worked", flag)
+    #         # print(df)
+    #         ax.annotate("$\\diamond$", (df.loc[ix, 'proton_peak_index'], df.loc[ix, 'AFo_norm']+0.0001), size=7)
     
 
     # format plot
