@@ -773,11 +773,14 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
             # calculate ultimate sum of square errors after minimization for each time point
             sse_bar = np.square(y_hat_fit(significant_sat_time, *best_param_vals_bar) - significant_yikj_bar)
+            n = one_graph_data_mean['sample_size'].max()
+            rse_bar = np.sqrt((1/(n-2))*(np.sum(sse_bar)))
 
             #append sum of square error calculated for this graph to the PARENT mean dataframe at this c and p
             #stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('SSE_bar')] = sse_bar.sum()
             
             stats_df_mean.loc[(c, slice(None), p), ('SSE_bar')] = sse_bar.sum()
+            stats_df_mean.loc[(c, slice(None), p), ('RSE_bar')] = rse_bar
 
             # append best parameters to variables, and then generate the instantaneous amplification factor 
             a_kj_bar = best_param_vals_bar[0]
@@ -786,8 +789,9 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
             amp_factor_instantaneous_bar = a_kj_bar * b_kj_bar
 
             #append instantaneous amplification factor calculated to the PARENT mean dataframe, for all datapoints in this graph
-            #stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
-            
+            #stats_df_mean.loc[(slice(c), slice(None), slice(p)), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar)) 
+            stats_df_mean.loc[(c, slice(None), p), ('alpha_bar')] = a_kj_bar
+            stats_df_mean.loc[(c, slice(None), p), ('beta_bar')] = b_kj_bar
             stats_df_mean.loc[(c, slice(None), p), ('AFo_bar')] = [amp_factor_instantaneous_bar]*(len(all_yikj_bar))
             
             # define file name for curve fits by mean
@@ -815,16 +819,20 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
                 #calculate ultimate sum of square errors after minimization for each time point, and append to list
                 sse = np.square(y_hat_fit(sat_time, *best_param_vals) - y_ikj)
+                rse = np.sqrt((1/(n-2))*(np.sum(sse)))
 
-                #appends sum of square error calculated to the PARENT stats replicate dataframe, summed for all datapoints in this graph
+                #appends to PARENT stats replicate dataframe
                 stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('SSE')] = sse.sum()    
+                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('RSE')] = rse 
 
                 # solve for the instantaneous amplification factor
                 a_kj = best_param_vals[0]
                 b_kj = best_param_vals[1]
                 amp_factor_instantaneous = a_kj * b_kj
 
-                #appends instantaneous amplification factor calculated to the PARENT stats replicate dataframe, for all datapoints in this graph
+                #appends instantaneous amplification factor and params calculated to the PARENT stats replicate dataframe, for all datapoints in this graph
+                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('alpha')] = a_kj  
+                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('beta')] = b_kj 
                 stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('AFo')] = [amp_factor_instantaneous]*(len(y_ikj))
 
                 #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name

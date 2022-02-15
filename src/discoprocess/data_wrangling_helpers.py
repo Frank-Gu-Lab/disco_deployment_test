@@ -784,6 +784,19 @@ def get_dofs_one_peak(df):
     dof_list = [dof] * len(np.unique(df.index.get_level_values(1)))
 
     return dof_list
+
+def flatten_multicolumns(mean_df):
+    '''Takes in a mean df and flattens the multi-tier column
+    index into a directly indexable index.'''
+
+    # clean up multi index for both
+    colnames = mean_df.columns.get_level_values(0).values
+    mean_df = mean_df.droplevel(1, axis=1)
+    colnames[4] = "corr_%_attenuation_mean"
+    colnames[5] = "corr_%_attenuation_std"
+    mean_df.columns = colnames
+    
+    return mean_df
     
 # helper for execute_curvefit
 def y_hat_fit(t, a, b):
