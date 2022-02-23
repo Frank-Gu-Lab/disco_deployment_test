@@ -33,7 +33,7 @@ idx = pd.IndexSlice
 
 # import all data wrangling functions for Pt. 1 & 2, and data merge function for Pt. 3
 from discoprocess.data_wrangling_functions import *
-from discoprocess.data_merging import merge, etl
+from discoprocess.data_merging import merge, etl_per_replicate, etl_per_sat_time
 from discoprocess.data_analyze import *
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
@@ -125,7 +125,10 @@ destination_path = '{}'.format(merge_output_directory)
 # binaryclf_df = merge(source_path, destination_path)
 # binaryclf_df.to_excel(os.path.join(merge_output_directory, "binaryclf_dataset.xlsx"))
 
-summary_df = etl(source_path, destination_path)
+summary_df = etl_per_replicate(source_path, destination_path)
 summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
+
+quality_check_df = etl_per_sat_time(source_path, destination_path)
+quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
 
 print("Data processing completed! Summary dataset files are available in the output directory under merged.")
