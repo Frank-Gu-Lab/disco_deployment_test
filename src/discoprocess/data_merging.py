@@ -534,14 +534,14 @@ def etl(source_path, destination_path):
     # subset replicates to unique values of interest
     rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates(
         subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "amp_factor"])
-    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE", "alpha", "beta"]].drop_duplicates(subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE", "alpha", "beta"])
-    mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "SSE_bar", "AFo_bar", "alpha_bar", "beta_bar"]].drop_duplicates().droplevel(1, axis=1)
+    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE", "yikj", "alpha", "beta"]].drop_duplicates(subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE", "yikj", "alpha", "beta"])
+    mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "SSE_bar", "AFo_bar", "yikj_bar", "alpha_bar", "beta_bar"]].drop_duplicates().droplevel(1, axis=1)
     
     # join replicate-specific AFo and SSE, clean noise from ppm
     midpoint_df = pd.merge(rep_all_df, rep_bind_df, how = 'left', on = primary_key_rep).drop(columns=['ppm_y']).rename(columns = {'ppm_x':'ppm'})
     
     # fill non-binding replicate peaks with zeros
-    midpoint_df[['AFo', 'SSE', 'alpha', 'beta']] = midpoint_df[['AFo', 'SSE', 'alpha', 'beta']].fillna(0)
+    midpoint_df[['AFo', 'SSE', 'yikj', 'alpha', 'beta']] = midpoint_df[['AFo', 'SSE', 'yikj','alpha', 'beta']].fillna(0)
     
     # ensure consistent data types in primary key 
     midpoint_df.polymer_name = midpoint_df.polymer_name.astype(str).str.replace(' ', '')
@@ -559,7 +559,7 @@ def etl(source_path, destination_path):
     summary_df = pd.merge(midpoint_df, mean_bind_df, how='left', on = primary_key_mean)
   
     # for non binding, fill with zeros
-    summary_df[['SSE_bar','AFo_bar','alpha_bar','beta_bar']] = summary_df[['SSE_bar','AFo_bar','alpha_bar','beta_bar']].fillna(0)
+    summary_df[['SSE_bar','AFo_bar', 'yikj_bar','alpha_bar','beta_bar']] = summary_df[['SSE_bar','AFo_bar', 'yikj_bar','alpha_bar','beta_bar']].fillna(0)
 
     # fill in sample size if have data, if not calculate based on max num replicates
     sample_size_mapper = summary_df[['polymer_name','concentration', 'sample_size']].drop_duplicates()
