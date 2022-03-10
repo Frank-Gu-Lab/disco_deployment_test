@@ -479,7 +479,8 @@ def filepath_to_dfs(df_file_paths, polymer_names):
 
 def etl_per_sat_time(source_path, destination_path):
     ''' This function extracts, transforms, and loads data into a merged machine learning ready dataset of DISCO experiments.
-    Done per sat time including curve fit params for downstream quality checking.
+    Done per sat time including curve fit params for downstream quality checking, and disco effect values for all binding and 
+    non-binding protons.
     
     Parameters
     ----------
@@ -533,13 +534,13 @@ def etl_per_sat_time(source_path, destination_path):
     rep_bind_df['ppm'] = rep_bind_df['ppm'].round(2)
 
     # subset replicates to unique values of interest
-    rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "ppm", "amp_factor"]].drop_duplicates(
-        subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "amp_factor"])
-    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "ppm", "AFo", "SSE", "yikj", "alpha", "beta"]].drop_duplicates()
-    mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "sat_time", "SSE_bar", "AFo_bar", "yikj_bar", "alpha_bar", "beta_bar"]].drop_duplicates().droplevel(1, axis=1)
+    rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "ppm", "amp_factor", "corr_%_attenuation"]].drop_duplicates() # subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "amp_factor"]
+    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "ppm", "corr_%_attenuation", "AFo", "SSE", "yikj", "alpha", "beta"]].drop_duplicates()
+    mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "sat_time", "AFo_bar", "SSE_bar", "yikj_bar", "alpha_bar", "beta_bar"]].drop_duplicates().droplevel(1, axis=1)
     
     # join replicate-specific AFo and SSE, clean noise from ppm
-    midpoint_df = pd.merge(rep_all_df, rep_bind_df, how = 'left', on = primary_key_rep).drop(columns=['ppm_y']).rename(columns = {'ppm_x':'ppm'})
+    midpoint_df = pd.merge(rep_all_df, rep_bind_df, how = 'left', on = primary_key_rep).drop(columns=['ppm_y', 'corr_%_attenuation_y']).rename(columns = {'ppm_x':'ppm', "corr_%_attenuation_x":"corr_%_attenuation"})
+                                                                                                                                               
     
     # fill non-binding replicate peaks with zeros
     midpoint_df[['AFo', 'SSE', 'yikj', 'alpha', 'beta']] = midpoint_df[['AFo', 'SSE', 'yikj','alpha', 'beta']].fillna(0)
