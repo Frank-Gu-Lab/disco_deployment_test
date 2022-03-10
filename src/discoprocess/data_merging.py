@@ -582,6 +582,26 @@ def etl_per_sat_time(source_path, destination_path):
     
     return summary_df
 
+def etl_per_proton(summary_df):
+    '''Subsets the full ETL to a smaller, per proton table.
+    '''
+    proton_df = summary_df.drop(columns = ["AFo_bar", "SSE_bar", "yikj_bar", "alpha_bar", "beta_bar"]).copy()
+    primary_key1 = ["polymer_name", "concentration", "proton_peak_index", "sat_time", "ppm"]
+    mean_proton_df = proton_df.groupby(by = primary_key1).mean().reset_index()
+
+    # pivot to move sat time into feature cols
+    primary_key2 = ["polymer_name", "concentration", "proton_peak_index", "ppm"]
+    sat_time_cols = mean_proton_df.pivot(index = primary_key2, columns = ["sat_time"], values = ["corr_%_attenuation"]).reset_index()
+    sat_time_cols.columns = sat_time_cols.columns.map('{0[0]}{0[1]}'.format) # make one level from multi index
+
+    # grab all other mean data
+    all_other_cols = mean_proton_df.drop(columns = ["sat_time", "corr_%_attenuation","replicate", "yikj"]).drop_duplicates()
+
+    # merge into final df
+    mean_binding_df = pd.merge(all_other_cols, sat_time_cols, on = primary_key2).drop_duplicates()
+
+    return mean_binding_df
+
 def etl_per_replicate(source_path, destination_path):
     ''' This function extracts, transforms, and loads data into a merged dataset of DISCO experiments.
     Extracted on a per technical replicate basis, AFo and SSE only provided (not buildup curve quality params).
