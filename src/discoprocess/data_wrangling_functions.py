@@ -258,7 +258,7 @@ def add_attenuation(current_book, batch_or_book = 'book'):
     # check if the fixed experimental values in irrad true and irrad false are equal, in the same order, and the same size, so that one to one calculations can be performed to calculate attenuation.
     fixed_values_equality_check = attenuation_calc_equality_checker(intensity_irrad_true, intensity_irrad_false, batch_or_book)
 
-    # if the test passes, calculate attenuation and append to dataframe
+    # if the test passes, calculate % attenuation and append to dataframe
     if fixed_values_equality_check == True:
 
         p_attenuation_intensity = intensity_irrad_false.absolute.values - intensity_irrad_true.absolute.values
