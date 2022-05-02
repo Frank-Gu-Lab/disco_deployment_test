@@ -5,7 +5,7 @@ dependencies:
   - matplotlib
   - seaborn
   - numpy
-  - pandas
+  - pandas>=1.4.2
   - pytest
   - pytest-mock
   - pytest-cov

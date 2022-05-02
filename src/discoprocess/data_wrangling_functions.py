@@ -615,11 +615,6 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
                 if len(subset_insignificant) > 2:
 
                     # recreate the corresponding parent multi index based on the identified points to drop to feed to parent dataframe
-                    # index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(0))
-                    # index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(1))
-                    # index_to_drop_conc = np.full(len(index_to_drop_sat_time), c)
-                    # index_to_drop_proton_peak = np.full(len(index_to_drop_sat_time), p)
-
                     index_to_drop_sat_time = np.array(current_subset_df.index.get_level_values(0))
                     index_to_drop_ppm = np.array(current_subset_df.index.get_level_values(1))
                     index_to_drop_conc = np.full(len(index_to_drop_sat_time), c)
