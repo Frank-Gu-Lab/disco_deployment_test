@@ -28,7 +28,7 @@ polymer_library_replicates = glob.glob(
 merged_bind_dataset = pd.read_excel("../data/output/merged/merged_binding_dataset.xlsx")
 
 # Define a custom output directory for formal figures
-output_directory = "../data/output/publications" 
+output_directory = "../data/output/publications"
 
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)
@@ -36,29 +36,29 @@ if not os.path.exists(output_directory):
 
 def grab_polymer_name(full_filepath, common_filepath):
     '''Grabs the polymer name from file path.
-    
+
     Parameters:
     -----------
     full_filepath: string
-        path to the datasheet for that polymer 
+        path to the datasheet for that polymer
 
-    common_filepath: string 
+    common_filepath: string
         portion of the filepath that is shared between all polymer inputs, excluding their custom names
-    
+
     Returns:
     -------
     polymer_name: string
         the custom portion of the filepath with the polymer name and any other custom info
     '''
 
-    _, polymer_name = full_filepath.split(common_filepath)
+    polymer_name = full_filepath.split(common_filepath)
     polymer_name = polymer_name[:-5] # remove the .xlsx
 
     return polymer_name
 
 # plot DISCO Effect build up curves with only significant peaks
 for polymer in polymer_library_binding:
-    
+
     binding_directory = f"{output_directory}/binding"
 
     if not os.path.exists(binding_directory):
@@ -69,7 +69,7 @@ for polymer in polymer_library_binding:
 
     # read polymer datasheet
     polymer_df = pd.read_excel(polymer, index_col=[0, 1, 2, 3], header=[0, 1])
-    
+
     generate_buildup_curve(polymer_df, polymer_name, binding_directory)
 
 
@@ -99,12 +99,12 @@ unique_bind_polymers = merged_bind_dataset.loc[merged_bind_dataset['AFo'] != 0, 
 for polymer in unique_bind_polymers:
 
     plot_df = merged_bind_dataset.loc[(merged_bind_dataset['polymer_name'] == polymer) & (merged_bind_dataset['AFo'] != 0)].copy()
-    
+
     # identify univariate outliers in plot_df using Tukey-Fence method
     plot_df_outliers = tukey_fence(plot_df, 'AFo')
     # print(plot_df_outliers)
 
-    # subset df to remove probable outliers 
+    # subset df to remove probable outliers
     plot_df_no_outliers = plot_df_outliers[plot_df_outliers['outlier_prob'] == False]
 
     # fit normalizer to AFo in the plot df after outliers removed
@@ -116,10 +116,5 @@ for polymer in unique_bind_polymers:
     plot_df_outliers['SSE_bar_norm'] = scaler.transform(abs(plot_df_outliers['SSE_bar'].values).reshape(-1, 1))
     plot_df_outliers['AFo_bar_norm'] = scaler.transform(abs(plot_df_outliers['AFo_bar'].values).reshape(-1, 1))
     plot_df_outliers['SSE_norm'] = scaler.transform(abs(plot_df_outliers['SSE'].values).reshape(-1, 1))
-    
+
     generate_fingerprint(plot_df_outliers, polymer, binding_directory)
-
-    
-    
-
-
