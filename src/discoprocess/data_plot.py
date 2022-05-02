@@ -13,13 +13,14 @@ import numpy as np
 # >>> mpl.get_configdir()
 # show hidden files, navigate to dir/stylelib, customize disco file
 
-plt.style.use(['science', 'disco'])
+# uncomment below to enable custom DISCO science plot style
+# plt.style.use(['science', 'disco'])
 plt.rcParams.update({'font.family':'sans-serif'})
 plt.rcParams.update({'font.size':12})
 # rc("text", usetex=False)
 
-# must install LaTex before Science Plots
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
+# uncomment below to enable LaTex mode - must install LaTex before Science Plots
+# os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
 
 # define colour palette
 # colors = ['#f781bf', '#e41a1c', '#ff7f00',
@@ -27,9 +28,7 @@ os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
 #           '#e0f3f8', '#fee090', '#fdae61', '#f46d43']
 
 # TO DO: add to instructions the custom DISCO colour package 
-# TO DO: fix colours to be more interesting
 # TO DO: fix fingerprint plots to accomodate outliers
-# TO DO: determine if normalizing / how to handle negative binding fingerprints?
 
 # ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf',
 #           '#f46d43', '#fdae61', '#fee090',
