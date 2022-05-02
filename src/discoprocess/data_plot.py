@@ -69,6 +69,7 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     output_file_name_conc = "{}/conc_{}.png".format(output_directory_exploratory, current_df_title)
     
     # export to file
+    fig1.tight_layout()
     fig1.savefig(output_file_name_conc, dpi=300)
 
     return
@@ -106,6 +107,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     output_file_name_ppm = "{}/ppm_{}.png".format(output_directory_exploratory, current_df_title)
 
     # export to file
+    fig2.tight_layout()
     fig2.savefig(output_file_name_ppm, dpi=300)
         
     return
@@ -243,6 +245,7 @@ def generate_buildup_curve(df, polymer_name, output_directory):
     output_file_name = f"{output_directory}/{polymer_name}-disco-curve.png"
 
     # export to file
+    fig.tight_layout()
     fig.savefig(output_file_name, dpi=300)
         
     plt.close('all')
@@ -290,6 +293,7 @@ def generate_fingerprint(df, polymer_name, output_directory):
     df['ppm'] = df['proton_peak_index'].map(ppm_mapper)
     df['point_size'] = df['outlier_prob'].map({False: 4.0, True: 2.0})
     sizes = df['point_size'].values
+    df['AFo'] = df['AFo'].abs() # use absolute values for fingerprints
     # print(df['AFo_norm'])
     # print(df['point_size'])
     # print(df)
@@ -315,7 +319,7 @@ def generate_fingerprint(df, polymer_name, output_directory):
     
 
     # format plot
-    ax.set_title(f'Binding Fingerprint - {polymer_name_plot}')
+    ax.set_title(f'Binding Fingerprint \n{polymer_name_plot}')
     ax.set_xlabel("Peak ($\delta$, ppm)")
     ax.set_ylabel("DISCO $AF_0$")
     # ax.set_ylabel("Normalized DISCO $AF_0$")
@@ -327,7 +331,8 @@ def generate_fingerprint(df, polymer_name, output_directory):
     output_file_name = f"{output_directory}/{polymer_name}-fingerprint.png"
 
     # export fig to file
-    fig.savefig(output_file_name, dpi=500)
+    fig.tight_layout()
+    fig.savefig(output_file_name, dpi=500, bbox_inches='tight')
 
     plt.close('all')
 

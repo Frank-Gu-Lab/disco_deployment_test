@@ -22,8 +22,7 @@ polymer_library_binding = set(glob.glob("../data/output/merged/stats_analysis_ou
 # significant and zero peaks
 polymer_library_all = glob.glob("../data/output/merged/stats_analysis_output_mean_all_*")
 
-polymer_library_replicates = glob.glob(
-    "../data/output/merged/stats_analysis_output_replicate_*")
+polymer_library_replicates = glob.glob("../data/output/merged/stats_analysis_output_replicate_*")
 
 merged_bind_dataset = pd.read_excel("../data/output/merged/merged_binding_dataset.xlsx")
 
@@ -51,7 +50,7 @@ def grab_polymer_name(full_filepath, common_filepath):
         the custom portion of the filepath with the polymer name and any other custom info
     '''
 
-    polymer_name = full_filepath.split(common_filepath)
+    polymer_name = full_filepath.split(common_filepath)[1]
     polymer_name = polymer_name[:-5] # remove the .xlsx
 
     return polymer_name
@@ -65,8 +64,8 @@ for polymer in polymer_library_binding:
         os.makedirs(binding_directory)
 
     polymer_name = grab_polymer_name(full_filepath = polymer,
-        common_filepath="../data/output/merged/stats_analysis_output_mean_")
-
+    common_filepath="../data/output/merged/stats_analysis_output_mean_")
+    
     # read polymer datasheet
     polymer_df = pd.read_excel(polymer, index_col=[0, 1, 2, 3], header=[0, 1])
 
@@ -75,7 +74,6 @@ for polymer in polymer_library_binding:
 
 # plot DISCO Effect build up curves with insignificant and significant peaks overlaid
 for polymer in polymer_library_all:
-
     binding_directory2 = f"{output_directory}/all_peaks"
 
     if not os.path.exists(binding_directory2):
@@ -97,7 +95,6 @@ unique_bind_polymers = merged_bind_dataset.loc[merged_bind_dataset['AFo'] != 0, 
 
 # iterate through figures per polymer
 for polymer in unique_bind_polymers:
-
     plot_df = merged_bind_dataset.loc[(merged_bind_dataset['polymer_name'] == polymer) & (merged_bind_dataset['AFo'] != 0)].copy()
 
     # identify univariate outliers in plot_df using Tukey-Fence method
