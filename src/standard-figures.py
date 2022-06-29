@@ -16,6 +16,7 @@ from discoprocess.data_plot import generate_buildup_curve
 from discoprocess.data_plot import generate_fingerprint
 from discoprocess.data_plot_helpers import tukey_fence
 
+
 # for only the peaks with a significant disco effect
 polymer_library_binding = set(glob.glob("../data/output/merged/stats_analysis_output_mean_*")) - set(glob.glob("../data/output/merged/stats_analysis_output_mean_all_*"))
 
@@ -50,6 +51,15 @@ def grab_polymer_name(full_filepath, common_filepath):
         the custom portion of the filepath with the polymer name and any other custom info
     '''
 
+    #Necessary for some windows operating systems
+    for char in full_filepath:
+        if char == "\\":
+            full_filepath = full_filepath.replace("\\", "/")
+
+    for char in common_filepath:
+        if char == "\\":
+            common_filepath = full_filepath.replace("\\", "/")
+
     polymer_name = full_filepath.split(common_filepath)[1]
     polymer_name = polymer_name[:-5] # remove the .xlsx
 
@@ -65,7 +75,7 @@ for polymer in polymer_library_binding:
 
     polymer_name = grab_polymer_name(full_filepath = polymer,
     common_filepath="../data/output/merged/stats_analysis_output_mean_")
-    
+
     # read polymer datasheet
     polymer_df = pd.read_excel(polymer, index_col=[0, 1, 2, 3], header=[0, 1])
 

@@ -1,6 +1,6 @@
 from math import sqrt
 import matplotlib as mpl
-import matplotlib.pyplot as plt   
+import matplotlib.pyplot as plt
 from matplotlib import rc
 import pandas as pd
 import seaborn as sns
@@ -8,7 +8,7 @@ import os
 import numpy as np
 
 # to customize DISCO palette:
-# find .matplotlib dir on your machine 
+# find .matplotlib dir on your machine
 # >>> import matplotlib as mpl
 # >>> mpl.get_configdir()
 # show hidden files, navigate to dir/stylelib, customize disco file
@@ -24,10 +24,10 @@ plt.rcParams.update({'font.size':12})
 
 # define colour palette
 # colors = ['#f781bf', '#e41a1c', '#ff7f00',
-#           '#984ea3', '#377eb8', '#4575b4','#74add1', '#abd9e9', 
+#           '#984ea3', '#377eb8', '#4575b4','#74add1', '#abd9e9',
 #           '#e0f3f8', '#fee090', '#fdae61', '#f46d43']
 
-# TO DO: add to instructions the custom DISCO colour package 
+# TO DO: add to instructions the custom DISCO colour package
 # TO DO: fix fingerprint plots to accomodate outliers
 
 # ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf',
@@ -36,7 +36,7 @@ plt.rcParams.update({'font.size':12})
 
 try:
     from .data_wrangling_helpers import y_hat_fit
-    from .data_plot_helpers import * 
+    from .data_plot_helpers import *
 except:
     from data_wrangling_helpers import y_hat_fit
     from data_plot_helpers import *
@@ -44,16 +44,16 @@ except:
 def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
     '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
     concentration as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
-    
+
     Parameters
     ----------
     current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns 
+        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
         (output from add_attenuation_and_corr_attenuation_to_dataframe).
-    
+
     output_directory_exploratory : str
         File path to directory that contains attenuation data for all polymer samples.
-        
+
     cuurent_df_title : str
         Title of DataFrame.
     '''
@@ -64,10 +64,10 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     plt.title("Polymer Sample Attenuation vs Saturation Time")
     plt.ylabel("Corrected Signal Intensity Attenuation (%)")
     plt.xlabel("NMR Pulse Saturation Time (s)")
-    
+
     # define file name for the concentration plot
     output_file_name_conc = "{}/conc_{}.png".format(output_directory_exploratory, current_df_title)
-    
+
     # export to file
     fig1.tight_layout()
     fig1.savefig(output_file_name_conc, dpi=300)
@@ -77,20 +77,20 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
 def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
     '''This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
     ppm as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
-    
+
     Parameters
     ----------
     current_df_attenuation : Pandas.DataFrame
         Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
         (output from add_attenuation_and_corr_attenuation_to_dataframe).
-    
+
     output_directory_exploratory : str
         File path to directory that contains attenuation data for all polymer samples.
-        
+
     cuurent_df_title : str
         Title of DataFrame.
     '''
-    
+
     a4_dims = (11.7, 8.27)
     fig2, ax2 = plt.subplots(figsize = a4_dims)
     sns.scatterplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue ='ppm', palette = 'viridis', y_jitter = True, legend = 'brief')
@@ -101,7 +101,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     plt.title("Polymer Sample Attenuation vs Saturation Time")
     plt.ylabel("Corrected Signal Intensity Attenuation  (%) by ppm")
     plt.xlabel("NMR Pulse Saturation Time (s)")
-    ax2.legend() 
+    ax2.legend()
 
     # define file name for the concentration plot
     output_file_name_ppm = "{}/ppm_{}.png".format(output_directory_exploratory, current_df_title)
@@ -109,45 +109,45 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     # export to file
     fig2.tight_layout()
     fig2.savefig(output_file_name_ppm, dpi=300)
-        
+
     return
 
 def generate_curvefit_plot(sat_time, df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
     ''' This function generates the curve-fitted plots of STD intensity vs saturation time on both a mean and replicate basis.
-    
+
     Parameters
     ----------
     sat_time : NumPy.ndarray
         Dataframe containing saturation time values.
-    
+
     df : Pandas.DataFrame
         Dataframe containing one graph data, mean
-    
+
     param_vals : array-like
         Array-like containing the fitted parameters for curve fitting.
-    
+
     r : int, default=None
         Unique replicate, only used in "rep" path.
-    
+
     c : float
         Unique concentration, used in both the "mean" and "rep" paths.
-    
+
     ppm : float
         Chemical shift of a particular proton.
-    
+
     filename : str
         File path to the output directory where the figures are saved.
-    
+
     mean_or_rep : str, {'mean', 'rep'}
         String indicating which path to take.
-    
+
     Notes
     -----
     Exports plot to file.
     '''
 
     fig, (ax) = plt.subplots(1, figsize=(8, 4))
-    
+
     if mean_or_rep == "mean":
         fig, (ax) = plt.subplots(2, figsize=(8, 4))
 
@@ -178,7 +178,7 @@ def generate_curvefit_plot(sat_time, df, param_vals, ppm, filename, c, r=None, m
         # PLOT CURVE FITS with original data per Replicate and save to file
         ax.plot(sat_time, y_hat_fit(sat_time, *param_vals), 'b-', label='data')
         ax.plot(sat_time, df, 'b.', label='data')
-        ax.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, ppm)) 
+        ax.set_title('Replicate = {} Curve Fit, Concentration = {} µmolar, ppm = {}'.format(r, c, ppm))
         ax.set_xlabel('NMR Saturation Time (s)')
         ax.set_ylabel('I/Io')
 
@@ -186,28 +186,28 @@ def generate_curvefit_plot(sat_time, df, param_vals, ppm, filename, c, r=None, m
     fig.tight_layout()
     # export to file
     fig.savefig(filename, dpi=300)
-    
+
     return
-    
+
 def generate_buildup_curve(df, polymer_name, output_directory):
     '''Generates the formal Disco Effect STD buildup curve for the figure.
-    
+
     Parameters:
     -----------
     df : Pandas.Dataframe
         dataframe containing one polymer's DISCO Effect information for the build up curve
 
     polymer_name: string
-        string containing the identifier of the polymer 
-    
+        string containing the identifier of the polymer
+
     output_directory: string
         file path to desired output directory for saved plots
-   
+
     Returns:
     -------
     None, outputs formal figures
     '''
-            
+
     fig, (ax) = plt.subplots(1, figsize=(8, 4))
     polymer_name_plot = polymer_name.replace("_", " ")
 
@@ -235,22 +235,22 @@ def generate_buildup_curve(df, polymer_name, output_directory):
         ax.fill_between(sat_time, y1, y2,
                         alpha=0.25)
         ax.legend(loc='best', bbox_to_anchor=(
-            0.6, 0.3, 0.6, 0.6), title="Delta ppm",)
+            0.6, 0.3, 0.6, 0.6), title="Δ ppm")
 
     ax.set_title(f'DISCO Effect Buildup Curve - {polymer_name_plot}')
     ax.set_xlabel('NMR Saturation Time (s)')
     ax.set_ylabel('Disco Effect')
 
-    # define file name 
+    # define file name
     output_file_name = f"{output_directory}/{polymer_name}-disco-curve.png"
 
     # export to file
     fig.tight_layout()
     fig.savefig(output_file_name, dpi=300)
-        
+
     plt.close('all')
 
-    return 
+    return
 
 def generate_fingerprint(df, polymer_name, output_directory):
     ''' Plots characteristic DISCO fingerprint of the binding polymer.
@@ -259,10 +259,10 @@ def generate_fingerprint(df, polymer_name, output_directory):
     -----------
     df : Pandas.DataFrame
         dataframe containing one polymer's data with a normalized column
-    
+
     output_directory: string
         file path to desired output directory for saved plots
-   
+
     Returns:
     -------
     None, outputs formal figures
@@ -307,7 +307,7 @@ def generate_fingerprint(df, polymer_name, output_directory):
     # df.plot.scatter(x = 'ppm', y = 'AFo_norm', s ='point_size')
     # print(df['point_size'].isna())
     sns.stripplot(data= df, x= 'ppm', y= 'AFo', ax= ax, edgecolor='k', linewidth=0.5)
-    
+
     # sns.boxplot(data = df, x = 'ppm', y = 'AFo_norm', ax = ax)
 
     # # annotate outliers - PAA does this work?
@@ -316,12 +316,12 @@ def generate_fingerprint(df, polymer_name, output_directory):
     #         # print("Worked", flag)
     #         # print(df)
     #         ax.annotate("$\\diamond$", (df.loc[ix, 'proton_peak_index'], df.loc[ix, 'AFo_norm']+0.0001), size=7)
-    
+
 
     # format plot
     ax.set_title(f'Binding Fingerprint \n{polymer_name_plot}')
-    ax.set_xlabel("Peak ($\delta$, ppm)")
-    ax.set_ylabel("DISCO $AF_0$")
+    ax.set_xlabel("Peak Δ ppm)")
+    ax.set_ylabel("DISCO AF_0")
     # ax.set_ylabel("Normalized DISCO $AF_0$")
 
     # reformat x axis
@@ -338,5 +338,3 @@ def generate_fingerprint(df, polymer_name, output_directory):
 
 
     return
-
-

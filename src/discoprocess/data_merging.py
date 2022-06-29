@@ -1,4 +1,4 @@
-# Part 3 Preprocessing Function - merges positive and negative data 
+# Part 3 Preprocessing Function - merges positive and negative data
 
 # import packages
 import pandas as pd
@@ -11,12 +11,12 @@ import shutil
 def move(source_path, destination_path):
     ''' Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
     where the merging of positive and negative observations into one dataset will occur.
-    
+
     Parameters
     ----------
     source_path : str
         String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-    
+
     destination_path : str
         String containing path of destination directory.
     '''
@@ -27,32 +27,32 @@ def move(source_path, destination_path):
     for starting_directory in preprocessed_data_directories: # loop through file paths containing desired outputs
 
         files_to_move = glob.glob("{}/*".format(starting_directory))
-        
+
         for file in files_to_move:
 
-            # check if file only has one row (i.e. no information) and ignore the file from the import if yes 
+            # check if file only has one row (i.e. no information) and ignore the file from the import if yes
             check_df = pd.read_excel(file)
-            
+
             if check_df.shape[0] > 1:
                 # copy the excel files in the source filepath into the destination
                 shutil.copy(file, destination_path)
-    
+
     print("Files for merging have been moved to the destination directory.")
 
     return
 
 def clean(df_list, polymer_list, pos_or_neg = 'pos'):
-    """This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column, 
+    """This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column,
     and drops the appropriate columns to the index level.
-    
+
     Parameters
     ----------
     df_list : list
         List of Pandas DataFrames to be cleaned.
-    
+
     polymer_list : list
         List of polymer names contained in the passed DataFrames.
-    
+
     pos_or_neg : str, {'pos', 'neg'}
         String to indicate path for positive binding observations (pos) or for negative binding observations (neg).
 
@@ -64,16 +64,16 @@ def clean(df_list, polymer_list, pos_or_neg = 'pos'):
     for i in range(len(df_list)):
         if 'polymer_name' not in df_list[i].columns:
             df_list[i].insert(loc = 0, column = 'polymer_name', value = polymer_list[i]) # add polymer name column
-        
+
         if 'ppm' in df_list[i].columns:
             # drop (ppm, mean) to index
             df_list[i].set_index(('ppm', 'mean'), append=True, inplace=True)
-            
+
             # renaming new index name to ppm
             df_list[i].index.names=['concentration', 'sat_time', 'proton_peak_index', 'ppm']
-            
+
             # drop (ppm, std)
-            df_list[i] = df_list[i].drop(('ppm', 'std'), axis = 1) 
+            df_list[i] = df_list[i].drop(('ppm', 'std'), axis = 1)
 
         # drop extra level
         df_list[i] = df_list[i].droplevel(1, axis = 1)
@@ -81,11 +81,11 @@ def clean(df_list, polymer_list, pos_or_neg = 'pos'):
         if pos_or_neg == 'pos':
             # drop extra columns
             drop_data = df_list[i].loc[:, ['corr_%_attenuation','dofs', 'amp_factor', 'yikj_bar','SSE_bar']]
-            
+
         else:
             # drop other columns not needed and extra level
             drop_data = df_list[i].loc[:, ['corr_%_attenuation', 'dofs', 'amp_factor']]
-        
+
         df_list[i] = df_list[i].drop(drop_data.columns, axis = 1)
 
 def clean_replicates(df_list, polymer_list):
@@ -94,11 +94,11 @@ def clean_replicates(df_list, polymer_list):
     Parameters:
     -----------
     df_list: list of Pandas.DataFrames
-        individual polymer data 
+        individual polymer data
 
     polymer_list: list
         polymer names that correspond to dataframes
-    
+
     Returns: None
     -------
 
@@ -107,29 +107,32 @@ def clean_replicates(df_list, polymer_list):
     Operations performed in place
     '''
 
+
     for i, df in enumerate(df_list):
-        
+        #print(df)
+        #print(type(df))
+
         # ensure polymer name in replicate table schema
         if 'polymer_name' not in df.columns:
             df.insert(loc=0, column='polymer_name', value=polymer_list[i])
-        
-        # remove ppm range from schema                
+
+        # remove ppm range from schema
         if 'ppm_range' in df.columns:
             df = df.drop(columns=['ppm_range'])
 
-    return 
+    return
 
 def reformat(df_list, pos_or_neg = 'pos'):
-    """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame. 
-    
+    """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame.
+
     Parameters
     ----------
     df_list : list
         List of Pandas DataFrames to be concatenated and reformatted.
-    
+
     pos_or_neg : str, {'pos', 'neg'}
         String to indicate path for positive binding observations (pos) or for negative binding observations (neg).
-        
+
     Returns
     -------
     df : Pandas.DataFrame
@@ -139,7 +142,7 @@ def reformat(df_list, pos_or_neg = 'pos'):
     df = pd.concat(df_list)
 
     if pos_or_neg == 'pos':
-        
+
         # 1) drop sat time from index
         df.index = df.index.droplevel(1)
 
@@ -151,14 +154,14 @@ def reformat(df_list, pos_or_neg = 'pos'):
         # 1) round ppm values to 4 sig figs
         df['ppm'] = np.round(df.ppm.values, 4)
         df.loc[df['significance'] == False, ('AFo_bar')] = 0.0 # removes false associations, as these values weren't considered in curve fitting
-        
+
     else:
-    
+
         # 2) drop sat time from index
         df.index = df.index.droplevel(1)
 
         # 2) reset and reformat index
-        
+
         df = df.reset_index()
         df = df.rename_axis(columns = "index")
 
@@ -178,9 +181,9 @@ def reformat(df_list, pos_or_neg = 'pos'):
 def reformat_replicates(df_list):
     ''' Concatenates true positive replicate binding data into one data table.
     Performs other reformatting operations as required.
-    
+
     Note - obsolete, remove in future'''
-    
+
     df = pd.concat(df_list)
 
     # drop duplicates from saturation time
@@ -191,12 +194,12 @@ def reformat_replicates(df_list):
 
 def join(df1, df2):
     """This function takes in two cleaned DataFrames and merges them in a way that makes sense.
-    
+
     Parameters
     ----------
     df1, df2 : Pandas.DataFrame
         Cleaned dataframes containing positive and negative binding observations, respectively.
-    
+
     Returns
     -------
     df : Pandas.DataFrame
@@ -210,12 +213,12 @@ def join(df1, df2):
 
     df = pd.merge(left = df1, right = df2, how = 'outer', on = key, indicator = True, suffixes = ("_a","_b"))
 
-    # allocate the correct AFo_bar values from each table 
+    # allocate the correct AFo_bar values from each table
     df.loc[np.isnan(df['AFo_bar_a']) == False, ('AFo_bar')] = df['AFo_bar_a'] # assigns AFo_bar_a values to observations where they exist
     df.loc[np.isnan(df['AFo_bar_a']) != False, ('AFo_bar')] = df['AFo_bar_b'] # assigns AFo_bar_b where no AFo_bar_a value does not exist (i.e. polymer was all non)
 
-    # remaining NaNs in table_c have significance = True, 
-    # BUT these were not used in Curve Fitting AFo calculations, due to strict drop criterion in preprocessing. 
+    # remaining NaNs in table_c have significance = True,
+    # BUT these were not used in Curve Fitting AFo calculations, due to strict drop criterion in preprocessing.
     # Therefore should still drop them here, as we don't know their true AFo as they weren't considered in curve fitting
 
     drop_subset = df.loc[np.isnan(df['AFo_bar'])==True]
@@ -223,7 +226,7 @@ def join(df1, df2):
 
     # now can drop the extra columns AFo_bar_a, AFo_bar_b, _merge
     df = df.drop(columns = ["AFo_bar_a", "AFo_bar_b", "_merge"])
-    
+
     # extra column usually added for book input only
     if 'level_2' in df.columns:
         df = df.drop('level_2', axis=1)
@@ -305,11 +308,11 @@ def summarize(df):
                     drop_index = snapshot_df.loc[snapshot_df['AFo_bar']==0].index
                     snapshot_df = snapshot_df.drop(index = drop_index)
                     snapshot_df = snapshot_df.drop_duplicates(subset = ['concentration', 'proton_peak_index', 'polymer_name', 'sample_size', 'AFo_bar', 'replicate', 'AFo', 'SSE'])
-                    
+
                 # append to snapshot list
                 snapshot_list.append(snapshot_df)
 
-            
+
     summary_df = pd.concat(snapshot_list)
 
     return summary_df
@@ -318,15 +321,15 @@ def merge(source_path, destination_path):
     ''' This function generates a merged machine learning ready dataset.
 
     It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.
-    
+
     Parameters
     ----------
     source_path : str
         String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-    
+
     destination_path : str
         String containing path of destination directory.
-        
+
     Returns
     -------
     mean_df: Pandas.DataFrame
@@ -344,16 +347,20 @@ def merge(source_path, destination_path):
     indicator2 = 'all'
     indicator3 = 'mean'
 
-    # Merge all the "mean" input polymer files with a significant AFo bar into one tidy longform dataframe 
+    # Merge all the "mean" input polymer files with a significant AFo bar into one tidy longform dataframe
     selected_files_pos = [file for file in all_files if indicator3 in file and indicator2 not in file]
     polymer_names_pos = [re.search('mean_(.+?).xlsx', file).group(1).strip() for file in selected_files_pos]
     #selected_dataframes = [pd.read_excel(file, header = [0, 1], index_col = [0,1,2,3]) for file in selected_files]
-    selected_dataframes = selected_files_pos.copy() 
+    selected_dataframes = selected_files_pos.copy()
+
+    #print("\n\n")
+    #print(selected_dataframes)
+    #print("\n\n")
 
     # Grab replicate files for future join, same number of replicate files as mean files
     selected_files_pos_rep = [file for file in all_files if indicator1 in file and indicator2 not in file]
     polymer_names_pos_rep = [re.search('replicate_(.+?).xlsx', file).group(1).strip() for file in selected_files_pos_rep]
-    selected_dataframes_rep = selected_files_pos_rep.copy()
+    selected_dataframes_rep = []
 
     # generate lists of true positive dataframes
     for i in range(len(selected_files_pos)):
@@ -372,11 +379,12 @@ def merge(source_path, destination_path):
             df_other = pd.read_excel(selected_files_pos[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
             df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
             selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-    
-        # replicate dataframes across polymers
-        selected_dataframes_rep[i] = pd.read_excel(selected_files_pos_rep[i], header = [0], index_col = [0])
-        
 
+        # replicate dataframes across polymers
+        #print(pd.read_excel(selected_files_pos_rep[i], header = [0], index_col = [0]))
+        selected_dataframes_rep.append(pd.read_excel(selected_files_pos_rep[i], header = [0], index_col = [0]))
+
+    #print(selected_dataframes_rep)
     clean(selected_dataframes, polymer_names_pos, 'pos')
 
     clean_replicates(selected_dataframes_rep, polymer_names_pos_rep)
@@ -392,7 +400,7 @@ def merge(source_path, destination_path):
     selected_dataframes = selected_files_neg.copy()
 
     for i in range(len(selected_files_neg)):
-    
+
         try: # ppm in index
             # Preserve multi-index when reading in Excel file
             df = pd.read_excel(selected_files_neg[i], header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
@@ -408,22 +416,22 @@ def merge(source_path, destination_path):
             selected_dataframes[i] = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
     clean(selected_dataframes, polymer_names_neg, 'neg')
-        
+
     selected_dataframes_neg = reformat(selected_dataframes, 'neg')
 
     # high level proton-specific data from true positive and true negatives in terms of AFo bar
     mean_df = join(selected_dataframes_pos, selected_dataframes_neg)
 
     # replicates_df = join_replicates(mean_df, selected_dataframes_pos_rep)
-    
+
     # summary_df = summarize(replicates_df)
 
     return mean_df
 
 def filepath_to_dfs(df_file_paths, polymer_names):
-    '''Reads df file path list, cleans and converts to list of dataframes, 
+    '''Reads df file path list, cleans and converts to list of dataframes,
     set schemas to be consistent according to desired columns.
-    
+
     Parameters:
     -----------
     df_file_paths: list
@@ -451,7 +459,7 @@ def filepath_to_dfs(df_file_paths, polymer_names):
                 df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
                 clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=(
                     "concentration", "sat_time", "proton_peak_index", "ppm"))
-                
+
 
             except KeyError: # ppm in column
 
@@ -459,7 +467,7 @@ def filepath_to_dfs(df_file_paths, polymer_names):
                 df = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
                 df_other = pd.read_excel(file, header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
                 df_other.columns = pd.MultiIndex.from_product([df_other.columns, ['']])
-                clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))    
+                clean_df = pd.merge(df, df_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
                 # add ppm back to index
                 df_ppm = clean_df['ppm']['mean']  # grab mean ppm
@@ -479,38 +487,37 @@ def filepath_to_dfs(df_file_paths, polymer_names):
 
 def etl_per_sat_time(source_path, destination_path):
     ''' This function extracts, transforms, and loads data into a merged machine learning ready dataset of DISCO experiments.
-    Done per sat time including curve fit params for downstream quality checking, and disco effect values for all binding and 
+    Done per sat time including curve fit params for downstream quality checking, and disco effect values for all binding and
     non-binding protons.
-    
+
     Parameters
     ----------
     source_path : str
         String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-    
+
     destination_path : str
         String containing path of destination directory.
-        
+
     Returns
-    -------   
+    -------
     summary_df: Pandas.DataFrame
         data reduced to the statistical summary of each experiment per sat time
     '''
-   
+
     # move relevant preprocessed Excel files to central folder for data ETL
     move(source_path, destination_path)
 
     all_files = glob.glob("{}/*.xlsx".format(destination_path))
-    
     # grab list of filepaths for:
-    # - all replicates (bind and not bind), 
-    # - binding only replicates (with individual AFo & SSE) 
+    # - all replicates (bind and not bind),
+    # - binding only replicates (with individual AFo & SSE)
     # - mean binding only data tables (AFo_bar and SSE_bar)
 
     rep_all = [file for file in all_files if 'replicate_all' in file]
     rep_bind = [file for file in all_files if 'replicate' in file and 'all' not in file]
     mean_bind = [file for file in all_files if 'mean' in file and 'all' not in file]
-    
-    
+
+
     # grab polymer names
     polymer_names_rep = [re.search('replicate_all_(.+?).xlsx', file).group(1).strip() for file in rep_all]
     polymer_names_rep_bind = [re.search('replicate_(.+?).xlsx', file).group(1).strip() for file in rep_bind]
@@ -523,12 +530,12 @@ def etl_per_sat_time(source_path, destination_path):
     rep_all = filepath_to_dfs(rep_all, polymer_names_rep)
     rep_bind = filepath_to_dfs(rep_bind, polymer_names_rep_bind)
     mean_bind = filepath_to_dfs(mean_bind, polymer_names_mean)
-    
+
     # concatenate polymer specific data of each type into cross-polymer tables
-    rep_all_df = pd.concat(rep_all) 
-    rep_bind_df = pd.concat(rep_bind) 
+    rep_all_df = pd.concat(rep_all)
+    rep_bind_df = pd.concat(rep_bind)
     mean_bind_df = pd.concat(mean_bind).reset_index() # make tidy
-    
+
     # round away ppm noise
     rep_all_df['ppm'] = rep_all_df['ppm'].round(2)
     rep_bind_df['ppm'] = rep_bind_df['ppm'].round(2)
@@ -537,15 +544,15 @@ def etl_per_sat_time(source_path, destination_path):
     rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "ppm", "amp_factor", "corr_%_attenuation"]].drop_duplicates() # subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "amp_factor"]
     rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "sat_time", "ppm", "corr_%_attenuation", "AFo", "SSE", "yikj", "alpha", "beta"]].drop_duplicates()
     mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size", "sat_time", "AFo_bar", "SSE_bar", "yikj_bar", "alpha_bar", "beta_bar"]].drop_duplicates().droplevel(1, axis=1)
-    
+
     # join replicate-specific AFo and SSE, clean noise from ppm
     midpoint_df = pd.merge(rep_all_df, rep_bind_df, how = 'left', on = primary_key_rep).drop(columns=['ppm_y', 'corr_%_attenuation_y']).rename(columns = {'ppm_x':'ppm', "corr_%_attenuation_x":"corr_%_attenuation"})
-                                                                                                                                               
-    
+
+
     # fill non-binding replicate peaks with zeros
     midpoint_df[['AFo', 'SSE', 'yikj', 'alpha', 'beta']] = midpoint_df[['AFo', 'SSE', 'yikj','alpha', 'beta']].fillna(0)
-    
-    # ensure consistent data types in primary key 
+
+    # ensure consistent data types in primary key
     midpoint_df.polymer_name = midpoint_df.polymer_name.astype(str).str.replace(' ', '')
     mean_bind_df.polymer_name = mean_bind_df.polymer_name.astype(str).str.replace(' ', '')
     midpoint_df.concentration = midpoint_df.concentration.astype(float)
@@ -557,16 +564,16 @@ def etl_per_sat_time(source_path, destination_path):
     midpoint_df = midpoint_df.sort_values(by = primary_key_mean)
     mean_bind_df = mean_bind_df.sort_values(by = primary_key_mean)
 
-    # join AFobar and SSEbar 
+    # join AFobar and SSEbar
     summary_df = pd.merge(midpoint_df, mean_bind_df, how='left', on = primary_key_mean)
-  
+
     # for non binding, fill with zeros
     summary_df[['SSE_bar','AFo_bar', 'yikj_bar','alpha_bar','beta_bar']] = summary_df[['SSE_bar','AFo_bar', 'yikj_bar','alpha_bar','beta_bar']].fillna(0)
 
     # fill in sample size if have data, if not calculate based on max num replicates
     sample_size_mapper = summary_df[['polymer_name','concentration', 'sample_size']].drop_duplicates()
     replicate_mapper = summary_df[['polymer_name', 'concentration', 'replicate']].drop_duplicates()
-    
+
     for row in sample_size_mapper.itertuples():
         polymer = row[1]
         conc = row[2]
@@ -577,9 +584,9 @@ def etl_per_sat_time(source_path, destination_path):
             max_nrep = replicate_mapper.loc[(replicate_mapper['polymer_name'] == polymer) & (replicate_mapper['concentration'] == conc), ('replicate')].max()
             summary_df.loc[(summary_df['polymer_name'] == polymer) & (summary_df['concentration'] == conc), ('sample_size')] = max_nrep
 
-        else: 
+        else:
             summary_df.loc[(summary_df['polymer_name'] == polymer) & (summary_df['concentration'] == conc), ('sample_size')] = sample_size
-    
+
     return summary_df
 
 def etl_per_proton(summary_df):
@@ -605,17 +612,17 @@ def etl_per_proton(summary_df):
 def etl_per_replicate(source_path, destination_path):
     ''' This function extracts, transforms, and loads data into a merged dataset of DISCO experiments.
     Extracted on a per technical replicate basis, AFo and SSE only provided (not buildup curve quality params).
-    
+
     Parameters
     ----------
     source_path : str
         String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-    
+
     destination_path : str
         String containing path of destination directory.
-        
+
     Returns
-    -------   
+    -------
     summary_df: Pandas.DataFrame
         data reduced to the statistical summary of each experiment
     '''
