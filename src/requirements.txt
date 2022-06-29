@@ -4,6 +4,3 @@ numpy
 pandas>=1.4.2
 openpyxl
 SciencePlots #1.0.9
-matplotlib
-openpyxl
-scikit-learn

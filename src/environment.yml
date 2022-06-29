@@ -1,0 +1,12 @@
+name: discoprocess
+channels:
+  - conda-forge
+dependencies:
+  - matplotlib
+  - seaborn
+  - numpy
+  - pandas>=1.4.2
+  - openpyxl
+  - scikit-learn # sklearn
+
+# +SciencePlots (via pip install)
