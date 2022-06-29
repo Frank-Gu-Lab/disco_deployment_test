@@ -1,6 +1,7 @@
 matplotlib
 seaborn
 numpy
-pandas>=1.4.2
-openpyxl
+pandas
 SciencePlots #1.0.9
+openpyxl
+scikit-learn
