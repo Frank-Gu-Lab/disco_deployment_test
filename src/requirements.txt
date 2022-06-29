@@ -2,8 +2,5 @@ matplotlib
 seaborn
 numpy
 pandas>=1.4.2
-pytest
-pytest-mock
-pytest-cov
 openpyxl
 SciencePlots #1.0.9
