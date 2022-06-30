@@ -70,7 +70,7 @@ merge_output_directory = ""
 if global_output_directory_1 != None and global_output_directory_1 != "":
 
     with open(os.path.abspath("src/past_user.txt"), "w") as f:
-        f.write(globa_output_directory_1 + "\n")
+        f.write(global_output_directory_1 + "\n")
         f.close()
 
 
