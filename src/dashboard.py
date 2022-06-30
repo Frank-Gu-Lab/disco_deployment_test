@@ -52,7 +52,6 @@ past_dirs = past_dir.read()
 while " " in past_dirs:
     past_dirs.remove(" ")
 
-print(past_dirs)
 
 list_of_past_dirs = past_dirs.split("\n")
 
