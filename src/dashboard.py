@@ -45,7 +45,7 @@ global_output_directory_1 = st.sidebar.text_input("Directory: ")
 while " " in global_output_directory_1:
     global_output_directory_1.remove(" ")
 
-past_dir = open("../src/past_user.txt", "r+")
+past_dir = open("../data/input/past_user.txt", "r+")
 
 past_dirs = past_dir.read()
 
