@@ -42,9 +42,37 @@ st.title("Welcome to the DISCO Data Processing Interactive GUI")
 st.sidebar.markdown("## To begin your DISCO data processing, please enter a directory below where output files may be stored")
 global_output_directory_1 = st.sidebar.text_input("Directory: ")
 
+while " " in global_output_directory_1:
+    global_output_directory_1.remove(" ")
+
+past_dir = open("past_user.txt", "r+")
+
+past_dirs = past_dir.read()
+
+while " " in past_dirs:
+    past_dirs.remove(" ")
+
+print(past_dirs)
+print(global_output_directory_1)
+
+list_of_past_dirs = past_dirs.split("\n")
+
+if global_output_directory_1 not in list_of_past_dirs and global_output_directory_1 != "" and global_output_directory_1 != None :
+    for dir in list_of_past_dirs:
+        if os.path.exists("../data/output/" + dir):
+            sht.rmtree("../data/output/" + dir)
+    past_dir.close()
+    past_dir = open("past_user.txt", "w")
+    past_dir.write("")
+
 merge_output_directory = ""
 
 if global_output_directory_1 != None and global_output_directory_1 != "":
+
+    past_dir.write(global_output_directory_1 + "\n")
+
+    past_dir.close()
+
     global_output_directory = "../data/output/" + global_output_directory_1
     if not os.path.exists(global_output_directory):
         os.makedirs(global_output_directory)
