@@ -45,7 +45,7 @@ global_output_directory_1 = st.sidebar.text_input("Directory: ")
 while " " in global_output_directory_1:
     global_output_directory_1.remove(" ")
 
-past_dir = open(os.path.abspath("../src/past_user.txt"), "r")
+past_dir = open(os.path.abspath("src/past_user.txt"), "r")
 
 past_dirs = past_dir.read()
 
@@ -59,7 +59,7 @@ if global_output_directory_1 not in list_of_past_dirs and global_output_director
         if os.path.exists("../data/output/" + dir):
             sht.rmtree("../data/output/" + dir)
     past_dir.close()
-    past_dir = open(os.path.abspath("../src/past_user.txt"), "w")
+    past_dir = open(os.path.abspath("src/past_user.txt"), "w")
     past_dir.write("")
 
 merge_output_directory = ""
