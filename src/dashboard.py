@@ -52,6 +52,8 @@ past_dirs = past_dir.read()
 while " " in past_dirs:
     past_dirs.remove(" ")
 
+print(past_dirs)
+
 list_of_past_dirs = past_dirs.split("\n")
 
 if global_output_directory_1 not in list_of_past_dirs and global_output_directory_1 != "" and global_output_directory_1 != None :
