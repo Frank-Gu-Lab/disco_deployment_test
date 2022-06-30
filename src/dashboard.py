@@ -63,14 +63,16 @@ if global_output_directory_1 not in list_of_past_dirs and global_output_director
     past_dir.close()
     past_dir = open(os.path.abspath("src/past_user.txt"), "w")
     past_dir.write("")
+    past_dir.close()
 
 merge_output_directory = ""
 
 if global_output_directory_1 != None and global_output_directory_1 != "":
 
-    past_dir.write(global_output_directory_1 + "\n")
+    with open(os.path.abspath("src/past_user.txt"), "w") as f:
+        f.write(globa_output_directory_1 + "\n")
+        f.close()
 
-    past_dir.close()
 
     global_output_directory = "../data/output/" + global_output_directory_1
     if not os.path.exists(global_output_directory):
