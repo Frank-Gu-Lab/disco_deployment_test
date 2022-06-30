@@ -188,6 +188,11 @@ if choice == "Upload and analyze":
     st.info("Please upload your data files to begin data processing!")
     list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
 
+    MAX_BOOKS = 7
+    if len(list_of_raw_books) > MAX_BOOKS:
+        st.warning("Warning: Max file upload limit of 7.  Only the first 7 books will be processed")
+        list_of_raw_books = list_of_raw_books[:8]
+
     i = 0
 
 
