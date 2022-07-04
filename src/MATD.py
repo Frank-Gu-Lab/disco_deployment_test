@@ -34,8 +34,164 @@ from streamlit import caching
 import random
 import string
 
+from tempfile import TemporaryDirectory
+
+import time as t
+
 idx = pd.IndexSlice
 
 #Setting up the page name
 st.set_page_config(page_title = "DISCO Data Processing")
-st.title("DISCO Data Processing Interactive GUI")
+st.title("DISCO Dashboard")
+
+##Some helper Functions##
+
+def get_random_string(length):
+    # choose from all lowercase letter
+    letters = string.ascii_lowercase
+    result_str = ''.join(random.choice(letters) for i in range(length))
+
+    return result_str
+
+def grab_polymer_name(full_filepath, common_filepath = " "):
+    '''Grabs the polymer name from file path.
+
+    Parameters:
+    -----------
+    full_filepath: string
+        path to the datasheet for that polymer
+
+    common_filepath: string
+        portion of the filepath that is shared between all polymer inputs, excluding their custom names
+
+    Returns:
+    -------
+    polymer_name: string
+        the custom portion of the filepath with the polymer name and any other custom info
+    '''
+
+    #Necessary for some windows operating systems
+    for char in full_filepath:
+        if char == "\\":
+            full_filepath = full_filepath.replace("\\", "/")
+
+    for char in common_filepath:
+        if char == "\\":
+            common_filepath = full_filepath.replace("\\", "/")
+
+    polymer_name = full_filepath.split(common_filepath)[1]
+    polymer_name = polymer_name[:-5] # remove the .xlsx
+
+    return polymer_name
+
+def grab_polymer_weight(polymer_name):
+
+    polymer_name = polymer_name.split("_")
+    polymer_weight = polymer_name[1][:-1]
+
+    return (polymer_name[0], int(polymer_weight))
+
+def data_checking(list_of_raw_books):
+    st.info("Checking names of polymers in datasets for correct formatting")
+
+    i = 0
+
+    if name_checker(list_of_raw_books):
+        st.success("Names are formatted correctly!")
+        i += 1
+
+    if resonance_and_column_checker(list_of_raw_books):
+        st.success("Data formatted correctly!")
+        i += 1
+
+    if range_checker(list_of_raw_books):
+        st.success("Data ranges are all correct!")
+        i += 1
+
+    if i == 3:
+        st.info("Great! Now it is time for data analysis!")
+        i += 1
+
+def analyzer(list_of_raw_books):
+
+    batch_tuple_list = []
+
+    clean_batch_tuple_list = []
+    clean_batch_list = []
+
+    for book in list_of_raw_books:
+        #append tuples from the list output of the batch processing function, so that each unique polymer tuple is assigned to the clean_batch_tuple_list
+        batch_tuple_list.append([polymer for polymer in batch_to_dataframe(book)])
+
+    # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
+
+    #if there has been batch data processing, call the batch cleaning function
+    if len(batch_tuple_list) != 0:
+
+        clean_batch_list = clean_the_batch_tuple_list(batch_tuple_list)
+
+        # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
+        clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]
+
+    # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
+
+    if len(clean_batch_tuple_list) != 0:
+        with st.spinner("Analyzing data..."):
+            analyze_data(clean_batch_tuple_list, global_output_directory)
+            i += 1
+
+    if i == 5:
+        return
+
+###Down to business###
+
+if "session_code" not in st.session_state:
+    st.session_state["session_code"] = get_random_string(12)
+
+st.sidebar.title("DISCO Navigation Sidebar")
+
+if "session_dir" not in st.session_state and "session_code" in st.session_state:
+
+    st.session_state["global_output_directory"] = "../data/output/" + st.session_state["session_code"]
+    if not os.path.exists(st.session_state["global_output_directory"]):
+        os.makedirs(st.session_state["global_output_directory"])
+
+    st.session_state["merged_output_directory"] = "{}/merged".format(st.session_state["global_output_directory"])
+
+    if not os.path.exists(st.session_state["merged_output_directory"]):
+        os.makedirs(st.session_state["merged_output_directory"])
+    # define data source path and data destination path to pass to data merging function
+    source_path = '{}/*/tables_*'.format(st.session_state["global_output_directory"])
+    destination_path = '{}'.format(st.session_state["merged_output_directory"])
+
+past_dir = open(os.path.abspath("src/past_user.txt"), "r")
+
+past_dirs = past_dir.read()
+
+while " " in past_dirs:
+    past_dirs.remove(" ")
+
+list_of_past_dirs = past_dirs.split("\n")
+
+if "merged_output_directory" in st.session_state and "time" not in st.session_state:
+    dirs_to_keep = []
+    for dir in list_of_past_dirs:
+        directory, time = dir.split(" ")
+        if os.path.exists("../data/output/" + directory) and t.time() - time >= 600:
+            sht.rmtree("../data/output/" + directory)
+        if os.path.exists("../data/output/" + directory) and t.time() - time <= 600:
+            dirs_to_keep.append(dir + "\n")
+    past_dir.close()
+    past_dir = open(os.path.abspath("src/past_user.txt"), "w")
+    past_dir.write("")
+    past_dir.close()
+
+    past_dir = open(os.path.abspath("src/past_user.txt"), "a")
+    past_dir.writelines(dirs_to_keep)
+    past_dir.close()
+
+    st.session_state["time"] = t.time()
+
+    with open(os.path.abspath("src/past_user.txt"), "a") as f:
+        f.append(st.session_state["global_output_directory"] + st.session_state["time"] + "\n")
+        f.close()
