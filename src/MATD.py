@@ -164,34 +164,39 @@ if "session_dir" not in st.session_state and "session_code" in st.session_state:
     source_path = '{}/*/tables_*'.format(st.session_state["global_output_directory"])
     destination_path = '{}'.format(st.session_state["merged_output_directory"])
 
-past_dir = open(os.path.abspath("src/past_user.txt"), "r")
+past_dir = open("past_user.txt", "r")
 
 past_dirs = past_dir.read()
 
-while " " in past_dirs:
-    past_dirs.remove(" ")
-
 list_of_past_dirs = past_dirs.split("\n")
 
-if "merged_output_directory" in st.session_state and "time" not in st.session_state:
-    dirs_to_keep = []
-    for dir in list_of_past_dirs:
-        directory, time = dir.split(" ")
-        if os.path.exists("../data/output/" + directory) and t.time() - time >= 600:
-            sht.rmtree("../data/output/" + directory)
-        if os.path.exists("../data/output/" + directory) and t.time() - time <= 600:
-            dirs_to_keep.append(dir + "\n")
-    past_dir.close()
-    past_dir = open(os.path.abspath("src/past_user.txt"), "w")
-    past_dir.write("")
-    past_dir.close()
+while "" in list_of_past_dirs:
+    list_of_past_dirs.remove("")
 
-    past_dir = open(os.path.abspath("src/past_user.txt"), "a")
-    past_dir.writelines(dirs_to_keep)
-    past_dir.close()
+while " " in list_of_past_dirs:
+    list_of_past_dirs.remove(" ")
+
+
+if "merged_output_directory" in st.session_state and "time" not in st.session_state:
+    if len(list_of_past_dirs) > 0:
+        dirs_to_keep = []
+        for dir in list_of_past_dirs:
+            directory, time = dir.split(" ")
+            if os.path.exists("../data/output/" + directory) and t.time() - time >= 600:
+                sht.rmtree("../data/output/" + directory)
+            if os.path.exists("../data/output/" + directory) and t.time() - time <= 600:
+                dirs_to_keep.append(dir + "\n")
+        past_dir.close()
+        past_dir = open("past_user.txt", "w")
+        past_dir.write("")
+        past_dir.close()
+
+        past_dir = open("past_user.txt", "a")
+        past_dir.writelines(dirs_to_keep)
+        past_dir.close()
 
     st.session_state["time"] = t.time()
 
-    with open(os.path.abspath("src/past_user.txt"), "a") as f:
-        f.append(st.session_state["global_output_directory"] + st.session_state["time"] + "\n")
-        f.close()
+    past_dir = open("past_user.txt", "a")
+    past_dir.write(st.session_state["global_output_directory"] + " " + str(st.session_state["time"]) + "\n")
+    past_dir.close()
