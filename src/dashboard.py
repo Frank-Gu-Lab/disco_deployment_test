@@ -197,15 +197,7 @@ if choice == "Upload and analyze":
 
     if len(list_of_raw_books) > 0:
         analysis(list_of_raw_books)
-        i += 5
-
-
-    if i == 5:
-        st.success("All polymers successfully analyzed")
-        sht.make_archive(os.path.abspath('../data/output/' + global_output_directory_1), 'zip', '../data/output/',os.path.abspath(global_output_directory))
-        with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
-           st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
-           i += 1
+        i += 6
 
     if i == 6:
 
@@ -468,14 +460,9 @@ elif choice == "Plot existing data and view plotting options":
                                 figure.savefig(output_filename_2, dpi = 500, transparent = False)
 
                                 st.image(output_filename_2, use_column_width = True)
+                                i += 1
 
                         #Now you just gotta graph em!
-
-                    with open(merge_output_directory + ".zip", "rb") as f:
-                        st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
-                    with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
-                       st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
-                       i += 1
 
                     if isinstance(display_frame, pd.DataFrame):
 
