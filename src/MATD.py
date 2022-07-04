@@ -137,11 +137,8 @@ def analyzer(list_of_raw_books):
 
     if len(clean_batch_tuple_list) != 0:
         with st.spinner("Analyzing data..."):
-            analyze_data(clean_batch_tuple_list, global_output_directory)
-            i += 1
-
-    if i == 5:
-        return
+            analyze_data(clean_batch_tuple_list, st.session_state["global_output_directory"])
+            
 
 ###Down to business###
 
@@ -237,7 +234,52 @@ if choice == "Read me":
     st.markdown("With the range keyword indicating to the program a datatable to be processed.  Please note how the on and off resonance tables for each saturation time must be formatted exactly as in the photo for each saturation time.  Also note the control column and the protein column (in this case BSM)")
 
 if choice == "Upload and analyze (Step 1)":
-    pass
+    st.info("Please upload your data files to begin data processing!")
+    list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
+
+    MAX_BOOKS = 7
+    if len(list_of_raw_books) > MAX_BOOKS:
+        st.warning("Warning: Max file upload limit of 7.  Only the first 7 books will be processed")
+        list_of_raw_books = list_of_raw_books[:8]
+
+    i = 0
+
+
+    if len(list_of_raw_books) > 0:
+        data_checking(list_of_raw_books)
+        analyzer(list_of_raw_books)
+        i += 6
+
+    if i == 6:
+        try:
+
+            replicate_summary_df = etl_per_replicate(source_path, destination_path)
+            rep_sum = replicate_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "merged_binding_dataset.xlsx"))
+
+            quality_check_df = etl_per_sat_time(source_path, destination_path)
+            qual_check = quality_check_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "merged_fit_quality_dataset.xlsx"))
+
+            proton_summary_df = etl_per_proton(quality_check_df)
+
+            prot_sum = proton_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"))
+
+            sht.make_archive(os.path.abspath(st.session_state["merged_output_directory"]), "zip", st.session_state["global_output_directory"], os.path.abspath(st.session_state["merged_output_directory"]))
+            with open(st.session_state["merged_output_directory"] + ".zip", "rb") as f:
+                st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
+                i = i + 1
+
+            with st.expander("Open to see Merged Binding Dataset"):
+                st.table(replicate_summary_df)
+            with st.expander("Open to see Merged Fit Quality Dataset"):
+                st.table(quality_check_df)
+
+        except ValueError:
+            st.warning("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
+
+    if i == 7:
+        st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
+
+
 if choice == "Plot data (Step 2)":
     pass
 if choice == "Window-viewer (Step 3)":
