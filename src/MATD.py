@@ -145,6 +145,9 @@ def analyzer(list_of_raw_books):
 
 ###Down to business###
 
+
+###Session management###
+
 if "session_code" not in st.session_state:
     st.session_state["session_code"] = get_random_string(12)
 
@@ -200,3 +203,42 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
     past_dir = open("past_user.txt", "a")
     past_dir.write(st.session_state["global_output_directory"] + " " + str(st.session_state["time"]) + "\n")
     past_dir.close()
+
+###Page management###
+
+list_of_raw_books = []
+choice = st.sidebar.radio("Would you like to upload data for data analysis, or plot data?", ["Read me", "Upload and analyze (Step 1)", "Plot data (Step 2)", "Window-viewer (Step 3)"])
+
+if choice == "Read me":
+    st.header("README")
+    st.caption("This repository contains code by the Frank Gu Lab at UofT for DISCO-NMR data processing turned into an interactive GUI")
+    st.image("aesthetic/disco_ball.gif")
+    st.markdown("This code transforms outputs from individual **DISCO NMR** experiments in MestreNova into a statistically validated, clean Pandas DataFrame of true positive and true negative polymer-proton binding observations for further use in machine learning.")
+    st.subheader("Data Process Description")
+    st.write('''
+        - Part 1: Reading and Cleaning Data (reads and prepares data for statistical analysis)
+        - Part 2: Statistical Analysis (classifies true positive binding proton observations, generates AFo plots, writes outputs to file)
+        - Part 3: Generate DataFrame + Export to Excel (merges true positive and true negative observations classified from Part 2 into ML-ready dataset)
+    ''')
+    st.subheader("Graphical Interface Workflow")
+    st.write('''
+        - Step 1: Upload data for analysis under the "Upload and analyze" tab.
+        - Step 2: Go to the plotting tab to see plots of the data from the analysis tab
+        - Step 3: Compare plots under the Window-viewer tab
+    ''')
+    st.subheader("Special Data Input Formatting Requirements")
+    st.markdown("For Batch Format inputs, please ensure unique polymer replicates intended to be analyzed together follow the same naming format. For example, if there are 4 total CMC replicates, 3 from one experiment to be analyzed together, and 1 from a separate experiment that is NOT intended as a replicate of the other three, the sheet tabs should be named as follows:")
+    st.write("""
+        - CMC (1), CMC (2), CMC (3) (These 3 will be analyzed together, as their name string is the same, and all have a space and brackets as delimeters.)
+        - CMC_other (The 4th CMC tab will be treated separately, as it is named with either a different string or delimeter (both in this case)
+    """)
+    st.markdown("Data tables should be formatted as follows in EXCEL:")
+    st.image("aesthetic/table_exemplar.png")
+    st.markdown("With the range keyword indicating to the program a datatable to be processed.  Please note how the on and off resonance tables for each saturation time must be formatted exactly as in the photo for each saturation time.  Also note the control column and the protein column (in this case BSM)")
+
+if choice == "Upload and analyze (Step 1)":
+    pass
+if choice == "Plot data (Step 2)":
+    pass
+if choice == "Window-viewer (Step 3)":
+    pass
