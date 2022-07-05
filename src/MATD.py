@@ -205,7 +205,7 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
 
     st.session_state["time"] = t.time()
 
-    past_dir = try:
+    try:
         past_dir = open("past_user.txt", "r")
     except FileNotFoundError:
         past_dir = open(os.path.abspath("src/past_user.txt"), "a")
