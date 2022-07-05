@@ -246,7 +246,7 @@ if choice == "Read me":
     try:
         st.image("aesthetic/table_exemplar.png")
     except FileNotFoundError:
-        st.image(os.path.abspath("src/aesthetic/exemplar.png"))
+        st.image(os.path.abspath("src/aesthetic/table_exemplar.png"))
     st.markdown("With the range keyword indicating to the program a datatable to be processed.  Please note how the on and off resonance tables for each saturation time must be formatted exactly as in the photo for each saturation time.  Also note the control column and the protein column (in this case BSM)")
 
 if choice == "Upload and analyze (Step 1)":
