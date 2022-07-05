@@ -163,8 +163,10 @@ if "session_dir" not in st.session_state and "session_code" in st.session_state:
     # define data source path and data destination path to pass to data merging function
     source_path = '{}/*/tables_*'.format(st.session_state["global_output_directory"])
     destination_path = '{}'.format(st.session_state["merged_output_directory"])
-
-past_dir = open("past_user.txt", "r")
+try:
+    past_dir = open("past_user.txt", "r")
+except FileNotFoundError:
+    past_dir = open(os.path.abspath("src/past_user.txt"), "r")
 
 past_dirs = past_dir.read()
 
@@ -187,17 +189,26 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
             if os.path.exists("../data/output/" + directory) and t.time() - time <= 600:
                 dirs_to_keep.append(dir + "\n")
         past_dir.close()
-        past_dir = open("past_user.txt", "w")
+        try:
+            past_dir = open("past_user.txt", "r")
+        except FileNotFoundError:
+            past_dir = open(os.path.abspath("src/past_user.txt"), "w")
         past_dir.write("")
         past_dir.close()
 
-        past_dir = open("past_user.txt", "a")
+        try:
+            past_dir = open("past_user.txt", "r")
+        except FileNotFoundError:
+            past_dir = open(os.path.abspath("src/past_user.txt"), "a")
         past_dir.writelines(dirs_to_keep)
         past_dir.close()
 
     st.session_state["time"] = t.time()
 
-    past_dir = open("past_user.txt", "a")
+    past_dir = try:
+        past_dir = open("past_user.txt", "r")
+    except FileNotFoundError:
+        past_dir = open(os.path.abspath("src/past_user.txt"), "a")
     past_dir.write(st.session_state["global_output_directory"] + " " + str(st.session_state["time"]) + "\n")
     past_dir.close()
 
