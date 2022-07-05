@@ -220,7 +220,10 @@ choice = st.sidebar.radio("Would you like to upload data for data analysis, or p
 if choice == "Read me":
     st.header("README")
     st.caption("This repository contains code by the Frank Gu Lab at UofT for DISCO-NMR data processing turned into an interactive GUI")
-    st.image("aesthetic/disco_ball.gif")
+    try:
+        st.image("aesthetic/disco_ball.gif")
+    except FileNotFoundError:
+        st.image(os.path.abspath("src/aesthetic/disco_ball.gif"))
     st.markdown("This code transforms outputs from individual **DISCO NMR** experiments in MestreNova into a statistically validated, clean Pandas DataFrame of true positive and true negative polymer-proton binding observations for further use in machine learning.")
     st.subheader("Data Process Description")
     st.write('''
