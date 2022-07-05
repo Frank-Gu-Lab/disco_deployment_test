@@ -204,7 +204,7 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
 ###Page management###
 
 list_of_raw_books = []
-choice = st.sidebar.radio("Would you like to upload data for data analysis, or plot data?", ["Read me", "Upload and analyze (Step 1)", "Plot data (Step 2)", "Window-viewer (Step 3)"])
+choice = st.sidebar.radio("Would you like to upload data for data analysis, or plot data?", ["Read me", "Upload and analyze (Step 1)", "Plot data (Step 2)"])
 
 if choice == "Read me":
     st.header("README")
@@ -221,7 +221,6 @@ if choice == "Read me":
     st.write('''
         - Step 1: Upload data for analysis under the "Upload and analyze" tab.
         - Step 2: Go to the plotting tab to see plots of the data from the analysis tab
-        - Step 3: Compare plots under the Window-viewer tab
     ''')
     st.subheader("Special Data Input Formatting Requirements")
     st.markdown("For Batch Format inputs, please ensure unique polymer replicates intended to be analyzed together follow the same naming format. For example, if there are 4 total CMC replicates, 3 from one experiment to be analyzed together, and 1 from a separate experiment that is NOT intended as a replicate of the other three, the sheet tabs should be named as follows:")
@@ -284,13 +283,17 @@ if choice == "Plot data (Step 2)":
 
             list_of_polymers = []
 
-            if os.exists('{}/publications'.format(st.session_state["merged_output_directory"])):
+            if "plotting_exception" not in st.session_state:
+                st.session_state["plotting_exception"] = False
+
+            if os.path.exists('{}/publications'.format(st.session_state["merged_output_directory"])):
                 sht.rmtree('{}/publications'.format(st.session_state["merged_output_directory"]))
+                st.session_state["plotting_exception"] = False
 
             with st.spinner("Establishing directories for supporting figures"):
 
                 # for only the peaks with a significant disco effect
-                polymer_library_binding = set(glob.glob(st.session_state["merged_output_directory"] + "/stats_analysis_output_mean_*")) - set(st.session_state["merged_output_directory"] + "/stats_analysis_output_mean_all_*"))
+                polymer_library_binding = set(glob.glob(st.session_state["merged_output_directory"] + "/stats_analysis_output_mean_*")) - set(st.session_state["merged_output_directory"] + "/stats_analysis_output_mean_all_*")
 
                 # significant and zero peaks
                 polymer_library_all = glob.glob(st.session_state["merged_output_directory"] + "/stats_analysis_output_mean_all_*")
@@ -421,8 +424,6 @@ if choice == "Plot data (Step 2)":
 
                             st.success("Binding detected, right click and click save image to begin download.")
 
-
-
                             i += 1
 
                         elif poly_choice in non_binding:
@@ -511,6 +512,63 @@ if choice == "Plot data (Step 2)":
                                     st.image(output_filename_2, use_column_width = True)
                                     i += 1
 
+                                    with st.expander("Look at fingerprint for another binding polymer"):
+
+                                        binding_curves = []
+                                        for polymer in list_of_polymers:
+                                            if polymer not in non_binding and polymer != poly_choice:
+                                                binding_curves.append(polymer)
+
+                                        weight_choice = st.radio("Please choose a binding polymer", binding_curves)
+
+                                        mosaic = """
+                                        AA
+                                        BB
+                                        """
+
+                                        gs_kw = dict(width_ratios=[1, 1.5], height_ratios=[1, 1.5])
+
+                                        fig, axd = plt.subplot_mosaic(mosaic, gridspec_kw=gs_kw, figsize=(3.3, 4), constrained_layout=False, dpi=150)
+
+                                        for tuple in mean_bindonly_list:
+                                            if weight_choice == tuple[1]:
+                                                add_buildup_toax(tuple[0], axd['A'])
+                                                axd['A'].set_ylabel("DISCO Effect", fontdict = {"fontsize": 7})
+                                                axd['A'].set_xlabel("NMR Saturation Time (s)", fontdict = {"fontsize": 7})
+                                                axd['A'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
+                                                axd['A'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                                                axd['A'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
+                                                axd['A'].tick_params(axis = 'x', labelsize = 6)
+                                                axd['A'].tick_params(axis = 'y', labelsize = 6)
+                                                axd['A'].set_title("DISCO Effect Buildup Curve - " + weight_choice, fontdict = {"fontsize": 7})
+
+                                        for tuple in replicate_bindonly_list:
+                                            if weight_choice == tuple[1]:
+                                                display_frame = tuple[0]
+                                                add_fingerprint_toax(tuple[0], axd['B'])
+                                                axd['B'].set_ylabel("DISCO AFo (Absolute Value)", fontdict = {"fontsize": 7})
+                                                axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)", fontdict = {"fontsize": 7})
+                                                axd['B'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
+                                                axd['B'].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                                                axd['B'].tick_params(axis = 'x', labelsize = 6)
+                                                axd['B'].tick_params(axis = 'y', labelsize = 6)
+                                                axd["B"].set_title("DISCO Fingerprint - " + weight_choice, fontdict = {"fontsize": 7})
+
+                                        props = dict(facecolor = "white", linewidth = 0.3)
+                                        legA = axd['A'].legend(loc = 'upper left', title = "Δ ppm", prop = {'size':5})
+                                        legA.get_frame().set_edgecolor('k')
+                                        legA.get_title().set_fontsize('6')
+                                        plt.rcParams['legend.fontsize'] = 7
+                                        legA.get_frame().set_linewidth(0.3)
+
+                                        output_filename = f"{output_directory}{weight_choice}.png"
+                                        plt.tight_layout()
+                                        fig.patch.set_facecolor('white')
+                                        fig.savefig(output_filename, dpi = 500, transparent = False)
+
+                                        st.image(output_filename, use_column_width = True)
+
+
                             #Now you just gotta graph em!
 
                         if isinstance(display_frame, pd.DataFrame):
@@ -563,10 +621,3 @@ if choice == "Plot data (Step 2)":
             st.warning("You do not have any datafiles to graph!")
         except FileNotFoundError:
             st.warning("You do not have any datafiles to graph!")
-
-
-
-
-
-if choice == "Window-viewer (Step 3)":
-    pass
