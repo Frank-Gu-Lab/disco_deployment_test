@@ -184,9 +184,9 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
         dirs_to_keep = []
         for dir in list_of_past_dirs:
             directory, time = dir.split(" ")
-            if os.path.exists("../data/output/" + directory) and t.time() - time >= 600:
+            if os.path.exists("../data/output/" + directory) and t.time() - time >= 1200:
                 sht.rmtree("../data/output/" + directory)
-            if os.path.exists("../data/output/" + directory) and t.time() - time <= 600:
+            if os.path.exists("../data/output/" + directory) and t.time() - time <= 1200:
                 dirs_to_keep.append(dir + "\n")
         past_dir.close()
         try:
