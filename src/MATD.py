@@ -561,7 +561,6 @@ if choice == "Plot data (Step 2)":
 
                                         for tuple in replicate_bindonly_list:
                                             if weight_choice == tuple[1]:
-                                                display_frame = tuple[0]
                                                 add_fingerprint_toax(tuple[0], axd['B'])
                                                 axd['B'].set_ylabel("DISCO AFo (Absolute Value)", fontdict = {"fontsize": 7})
                                                 axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)", fontdict = {"fontsize": 7})
