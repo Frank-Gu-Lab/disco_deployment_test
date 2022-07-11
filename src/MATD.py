@@ -84,6 +84,16 @@ def grab_polymer_name(full_filepath, common_filepath = " "):
 
     return polymer_name
 
+def remove_conc(polymer_name):
+    i = 0
+    for pos, letter in enumerate(reversed(polymer_name)):
+        if letter == "_":
+            i = pos
+            break
+    polymer_name = polymer_name[:-1 * i - 1]
+
+    return polymer_name
+
 def grab_polymer_weight(polymer_name):
 
     polymer_name = polymer_name.split("_")
@@ -190,14 +200,14 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
                 dirs_to_keep.append(dir + "\n")
         past_dir.close()
         try:
-            past_dir = open("past_user.txt", "r")
+            past_dir = open("past_user.txt", "w")
         except FileNotFoundError:
             past_dir = open(os.path.abspath("src/past_user.txt"), "w")
         past_dir.write("")
         past_dir.close()
 
         try:
-            past_dir = open("past_user.txt", "r")
+            past_dir = open("past_user.txt", "a")
         except FileNotFoundError:
             past_dir = open(os.path.abspath("src/past_user.txt"), "a")
         past_dir.writelines(dirs_to_keep)
@@ -206,7 +216,7 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
     st.session_state["time"] = t.time()
 
     try:
-        past_dir = open("past_user.txt", "r")
+        past_dir = open("past_user.txt", "a")
     except FileNotFoundError:
         past_dir = open(os.path.abspath("src/past_user.txt"), "a")
     past_dir.write(st.session_state["global_output_directory"] + " " + str(st.session_state["time"]) + "\n")
@@ -459,8 +469,8 @@ if choice == "Plot data (Step 2)":
                             list_of_polymer_names = []
 
                             for polymer in list_of_polymers:
-                                if grab_polymer_name(" " + polymer) not in list_of_polymer_names:
-                                    list_of_polymer_names.append(grab_polymer_name(" " + polymer))
+                                if remove_conc(polymer) not in list_of_polymer_names:
+                                    list_of_polymer_names.append(remove_conc(polymer))
 
                             list_of_polymers_by_weight = []
 
@@ -468,13 +478,15 @@ if choice == "Plot data (Step 2)":
                                 list_of_polymers_by_weight.append(grab_polymer_weight(polymer))
 
                             possible_weights = []
+                            possible_NP_weights = []
 
                             for polymer in list_of_polymers_by_weight:
-                                if polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]:
+                                if (polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]):
                                     possible_weights.append(polymer[1])
+                                if (grab_polymer_weight(poly_choice)[0] in polymer[0] and "NP" in polymer[0] and polymer[1] not in possible_NP_weights and ((polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]) or (polymer[0] != grab_polymer_weight(poly_choice)[0]))):
+                                    possible_NP_weights.append(polymer[1])
 
-
-                            weight_choice = st.radio("Please choose the molecular weight to compare with", possible_weights)
+                            weight_choice = st.radio("Please choose the molecular weight to compare with", possible_weights, key = 7)
 
                             if len(possible_weights) > 0:
 
@@ -536,7 +548,7 @@ if choice == "Plot data (Step 2)":
                                             if polymer not in non_binding and polymer != poly_choice:
                                                 binding_curves.append(polymer)
 
-                                        weight_choice = st.radio("Please choose a binding polymer", binding_curves)
+                                        weight_choice = st.radio("Please choose a binding polymer", binding_curves, key = 2)
 
                                         mosaic = """
                                         AA
@@ -586,6 +598,124 @@ if choice == "Plot data (Step 2)":
 
 
                             #Now you just gotta graph em!
+                            weight_np_choice = st.radio("Please choose a nanoparticle to compare with", possible_NP_weights, key = 5)
+
+                            if len(possible_NP_weights) > 0:
+
+                                list_of_NP = []
+                                for polymer in list_of_polymers_by_weight:
+                                    if "NP" in polymer[0]:
+                                        list_of_NP.append(polymer)
+
+                                print(list_of_NP)
+
+                                temp = ["a", "b"]
+                                list_of_np_replicates_for_diff = []
+                                for polymer in list_of_polymers_by_weight:
+                                    for polymer2 in list_of_NP:
+                                        #print(polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and grab_polymer_weight(poly_choice)[0] in polymer2[0] and weight_np_choice == polymer2[1])
+                                        if polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and grab_polymer_weight(poly_choice)[0] in polymer2[0] and weight_np_choice == polymer2[1]:
+
+                                            for tuple in replicate_all_list:
+                                                if polymer[1] > polymer2[1]:
+                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                        temp[0] = tuple
+                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                        temp[1] = tuple
+                                                else:
+                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                        temp[1] = tuple
+                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                        temp[0] = tuple
+                                            condition = 0
+                                            for pair in list_of_np_replicates_for_diff:
+                                                if pair[0][1] != temp[0][1]:
+                                                    condition = 1
+                                            if condition == 0:
+                                                list_of_np_replicates_for_diff.append([temp[0], temp[1]])
+
+                                if len(list_of_np_replicates_for_diff) > 0:
+
+
+                                    effect_size_df = generate_disco_effect_mean_diff_df(list_of_np_replicates_for_diff[0][1][0], list_of_np_replicates_for_diff[0][0][0])
+                                    subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
+
+
+                                    figure, axy = plt.subplots(1, figsize = (16, 5))
+
+                                    add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
+
+                                    axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
+                                    axy.set_ylim(-3, 2.5)
+                                    axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                                    axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
+                                    axy.tick_params(axis = 'x', labelsize = 6)
+                                    axy.tick_params(axis = 'y', labelsize = 6)
+                                    plt.title(list_of_np_replicates_for_diff[0][1][1] + " vs " + list_of_np_replicates_for_diff[0][0][1])
+
+
+                                    output_filename_8 = f"{output_directory}/" + list_of_np_replicates_for_diff[0][1][1] + "_diff" + ".png"
+                                    figure.patch.set_facecolor("white")
+                                    plt.tight_layout(pad = 1)
+                                    figure.savefig(output_filename_8, dpi = 250, transparent = False)
+
+                                    st.image(output_filename_8, use_column_width = True)
+                                    i += 1
+
+                                    with st.expander("Look at fingerprint for another binding polymer"):
+
+                                        binding_curves = []
+                                        for polymer in list_of_polymers:
+                                            if polymer not in non_binding and polymer != poly_choice:
+                                                binding_curves.append(polymer)
+
+                                        weight_choice = st.radio("Please choose a binding polymer", binding_curves, key = 11)
+
+                                        mosaic = """
+                                        AA
+                                        BB
+                                        """
+
+                                        gs_kw = dict(width_ratios=[1, 1.5], height_ratios=[1, 1.5])
+
+                                        fig, axd = plt.subplot_mosaic(mosaic, gridspec_kw=gs_kw, figsize=(3.3, 4), constrained_layout=False, dpi=150)
+
+                                        for tuple in mean_bindonly_list:
+                                            if weight_choice == tuple[1]:
+                                                add_buildup_toax(tuple[0], axd['A'])
+                                                axd['A'].set_ylabel("DISCO Effect", fontdict = {"fontsize": 7})
+                                                axd['A'].set_xlabel("NMR Saturation Time (s)", fontdict = {"fontsize": 7})
+                                                axd['A'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
+                                                axd['A'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                                                axd['A'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
+                                                axd['A'].tick_params(axis = 'x', labelsize = 6)
+                                                axd['A'].tick_params(axis = 'y', labelsize = 6)
+                                                axd['A'].set_title("DISCO Effect Buildup Curve - " + weight_choice, fontdict = {"fontsize": 7})
+
+                                        for tuple in replicate_bindonly_list:
+                                            if weight_choice == tuple[1]:
+                                                add_fingerprint_toax(tuple[0], axd['B'])
+                                                axd['B'].set_ylabel("DISCO AFo (Absolute Value)", fontdict = {"fontsize": 7})
+                                                axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)", fontdict = {"fontsize": 7})
+                                                axd['B'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
+                                                axd['B'].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                                                axd['B'].tick_params(axis = 'x', labelsize = 6)
+                                                axd['B'].tick_params(axis = 'y', labelsize = 6)
+                                                axd["B"].set_title("DISCO Fingerprint - " + weight_choice, fontdict = {"fontsize": 7})
+
+                                        props = dict(facecolor = "white", linewidth = 0.3)
+                                        legA = axd['A'].legend(loc = 'upper left', title = "Δ ppm", prop = {'size':5})
+                                        legA.get_frame().set_edgecolor('k')
+                                        legA.get_title().set_fontsize('6')
+                                        plt.rcParams['legend.fontsize'] = 7
+                                        legA.get_frame().set_linewidth(0.3)
+
+                                        output_filename = f"{output_directory}{weight_choice}.png"
+                                        plt.tight_layout()
+                                        fig.patch.set_facecolor('white')
+                                        fig.savefig(output_filename, dpi = 500, transparent = False)
+
+                                        st.image(output_filename, use_column_width = True)
 
                         if isinstance(display_frame, pd.DataFrame):
 
