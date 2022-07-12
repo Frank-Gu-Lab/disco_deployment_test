@@ -730,7 +730,7 @@ if choice == "Plot data (Step 2)":
                             with st.expander("Expand to see AFo by ppm for Fingerprint - "+ poly_choice):
                                 st.table(new_summary)
 
-            if i >= 4 and isinstance(display_frame, pd.DataFrame):
+            if isinstance(display_frame, pd.DataFrame):
 
                 st.success("See below for information about fit quality and RSE")
 
