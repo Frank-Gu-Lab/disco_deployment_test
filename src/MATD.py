@@ -164,7 +164,7 @@ if "session_dir" not in st.session_state and "session_code" in st.session_state:
 
     st.info(os.path.dirname(os.path.abspath(__file__)))
 
-    st.session_state["global_output_directory"] = os.path.abspath("../data/output/" + st.session_state["session_code"])
+    st.session_state["global_output_directory"] = os.path.abspath("app/data/output/" + st.session_state["session_code"])
     st.info(st.session_state["global_output_directory"])
     if not os.path.exists(st.session_state["global_output_directory"]):
         os.makedirs(st.session_state["global_output_directory"])
