@@ -162,7 +162,8 @@ st.sidebar.title("DISCO Navigation Sidebar")
 
 if "session_dir" not in st.session_state and "session_code" in st.session_state:
 
-    st.session_state["global_output_directory"] = os.path.dirname(os.path.dirname(os.path.abspath("../data/output/" + st.session_state["session_code"])))
+    st.session_state["global_output_directory"] = os.path.abspath("../data/output/" + st.session_state["session_code"])
+    print(st.session_state["global_output_directory"])
     if not os.path.exists(st.session_state["global_output_directory"]):
         os.makedirs(st.session_state["global_output_directory"])
 
@@ -194,7 +195,6 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
         dirs_to_keep = []
         for dir in list_of_past_dirs:
             directory, time = dir.split(" ")
-            print(os.path.abspath("../output/" + directory))
             if os.path.exists("../output/" + directory) and t.time() - float(time) >= 600:
                 sht.rmtree("../output/" + directory)
             if os.path.exists("../output/" + directory) and t.time() - float(time) <= 600:
