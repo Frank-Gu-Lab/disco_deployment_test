@@ -1,1 +1,1 @@
-web: sh streamlit_setup.sh && streamlit run MATD.py
+web: sh streamlit_setup.sh && streamlit run src/MATD.py
