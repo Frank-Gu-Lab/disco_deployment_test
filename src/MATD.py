@@ -162,7 +162,7 @@ st.sidebar.title("DISCO Navigation Sidebar")
 
 if "session_dir" not in st.session_state and "session_code" in st.session_state:
 
-    st.session_state["global_output_directory"] = "../data/output/" + st.session_state["session_code"]
+    st.session_state["global_output_directory"] = "/data/output/" + st.session_state["session_code"]
     if not os.path.exists(st.session_state["global_output_directory"]):
         os.makedirs(st.session_state["global_output_directory"])
 
