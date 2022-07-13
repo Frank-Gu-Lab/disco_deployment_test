@@ -265,8 +265,8 @@ if choice == "Upload and analyze (Step 1)":
 
     MAX_BOOKS = 7
     if len(list_of_raw_books) > MAX_BOOKS:
-        st.warning("Warning: Max file upload limit of 7.  Only the first 7 books will be processed")
-        list_of_raw_books = list_of_raw_books[:8]
+        st.warning("Warning: Max file upload limit of 5.  Only the first 5 books will be processed")
+        list_of_raw_books = list_of_raw_books[:6]
 
     i = 0
 
