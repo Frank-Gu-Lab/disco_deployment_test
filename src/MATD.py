@@ -1,3 +1,5 @@
+##GUI Module for Streamlit application###
+
 ####Importing Dependencies####
 import streamlit as st
 import pandas as pd
