@@ -296,11 +296,17 @@ if choice == "Upload and analyze (Step 1)":
             with st.expander("Open to see Merged Fit Quality Dataset"):
                 st.table(quality_check_df)
 
+            i += 1
+
         except ValueError:
             st.warning("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
+            i += 1
 
-    if i == 7:
-        st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
+
+
+        if i == 7:
+            with open(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"), "rb") as f:
+                st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
 
 if choice == "Plot data (Step 2)":
@@ -763,6 +769,10 @@ if choice == "Plot data (Step 2)":
                     st.info("Please see table below for R^2 value by PPM for the non-linear fits above.")
                     st.table(coeff_df)
                     st.info("All plotting data remains available in the downloads above")
+                    
+
+            with open(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"), "rb") as f:
+                st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
 
         except AttributeError:
