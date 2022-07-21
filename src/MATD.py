@@ -227,7 +227,12 @@ if "merged_output_directory" in st.session_state and "time" not in st.session_st
 ###Page management###
 
 list_of_raw_books = []
-choice = st.sidebar.radio("Would you like to upload data for data analysis, or plot data?", ["Read me", "Upload and analyze (Step 1)", "Plot data (Step 2)"])
+if t.time - st.session_state["time"] < 600:
+    choice = st.sidebar.radio("Would you like to upload data for data analysis, or plot data?", ["Read me", "Upload and analyze (Step 1)", "Plot data (Step 2)"])
+else:
+    choice = "None"
+    st.info("Please refresh the page to begin a new session.  Session time expires after 10 minutes.")
+
 
 if choice == "Read me":
     st.header("README")
