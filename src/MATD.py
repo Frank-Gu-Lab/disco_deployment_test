@@ -305,7 +305,7 @@ if choice == "Upload and analyze (Step 1)":
 
 
         if i == 7:
-            with open(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"), "rb") as f:
+            with open(os.path.join(st.session_state["merge_output_directory"], "proton_binding_dataset.xlsx"), "rb") as f:
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
 
@@ -769,9 +769,9 @@ if choice == "Plot data (Step 2)":
                     st.info("Please see table below for R^2 value by PPM for the non-linear fits above.")
                     st.table(coeff_df)
                     st.info("All plotting data remains available in the downloads above")
-                    
 
-            with open(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"), "rb") as f:
+
+            with open(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"), "rb") as f:
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
 
