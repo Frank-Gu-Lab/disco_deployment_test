@@ -281,6 +281,8 @@ if choice == "Upload and analyze (Step 1)":
 
         clean_batch_tuple_list = analyzer(list_of_raw_books)
 
+        del list_of_raw_books
+
         # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
 
         if len(clean_batch_tuple_list) != 0:

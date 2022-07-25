@@ -277,6 +277,7 @@ def prep_mean(corr_p_attenuation_df):
     peak_index_array = np.array(input_for_dofs)
 
     dofs = get_dofs(peak_index_array, regrouped_df)
+    
     # print(mean_corr_attenuation_ppm)
     # append a new column with the calculated degrees of freedom to the table for each proton peak index
     mean_corr_attenuation_ppm['dofs'] = dofs

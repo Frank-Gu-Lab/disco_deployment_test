@@ -94,6 +94,8 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
     current_df_mean = prep_mean(current_df_attenuation)
     current_df_replicates = prep_replicate(current_df_attenuation)
 
+    del current_df_attenuation
+
     # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
     current_df_mean = t_test(current_df_mean, p=0.05)
 
