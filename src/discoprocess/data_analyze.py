@@ -141,9 +141,6 @@ def analyze_data(tuple_list, global_output_directory):
 
             # remove any spaces from title
             current_df_title = current_df_title.replace(' ', '')
-
-            print("Beginning data analysis for {}...".format(current_df_title))
-
             # DEFINE CUSTOM OUTPUT DIRECTORIES FOR THIS DATAFRAME ------------------------------------------
 
             output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory = generate_directories(current_df_title, global_output_directory)
@@ -154,10 +151,4 @@ def analyze_data(tuple_list, global_output_directory):
             current_df_attenuation = add_corr_attenuation(df_true, df_false)
 
 
-            # This completes Part 1 - Data Preprocessing and Visualizing the Results!
-
-            # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
-
             current_df_mean, current_df_replicates = modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
-
-            print("All activities are now completed for: {}".format(current_df_title))
