@@ -145,11 +145,8 @@ def analyzer(list_of_raw_books):
         # convert clean batch list to a clean batch tuple list format (polymer_name, df) for further processing
         clean_batch_tuple_list = [(clean_batch_list[i]['polymer_name'].iloc[0], clean_batch_list[i]) for i in range(len(clean_batch_list))]
 
-    # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
+    return clean_batch_tuple_list
 
-    if len(clean_batch_tuple_list) != 0:
-        with st.spinner("Analyzing data..."):
-            analyze_data(clean_batch_tuple_list, st.session_state["global_output_directory"])
 
 
 ###Down to business###
@@ -270,7 +267,7 @@ if choice == "Upload and analyze (Step 1)":
     st.info("Please upload your data files to begin data processing!")
     list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
 
-    MAX_BOOKS = 7
+    MAX_BOOKS = 4
     if len(list_of_raw_books) > MAX_BOOKS:
         st.warning("Warning: Max file upload limit of 4.  Only the first 4 books will be processed")
         list_of_raw_books = list_of_raw_books[:5]
@@ -279,8 +276,16 @@ if choice == "Upload and analyze (Step 1)":
 
 
     if len(list_of_raw_books) > 0:
+        
         data_checking(list_of_raw_books)
-        analyzer(list_of_raw_books)
+
+        clean_batch_tuple_list = analyzer(list_of_raw_books)
+
+        # LOOP THROUGH AND PROCESS EVERY CLEAN DATAFRAME IN THE BATCH LIST GENERATED ABOVE, IF ANY ----------------------------------
+
+        if len(clean_batch_tuple_list) != 0:
+            with st.spinner("Analyzing data..."):
+                analyze_data(clean_batch_tuple_list, st.session_state["global_output_directory"])
         i += 6
 
     if i == 6:
