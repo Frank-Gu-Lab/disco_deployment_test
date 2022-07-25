@@ -586,10 +586,6 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     unique_replicates = stats_df_replicates.replicate.unique().tolist()
     ppm_index = stats_df_replicates['ppm']
 
-    # Now preparing to curve fit, export the curve fit plots to a file, and tabulate the final results ------------------------------
-
-    print('Exporting all mean and individual curve fit figures to an output directory... this may take a moment.')
-
     for c in unique_concentrations:
         for p in unique_protons:
 
@@ -709,6 +705,3 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
         output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
         stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
-
-    print('Export of all figures to file complete!')
-    return stats_df_mean, stats_df_replicates

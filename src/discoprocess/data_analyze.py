@@ -116,8 +116,6 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
 
     current_df_mean, current_df_replicates = execute_curvefit(current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title)
 
-    return current_df_mean, current_df_replicates
-
 def analyze_data(tuple_list, global_output_directory):
         """This function outlines the full data visualization and modeling processing for a list of dataframes.
 
@@ -151,4 +149,4 @@ def analyze_data(tuple_list, global_output_directory):
             current_df_attenuation = add_corr_attenuation(df_true, df_false)
 
 
-            current_df_mean, current_df_replicates = modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
+            modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)

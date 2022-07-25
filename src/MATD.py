@@ -276,7 +276,7 @@ if choice == "Upload and analyze (Step 1)":
 
 
     if len(list_of_raw_books) > 0:
-        
+
         data_checking(list_of_raw_books)
 
         clean_batch_tuple_list = analyzer(list_of_raw_books)
@@ -287,6 +287,8 @@ if choice == "Upload and analyze (Step 1)":
             with st.spinner("Analyzing data..."):
                 analyze_data(clean_batch_tuple_list, st.session_state["global_output_directory"])
         i += 6
+
+        del clean_batch_tuple_list
 
     if i == 6:
         try:
