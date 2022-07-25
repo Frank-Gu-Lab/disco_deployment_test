@@ -153,11 +153,6 @@ def analyze_data(tuple_list, global_output_directory):
             df_true, df_false = add_attenuation(current_df)
             current_df_attenuation = add_corr_attenuation(df_true, df_false)
 
-            # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
-
-            print("Visualizing data for {} and saving to a custom exploratory plots output folder...".format(current_df_title))
-            generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
-            generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title)
 
             # This completes Part 1 - Data Preprocessing and Visualizing the Results!
 
