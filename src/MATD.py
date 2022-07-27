@@ -253,10 +253,10 @@ if choice == "Upload and analyze (Step 1)":
     st.info("Please upload your data files to begin data processing!")
     list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
 
-    MAX_BOOKS = 4
+    MAX_BOOKS = 6
     if len(list_of_raw_books) > MAX_BOOKS:
-        st.warning("Warning: Max file upload limit of 4.  Only the first 4 books will be processed")
-        list_of_raw_books = list_of_raw_books[:5]
+        st.warning("Warning: Max file upload limit of 6.  Only the first 4 books will be processed")
+        list_of_raw_books = list_of_raw_books[:7]
 
     i = 0
 
@@ -282,19 +282,24 @@ if choice == "Upload and analyze (Step 1)":
         try:
 
             replicate_summary_df = etl_per_replicate(source_path, destination_path)
-            rep_sum = replicate_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "merged_binding_dataset.xlsx"))
+            replicate_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "merged_binding_dataset.xlsx"))
 
             quality_check_df = etl_per_sat_time(source_path, destination_path)
-            qual_check = quality_check_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "merged_fit_quality_dataset.xlsx"))
+            quality_check_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "merged_fit_quality_dataset.xlsx"))
 
             proton_summary_df = etl_per_proton(quality_check_df)
 
-            prot_sum = proton_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"))
+            proton_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"))
+
+            del proton_summary_df
 
             with st.expander("Open to see Merged Binding Dataset"):
                 st.table(replicate_summary_df)
             with st.expander("Open to see Merged Fit Quality Dataset"):
                 st.table(quality_check_df)
+
+            del replicate_summary_df
+            del quality_check_df
 
             i += 1
 
