@@ -391,49 +391,49 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
 
             generate_curvefit_plot(all_sat_time, one_graph_data_mean, best_param_vals_bar, ppm_bar, output_file_name_figsmean, c, mean_or_rep = 'mean')
 
-            for r in unique_replicates:
+        for r in unique_replicates:
 
-                #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
-                one_graph_data = stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r)]
+            #COMPLETE REPLICATE SPECIFIC CURVE FIT OPERATIONS - subset the df via index slice based on the current peak, concentration, and replicate
+            one_graph_data = stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r)]
 
-                # define the experimental data to compare square error with (amp_factor * atten_corr_int), for y_ikj
-                y_ikj = one_graph_data['yikj']
+            # define the experimental data to compare square error with (amp_factor * atten_corr_int), for y_ikj
+            y_ikj = one_graph_data['yikj']
 
-                #this will skip the graphing and analysis for cases where a proton peak has been removed from consideration
-                if y_ikj.size == 0:
-                    continue
+            #this will skip the graphing and analysis for cases where a proton peak has been removed from consideration
+            if y_ikj.size == 0:
+                continue
 
-                # define sat_time to be used for the x_data
-                sat_time = one_graph_data[['sat_time']].values.ravel()
+            # define sat_time to be used for the x_data
+            sat_time = one_graph_data[['sat_time']].values.ravel()
 
-                #Fit Curve for curren proton, concentration and replicate, optimizing for minimization of square error via least squares levenburg marquadt algorithm
-                best_param_vals, covar = curve_fit(y_hat_fit, sat_time, y_ikj, p0 = initial_guess, method = 'lm', maxfev=5000)
+            #Fit Curve for curren proton, concentration and replicate, optimizing for minimization of square error via least squares levenburg marquadt algorithm
+            best_param_vals, covar = curve_fit(y_hat_fit, sat_time, y_ikj, p0 = initial_guess, method = 'lm', maxfev=5000)
 
-                #calculate ultimate sum of square errors after minimization for each time point, and append to list
-                sse = np.square(y_hat_fit(sat_time, *best_param_vals) - y_ikj)
+            #calculate ultimate sum of square errors after minimization for each time point, and append to list
+            sse = np.square(y_hat_fit(sat_time, *best_param_vals) - y_ikj)
 
-                #appends to PARENT stats replicate dataframe
-                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('SSE')] = sse.sum()
+            #appends to PARENT stats replicate dataframe
+            stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('SSE')] = sse.sum()
 
-                # solve for the instantaneous amplification factor
-                a_kj = best_param_vals[0]
-                b_kj = best_param_vals[1]
-                amp_factor_instantaneous = a_kj * b_kj
+            # solve for the instantaneous amplification factor
+            a_kj = best_param_vals[0]
+            b_kj = best_param_vals[1]
+            amp_factor_instantaneous = a_kj * b_kj
 
-                #appends instantaneous amplification factor and params calculated to the PARENT stats replicate dataframe, for all datapoints in this graph
-                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('alpha')] = a_kj
-                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('beta')] = b_kj
-                stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('AFo')] = [amp_factor_instantaneous]*(len(y_ikj))
+            #appends instantaneous amplification factor and params calculated to the PARENT stats replicate dataframe, for all datapoints in this graph
+            stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('alpha')] = a_kj
+            stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('beta')] = b_kj
+            stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('AFo')] = [amp_factor_instantaneous]*(len(y_ikj))
 
-                #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name
+            #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name
 
 
-                mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)
+            mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)
 
-                # file name for curve fits by replicate
-                output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
+            # file name for curve fits by replicate
+            output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
 
-                generate_curvefit_plot(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
+            generate_curvefit_plot(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
 
     #export tabulated results to file and return updated dataframes
     output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title)
