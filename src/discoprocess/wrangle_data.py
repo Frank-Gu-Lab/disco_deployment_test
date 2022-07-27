@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Data processing scripts involved in preprocessing, transforming, and statistically testing data for plotting.
-"""
+
 
 import numpy as np
 import pandas as pd
@@ -11,8 +9,7 @@ import pingouin as pg
 
 # DATA PREPROCESSING FUNCTIONS
 def flatten_multicolumns(mean_df):
-    '''Takes in a mean df and flattens the multi-tier column
-    index into a directly indexable index.'''
+
 
     # clean up multi index for both
     colnames = mean_df.columns.get_level_values(0).values
@@ -25,29 +22,7 @@ def flatten_multicolumns(mean_df):
 
 # CALCULATE DISCO EFFECT PARAMS
 def calculate_abs_buildup_params(df):
-    ''' Calculates Absolute buildup curve parameters from a plot-level group
-    of data.
 
-    Parameters:
-    ----------
-    df: pd.DataFrame
-        mean corr % attenuation and associated data for a proton-level buildup curve
-        after being flattened by flatten_multicolumns, sourced originally from mean raw data files
-
-    Returns:
-    --------
-    sat_time: array-like
-        saturation times for the buildup curve
-
-    disco_effect: array-like
-        disco effect for the buildup curve
-
-    y1: array-like
-        standard error lower bound
-
-    y2: array-like
-        standard error upper bound
-    '''
 
     # plot DISCO effect build up curve, absolute values
     sat_time = df['sat_time'].values
@@ -62,29 +37,7 @@ def calculate_abs_buildup_params(df):
     return sat_time, disco_effect, y1, y2
 
 def calculate_buildup_params(df):
-    ''' Calculates buildup curve parameters (not absolute) from a plot-level group
-    of data.
 
-    Parameters:
-    ----------
-    df: pd.DataFrame
-        corr % attenuation and associated data for a proton-level buildup curve
-        after being flattened by flatten_multicolumns
-
-    Returns:
-    --------
-    sat_time: array-like
-        saturation times for the buildup curve
-
-    disco_effect: array-like
-        disco effect for the buildup curve
-
-    y1: array-like
-        standard error lower bound
-
-    y2: array-like
-        standard error upper bound
-    '''
 
     # plot DISCO effect build up curve, absolute values
     sat_time = df['sat_time'].values
@@ -100,40 +53,21 @@ def calculate_buildup_params(df):
 
 # CHANGE PROFILE DISCO EFFECT STAT TESTING, AND RESULTING DATA WRANGLING FUNCTIONS
 def shapiro_wilk(effect):
-    '''
-    H0: the data is normally distributed
-    H1: the data is not normally distributed
 
-    Therefore, if p > 0.05 we fail to reject the null hypothesis'''
 
     stat, p = stats.shapiro(effect)
 
     return p
 
 def bartlett(effect1, effect2):
-    '''After testing that p(shapiro wilk) > 0.05 for both effect1 and effect2, use Bartlett's test to
-    examine the equal variance assumption.
 
-    H0: the data is of equal variance
-    H1: the data is not of equal variance
-
-    Therefore, if p > 0.05 we fail to reject the null hypothesis
-    '''
 
     stat, p = stats.bartlett(effect1, effect2)
 
     return p
 
 def change_significance(group_1, group_2, alt_hyp="two-sided"):
-    '''Defaults to two sided test, can change to 'greater'
-    for seeing if effect is larger in group 2 than group 1.
-    or 'less' for vice versa.
 
-    GROUP 1 = CONTROL (LOW)
-    GROUP 2 = TREATMENT (HIGH)
-
-    Reports back the significance of any changes, and their effect size for interpretation.
-    '''
     df_list = []
 
     for first, second, in zip(group_1, group_2):
@@ -222,27 +156,14 @@ def change_significance(group_1, group_2, alt_hyp="two-sided"):
     return results_df
 
 def generate_subset_sattime_df(effect_size_df, sat_time):
-    '''Subset the disco observations to only those of the desired sat_time, to generate
-    the desired subset data for the difference profile plot.'''
+
 
     subset_sattime_df = effect_size_df.loc[effect_size_df['sat_time'] == sat_time].copy().drop(columns="sat_time")
 
     return subset_sattime_df
 
 def generate_disco_effect_mean_diff_df(replicate_df_low, replicate_df_high):
-    '''Take raw dfs from input file and generate dfs
-    contining information about the change in disco effect (mean difference) between them.
-    Effect size (hedge's g), effect significance with 95% CI.
 
-    Notes:
-    ------
-    Must be dfs from two identical polymers with the same peaks. I.e.
-    low mW and high mW. Note that the convention for ordering matters.
-
-    In all calculation cases, order is [high df - low df], as is low df is the control
-    and high df is the treatment. High df is the df with the property being
-    increased, i.e. increased mW or % hydrolysis.
-    '''
 
     # take absolute values of everything
 

@@ -18,18 +18,7 @@ except:
     from .data_plot import *
 
 def name_checker(list_of_raw_books):
-    '''
-        This function checks to ensure that the polymer naming is consistent across input files and returns a descriptive error
-        message for inconsistent naming
 
-        Input:
-
-            List of all raw books to be used for the data PROCESSING
-
-        Output:
-
-            Will return 1 if all data is input correctly, raise an error otherwise.
-    '''
 
     for book in list_of_raw_books:
 
@@ -55,16 +44,6 @@ def name_checker(list_of_raw_books):
     return True
 
 def resonance_and_column_checker(list_of_raw_books):
-    '''
-    This function checks the on and off resonances in the input tables, and also checks to make sure the BSM and CONTROL columns are in the correct places
-
-    Input:
-        list_of_raw_books - a list of excel books to be checked
-
-    Output:
-        Nothing if all clear, an error message if a check raises a flags
-
-    '''
 
     for b in list_of_raw_books:
 
@@ -167,16 +146,7 @@ def resonance_and_column_checker(list_of_raw_books):
     return True
 
 def range_checker(list_of_raw_books):
-    '''
-    Checks to make sure the ranges are the same for all tables in the excel files
 
-    Input:
-        list_of_raw_books - list containing excel books to be PROCESSED
-
-    Output:
-        Nothing if all clear, an error if the ranges dont match across all tables.
-
-    '''
 
     for b in list_of_raw_books:
 

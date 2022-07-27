@@ -42,21 +42,7 @@ except:
     from data_plot_helpers import *
 
 def generate_concentration_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
-    '''This function generates a basic exploratory stripplot of polymer sample attenuation vs saturation time using
-    concentration as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
 
-    Parameters
-    ----------
-    current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
-        (output from add_attenuation_and_corr_attenuation_to_dataframe).
-
-    output_directory_exploratory : str
-        File path to directory that contains attenuation data for all polymer samples.
-
-    cuurent_df_title : str
-        Title of DataFrame.
-    '''
     a4_dims = (11.7, 8.27)
     fig1, ax = plt.subplots(figsize = a4_dims)
     sns.stripplot(ax = ax, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue = 'concentration', palette = 'viridis')
@@ -75,21 +61,7 @@ def generate_concentration_plot(current_df_attenuation, output_directory_explora
     return
 
 def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, current_df_title):
-    '''This function generates a basic exploratory scatterplot of polymer sample attenuation vs saturation time using
-    ppm as a "hue" to differentiate points. This function also saves the plot to a custom output folder.
 
-    Parameters
-    ----------
-    current_df_attenuation : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
-        (output from add_attenuation_and_corr_attenuation_to_dataframe).
-
-    output_directory_exploratory : str
-        File path to directory that contains attenuation data for all polymer samples.
-
-    cuurent_df_title : str
-        Title of DataFrame.
-    '''
 
     a4_dims = (11.7, 8.27)
     fig2, ax2 = plt.subplots(figsize = a4_dims)
@@ -113,38 +85,7 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
     return
 
 def generate_curvefit_plot(sat_time, df, param_vals, ppm, filename, c, r=None, mean_or_rep = 'mean'):
-    ''' This function generates the curve-fitted plots of STD intensity vs saturation time on both a mean and replicate basis.
 
-    Parameters
-    ----------
-    sat_time : NumPy.ndarray
-        Dataframe containing saturation time values.
-
-    df : Pandas.DataFrame
-        Dataframe containing one graph data, mean
-
-    param_vals : array-like
-        Array-like containing the fitted parameters for curve fitting.
-
-    r : int, default=None
-        Unique replicate, only used in "rep" path.
-
-    c : float
-        Unique concentration, used in both the "mean" and "rep" paths.
-
-    ppm : float
-        Chemical shift of a particular proton.
-
-    filename : str
-        File path to the output directory where the figures are saved.
-
-    mean_or_rep : str, {'mean', 'rep'}
-        String indicating which path to take.
-
-    Notes
-    -----
-    Exports plot to file.
-    '''
 
     fig, (ax) = plt.subplots(1, figsize=(8, 4))
 
@@ -190,23 +131,6 @@ def generate_curvefit_plot(sat_time, df, param_vals, ppm, filename, c, r=None, m
     return
 
 def generate_buildup_curve(df, polymer_name, output_directory):
-    '''Generates the formal Disco Effect STD buildup curve for the figure.
-
-    Parameters:
-    -----------
-    df : Pandas.Dataframe
-        dataframe containing one polymer's DISCO Effect information for the build up curve
-
-    polymer_name: string
-        string containing the identifier of the polymer
-
-    output_directory: string
-        file path to desired output directory for saved plots
-
-    Returns:
-    -------
-    None, outputs formal figures
-    '''
 
     fig, (ax) = plt.subplots(1, figsize=(8, 4))
     polymer_name_plot = polymer_name.replace("_", " ")
@@ -253,20 +177,7 @@ def generate_buildup_curve(df, polymer_name, output_directory):
     return
 
 def generate_fingerprint(df, polymer_name, output_directory):
-    ''' Plots characteristic DISCO fingerprint of the binding polymer.
 
-    Parameters:
-    -----------
-    df : Pandas.DataFrame
-        dataframe containing one polymer's data with a normalized column
-
-    output_directory: string
-        file path to desired output directory for saved plots
-
-    Returns:
-    -------
-    None, outputs formal figures
-    '''
 
     fig, (ax) = plt.subplots(1, figsize=(4, 4))
 

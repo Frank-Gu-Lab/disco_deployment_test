@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Custom scripts to plot DISCO profiles to a passed plot axis.
-"""
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -11,35 +9,6 @@ from discoprocess.plotting_helpers import annotate_sig_buildup_points
 from discoprocess.wrangle_data import flatten_multicolumns, calculate_abs_buildup_params
 
 def add_fingerprint_toax(df, ax, **kwargs):
-    '''Adds DISCO AF0 fingerprints of all binding protons for one polymer to the plot axis passed.
-
-    Parameters:
-    -----------
-    df: pandas.DataFrame
-        "replicate" raw data for one polymer (raw file containing all technical AF0 replicates for only the polymers binding protons)
-    ax: matplotlib axis
-        axis of the plot to contain the DISCO fingerprint
-
-    **kwargs: dict {"custom_palette": [list, of, colourcodes]} (optional, if desired)
-        custom plotting palette containing a unique color code for each proton
-
-    Returns:
-    --------
-    None, adds DISCO AF0 fingerprint to plot axis passed
-
-    Example:
-    -------
-    >>> import pandas as pd
-    >>> import matplotlib.pyplot as plt
-
-    >>> # read the per-replicate data table, containing information from only the binding protons in HPC
-    >>> hpc_df_replicates = pd.read_excel("../data/raw/stats_analysis_output_replicate_HPC_370k_20uM.xlsx", index_col=[0], header=[0]).reset_index()
-    >>> fig, ax = plt.subplots(figsize=(5, 5))
-    >>> add_fingerprint_toax(df=hpc_df_replicates, ax=ax)
-    >>> plt.show()
-
-    The binding AF0 fingerprint for HPC will appear on the passed plot axis.
-    '''
 
     ppm = np.round(df.copy().groupby(by='proton_peak_index')['ppm'].mean(), 2)
     ppm_ix = np.unique(df['proton_peak_index'].values)
@@ -74,34 +43,6 @@ def add_fingerprint_toax(df, ax, **kwargs):
     return
 
 def add_buildup_toax(df, ax):
-    '''Adds the Absolute DISCO Effect(t) buildup curves for all protons in
-    a polymer to an existing plot axis.
-
-    Parameters:
-    -----------
-    df: pandas.DataFrame
-        mean raw data file for one polymer, containing mean DISCO Effects(t)
-        (corr % attuenation) for /only/ the binding protons
-
-    ax: matplotlib axis
-        plot axis to contain the buildup curves
-
-    Returns:
-    --------
-    None, adds buildup curves to axis
-
-    Example:
-    --------
-    >>> import matplotlib.pyplot as plt
-    >>> import pandas as pd
-    >>> # read the mean data table, containing information from only the binding protons in HPC
-    >>> hpc_df = pd.read_excel("../data/raw/stats_analysis_output_mean_HPC_370k_20uM.xlsx", index_col=[0, 1, 2, 3], header=[0, 1]).reset_index()
-    >>> fig, ax = plt.subplots(figsize = (5,5))
-    >>> add_buildup_toax(df = hpc_df, ax = ax)
-    >>> plt.show()
-
-    The buildup curves for all binding peaks in HPC will appear on the plot axis.
-    '''
 
     if type(df.columns) == pd.MultiIndex:
         df = flatten_multicolumns(df)  # make data indexable if it is not already
@@ -122,55 +63,6 @@ def add_buildup_toax(df, ax):
     return
 
 def add_overlaid_buildup_toax_customlabels(df_list, ax, **kwargs):
-    '''Adds buildup curve(s) to a plot. Allows control of individual proton buildup curves when designing a buildup curve plot,
-    for use cases where only specific subsets of buildup curves are desired to be plotted.
-
-    Parameters:
-    -----------
-    df_list: list
-        list of one "mean" raw dataframe for every polymer whose data is to be used in the plot
-
-    ax: matplotlib axis
-        location for the plot
-
-    **kwargs: dict
-        any desired custom plotting parameters
-
-    Notes:
-    ------
-    * To add new custom properties, simply add another kwargs.pop statement below, and pass a new kwarg to the dict
-
-    Example:
-    -------
-    >>> import matplotlib.pyplot as plt
-    >>> import pandas as pd
-    >>> from utils.plotting_helpers import assemble_peak_buildup_df
-    >>> from utils.wrangle_data import generate_disco_effect_mean_diff_df, generate_subset_sattime_df
-
-    >>> # read data
-    >>> low_hpc_replicate_all = pd.read_excel("../data/raw/stats_analysis_output_replicate_all_HPC_80k_20uM.xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-    >>> high_hpc_replicate_all = pd.read_excel("../data/raw/stats_analysis_output_replicate_all_HPC_370k_20uM.xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-
-    >>> # grab the desired proton to plot by their proton peak index
-    >>> ppi_1_low = assemble_peak_buildup_df(low_hpc_replicate_all, 1)
-    >>> ppi_1_high = assemble_peak_buildup_df(high_hpc_replicate_all, 1)
-
-    >>> # compute change significance between proton buildup curves
-    >>> hpc_effect_size_df = generate_disco_effect_mean_diff_df(low_hpc_replicate_all, high_hpc_replicate_all)
-    >>> hpc_subset_sattime_df = generate_subset_sattime_df(hpc_effect_size_df, 0.25)
-    >>> kwargs = {"labels": ["80", "370"],
-    >>>       "dx": 0.003,
-    >>>       "dy": 0.010,
-    >>>       "change_significance": hpc_effect_size_df,
-    >>>       "annot_color": "#000000",
-    >>>       "custom_colors": ['#b3cde3', '#377eb8']}
-
-    >>> # construct and display peak overlay plot w/ annotated change significance
-    >>> fig, ax = plt.subplots(figsize = (5,2))
-    >>> df_list = [ppi_1_low, ppi_1_high]
-    >>> add_overlaid_buildup_toax_customlabels(df_list, ax, **kwargs)
-    >>> plt.show()
-    '''
 
     # extract custom properties
     custom_labels = kwargs.pop("labels")
@@ -217,57 +109,7 @@ def add_overlaid_buildup_toax_customlabels(df_list, ax, **kwargs):
     return
 
 def add_difference_plot(df, ax, dy, **kwargs):
-    '''Add a proton-wise difference profile plot to a plot axis (Vertical Orientation).
 
-    Parameters:
-    -----------
-    df: Pandas.DataFrame
-        "subset_sattime_df" for a polymer comparison, contains change effect data computed only at
-        the desired sat time t for this plot
-
-    ax: matplotlib axis
-        plot destination
-
-    dy: float
-        y distance for significance marker away from datapoint
-
-    **kwargs: dict {"custom_colors":[list, with, one, custom, color, per, proton]} (optional)
-
-    Returns:
-    --------
-    None, adds difference profile to a plot
-
-    Theory Notes:
-    -------------
-    * Proton-wise difference profile plot shows the change effect size and significance of any changes in mean DISCO effect(t) between all
-    the protons from two polymer test groups. In this work, test groups were low mW vs high mW versions of the same polymer.
-
-    * Selected sat time for the difference plot is determined when the subset_sattime_df is computed. Lower sat times are more
-    representative as there is the least influence from rebinding.
-
-    Example:
-    --------
-    >>> import pandas as pd
-    >>> import matplotlib.pyplot as plt
-    >>> from utils.plotting import add_difference_plot
-    >>> from utils.wrangle_data import generate_disco_effect_mean_diff_df, generate_subset_sattime_df
-
-    >>> # we use "replicate all" data as we are considering both binding and non-binding protons
-    >>> low_HPC = pd.read_excel("../data/raw/stats_analysis_output_replicate_all_HPC_80k_20uM.xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-    >>> high_HPC = pd.read_excel("../data/raw/stats_analysis_output_replicate_all_HPC_370k_20uM.xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-
-    >>> # first compute HPC's difference profile from the raw data
-    >>> hpc_effect_size_df = generate_disco_effect_mean_diff_df(low_HPC, high_HPC)
-
-    >>> # subset HPC's difference profile to the desired sat time Disco Effect(t = 0.25)
-    >>> hpc_subset_sattime_df = generate_subset_sattime_df(hpc_effect_size_df, 0.25)
-
-    >>> kwargs = {"custom_colors": ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf', '#ffff33', '#4daf4a', '#a65628', '#999999']}
-
-    >>> fig, ax = plt.subplots(figsize = (3,5))
-    >>> add_difference_plot(df=hpc_subset_sattime_df, dy= 0.010,  ax=ax, **kwargs)
-    >>> plt.show()
-    '''
 
     plot_range = range(1, (df.shape[0])+1)
 
@@ -295,56 +137,7 @@ def add_difference_plot(df, ax, dy, **kwargs):
     return
 
 def add_difference_plot_transposed(df, ax, dy, **kwargs):
-    '''Add a proton-wise difference profile plot to a plot axis (Horizontal Orientation).
 
-    Parameters:
-    -----------
-    df: Pandas.DataFrame
-        "subset_sattime_df" for a polymer comparison, contains change effect data computed only at
-        the desired sat time t for this plot
-
-    ax: matplotlib axis
-        plot destination
-
-    dy: float
-        y distance for significance marker away from datapoint
-
-    **kwargs: dict {"custom_colors":[list, with, one, custom, color, per, proton]} (optional)
-
-    Returns:
-    --------
-    None, adds difference profile to a plot
-
-    Theory Notes:
-    -------------
-    * Proton-wise difference profile plot shows the change effect size and significance of any changes in mean DISCO effect(t) between all
-    the protons from two polymer test groups. In this work, test groups were low mW vs high mW versions of the same polymer.
-
-    * Selected sat time for the difference plot is determined when the subset_sattime_df is computed.
-
-    Example:
-    --------
-    >>> import pandas as pd
-    >>> import matplotlib.pyplot as plt
-    >>> from utils.plotting import add_difference_plot_transposed
-    >>> from utils.wrangle_data import generate_disco_effect_mean_diff_df, generate_subset_sattime_df
-
-    >>> # we use "replicate all" data table as we are considering both binding and non-binding protons
-    >>> low_HPC = pd.read_excel("../data/raw/stats_analysis_output_replicate_all_HPC_80k_20uM.xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-    >>> high_HPC = pd.read_excel("../data/raw/stats_analysis_output_replicate_all_HPC_370k_20uM.xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-
-    >>> # first compute HPC's difference profile from the raw data
-    >>> hpc_effect_size_df = generate_disco_effect_mean_diff_df(low_HPC, high_HPC)
-
-    >>> # subset HPC's difference profile to the desired sat time Disco Effect(t = 0.25)
-    >>> hpc_subset_sattime_df = generate_subset_sattime_df(hpc_effect_size_df, 0.25)
-
-    >>> kwargs = {"custom_colors": ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf', '#ffff33', '#4daf4a', '#a65628', '#999999']}
-
-    >>> fig, ax = plt.subplots(figsize=(3, 5))
-    >>> add_difference_plot_transposed(df=hpc_subset_sattime_df, dy=0.010, ax=ax, **kwargs)
-    >>> plt.show()
-    '''
 
     plot_domain = range(1, df.shape[0]+1)
 

@@ -9,17 +9,6 @@ import re
 import shutil
 
 def move(source_path, destination_path):
-    ''' Moves true positive and true negative Excel file outputs from Pt 1 and Pt 2 of disco-data-processing.py to a central folder
-    where the merging of positive and negative observations into one dataset will occur.
-
-    Parameters
-    ----------
-    source_path : str
-        String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-
-    destination_path : str
-        String containing path of destination directory.
-    '''
 
     # grab list of directories for all files of interest as defined by source_path previously
     preprocessed_data_directories = glob.glob(source_path)
@@ -42,24 +31,7 @@ def move(source_path, destination_path):
     return
 
 def clean(df_list, polymer_list, pos_or_neg = 'pos'):
-    """This function cleans the dataframes in the inputted list by dropping extra columns, appending the missing polymer_name column,
-    and drops the appropriate columns to the index level.
 
-    Parameters
-    ----------
-    df_list : list
-        List of Pandas DataFrames to be cleaned.
-
-    polymer_list : list
-        List of polymer names contained in the passed DataFrames.
-
-    pos_or_neg : str, {'pos', 'neg'}
-        String to indicate path for positive binding observations (pos) or for negative binding observations (neg).
-
-    Notes
-    -----
-    Relies on mutability nature of list.
-    """
     # 1) clean list
     for i in range(len(df_list)):
         if 'polymer_name' not in df_list[i].columns:
@@ -89,23 +61,6 @@ def clean(df_list, polymer_list, pos_or_neg = 'pos'):
         df_list[i] = df_list[i].drop(drop_data.columns, axis = 1)
 
 def clean_replicates(df_list, polymer_list):
-    '''Cleans replicate dataframes to ensure consistent schema.
-
-    Parameters:
-    -----------
-    df_list: list of Pandas.DataFrames
-        individual polymer data
-
-    polymer_list: list
-        polymer names that correspond to dataframes
-
-    Returns: None
-    -------
-
-    Notes:
-    ------
-    Operations performed in place
-    '''
 
 
     for i, df in enumerate(df_list):
@@ -123,21 +78,7 @@ def clean_replicates(df_list, polymer_list):
     return
 
 def reformat(df_list, pos_or_neg = 'pos'):
-    """This function takes in a list of Pandas DataFrames, concatenates them, and returns the final reformatted DataFrame.
 
-    Parameters
-    ----------
-    df_list : list
-        List of Pandas DataFrames to be concatenated and reformatted.
-
-    pos_or_neg : str, {'pos', 'neg'}
-        String to indicate path for positive binding observations (pos) or for negative binding observations (neg).
-
-    Returns
-    -------
-    df : Pandas.DataFrame
-        Final reformatted DataFrame.
-    """
     # concatenate
     df = pd.concat(df_list)
 
@@ -179,10 +120,7 @@ def reformat(df_list, pos_or_neg = 'pos'):
     return df
 
 def reformat_replicates(df_list):
-    ''' Concatenates true positive replicate binding data into one data table.
-    Performs other reformatting operations as required.
 
-    Note - obsolete, remove in future'''
 
     df = pd.concat(df_list)
 
@@ -193,18 +131,6 @@ def reformat_replicates(df_list):
     return df
 
 def join(df1, df2):
-    """This function takes in two cleaned DataFrames and merges them in a way that makes sense.
-
-    Parameters
-    ----------
-    df1, df2 : Pandas.DataFrame
-        Cleaned dataframes containing positive and negative binding observations, respectively.
-
-    Returns
-    -------
-    df : Pandas.DataFrame
-        Final merged dataframe containing the merged dataset and positive and negative observations.
-    """
 
     key = ['concentration','proton_peak_index','ppm','polymer_name','sample_size','t_results','significance'] # combo of values that define a unique observation in each table
 
@@ -234,22 +160,7 @@ def join(df1, df2):
     return df
 
 def join_replicates(df1, df2):
-    '''One to many join the replicate specific AFo replicate data into global dataset.
-    Note - obsolete - remove in future
 
-    Parameters:
-    ----------
-    df1: pandas.DataFrame
-        the "one" dataframe
-
-    df2: pandas.DataFrame
-        the "many" dataframe
-
-    Returns:
-    -------
-    merged_df: pandas.DataFrame
-        the df after the join
-    '''
     # set df1 schema
     df1 = df1[['concentration', 'proton_peak_index', 'ppm',
                'polymer_name', 'sample_size','AFo_bar']]
@@ -270,18 +181,7 @@ def join_replicates(df1, df2):
     return merged_df.rename(columns={'ppm_x': 'ppm'})
 
 def summarize(df):
-    ''' Takes a proton-specific dataframe and summarizes it in terms of summary statistics per experiment.
-    Parameters:
-    -----------
-    df: Pandas.Dataframe
-        contains proton-specific dataframe (output of join_replicates)
 
-    Returns:
-    -------
-    summary_df: Pandas.Dataframe
-        summary statistics of the experiment
-    Note: obsolete - remove in future
-    '''
 
     polymers = df['polymer_name'].unique()
 
@@ -318,24 +218,6 @@ def summarize(df):
     return summary_df
 
 def merge(source_path, destination_path):
-    ''' This function generates a merged machine learning ready dataset.
-
-    It returns a Pandas dataframe containing the ground truth merged dataset of positive and negative observations.
-
-    Parameters
-    ----------
-    source_path : str
-        String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-
-    destination_path : str
-        String containing path of destination directory.
-
-    Returns
-    -------
-    mean_df: Pandas.DataFrame
-        used for binary classification in May '21, shows individual observations and statistical test results with labels suitable for binary encoding
-        Note: observed data is likely confounded by sat time, not handled properly, use ETL function instead
-    '''
 
     # Move relevant preprocessed Excel files from Pt. 1 and Pt. 2 to a central destination folder for data merging
     move(source_path, destination_path)
@@ -429,22 +311,7 @@ def merge(source_path, destination_path):
     return mean_df
 
 def filepath_to_dfs(df_file_paths, polymer_names):
-    '''Reads df file path list, cleans and converts to list of dataframes,
-    set schemas to be consistent according to desired columns.
 
-    Parameters:
-    -----------
-    df_file_paths: list
-        list of filepaths to data
-
-    polymer_names: string
-        list of strings that correspond to the polymer names
-
-    Returns:
-    --------
-    df_list: list
-        list of dataframes containing polymer info
-    '''
 
     df_list = []
 
@@ -486,23 +353,7 @@ def filepath_to_dfs(df_file_paths, polymer_names):
     return df_list
 
 def etl_per_sat_time(source_path, destination_path):
-    ''' This function extracts, transforms, and loads data into a merged machine learning ready dataset of DISCO experiments.
-    Done per sat time including curve fit params for downstream quality checking, and disco effect values for all binding and
-    non-binding protons.
 
-    Parameters
-    ----------
-    source_path : str
-        String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-
-    destination_path : str
-        String containing path of destination directory.
-
-    Returns
-    -------
-    summary_df: Pandas.DataFrame
-        data reduced to the statistical summary of each experiment per sat time
-    '''
 
     # move relevant preprocessed Excel files to central folder for data ETL
     move(source_path, destination_path)
@@ -617,22 +468,7 @@ def etl_per_proton(summary_df):
     return mean_binding_df
 
 def etl_per_replicate(source_path, destination_path):
-    ''' This function extracts, transforms, and loads data into a merged dataset of DISCO experiments.
-    Extracted on a per technical replicate basis, AFo and SSE only provided (not buildup curve quality params).
 
-    Parameters
-    ----------
-    source_path : str
-        String containing path of source directory, including the Unix wildcard * to indicate to the function to retrieve all files therein.
-
-    destination_path : str
-        String containing path of destination directory.
-
-    Returns
-    -------
-    summary_df: Pandas.DataFrame
-        data reduced to the statistical summary of each experiment
-    '''
 
     # move relevant preprocessed Excel files to central folder for data ETL
     move(source_path, destination_path)

@@ -56,21 +56,7 @@ def get_random_string(length):
     return result_str
 
 def grab_polymer_name(full_filepath, common_filepath = " "):
-    '''Grabs the polymer name from file path.
 
-    Parameters:
-    -----------
-    full_filepath: string
-        path to the datasheet for that polymer
-
-    common_filepath: string
-        portion of the filepath that is shared between all polymer inputs, excluding their custom names
-
-    Returns:
-    -------
-    polymer_name: string
-        the custom portion of the filepath with the polymer name and any other custom info
-    '''
 
     #Necessary for some windows operating systems
     for char in full_filepath:

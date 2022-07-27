@@ -1,12 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thursday Oct 21 14:39 2021
 
-@author: Samantha Stuart
-
-For the user to modify in order to generate individualized DISCO binding fingerprints and build up curves.
-
-"""
 import pandas as pd
 import glob
 import os
@@ -33,21 +25,6 @@ if not os.path.exists(output_directory):
 
 
 def grab_polymer_name(full_filepath, common_filepath):
-    '''Grabs the polymer name from file path.
-    
-    Parameters:
-    -----------
-    full_filepath: string
-        path to the datasheet for that polymer 
-
-    common_filepath: string 
-        portion of the filepath that is shared between all polymer inputs, excluding their custom names
-    
-    Returns:
-    -------
-    polymer_name: string
-        the custom portion of the filepath with the polymer name and any other custom info
-    '''
 
     _, polymer_name = full_filepath.split(common_filepath)
     polymer_name = polymer_name[:-5]  # remove the .xlsx

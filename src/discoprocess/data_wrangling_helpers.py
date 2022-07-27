@@ -4,28 +4,7 @@ import os
 
 # helper for initialize_excel_batch_replicates
 def DropComplete(x):
-    """Checks if [Cc]omplete is a substring of x.
 
-    Parameters
-    ----------
-    x : str
-
-    Returns
-    -------
-    bool
-        False if [Cc]omplete is a substring, otherwise True.
-
-    Examples
-    --------
-    >>> DropComplete("Complete")
-    False
-
-    >>> DropComplete("complete")
-    False
-
-    >>> DropComplete("Other")
-    True
-    """
 
     if "omplete" in x:
         return False
@@ -34,25 +13,7 @@ def DropComplete(x):
 
 # helper for batch_to_dataframe
 def initialize_excel_batch_replicates(b):
-    '''This function determines the unique polymers contained in an excel book, the number of replicates of those polymers,
-    and also returns an iterable of the sheet names without Complete in them.
 
-    Parameters
-    ----------
-    b : str
-        Path file to the Excel Batch file of interest.
-
-    Returns
-    -------
-    unique_polymers : list
-        List of unique polymer names contained in b.
-
-    unique_polymer_replicates : list
-        List of number of replicates for each unique polymer.
-
-    all_sheets_complete_removed : list
-        List of sheet names in b without Complete in them.
-    '''
     all_sheets_iterator = []
     all_data_sheets = []
     name_sheets = []
@@ -120,22 +81,7 @@ def clean_string(string):
     return string
 
 def grab_conc(polymer_name):
-    '''Extracts concentration from the polymer name string.
 
-    Parameters:
-    ----------
-    polymer_name: string
-        string that includes concentration as part of data entry
-
-    Returns:
-    --------
-    conc: int
-        int containing the substring of conentration (uM) of the experiment
-
-    Notes:
-    -----
-    In polymer name variable for data entry, need to ensure the concentration followed by uM is always the terminal substring.
-    '''
 
     polymer_name = polymer_name.split(' ', -1)[0] # remove the (#) replicate number from polymer name
     polymer_name = clean_string(polymer_name)
@@ -146,28 +92,7 @@ def grab_conc(polymer_name):
 
 # helper for batch_to_dataframe
 def wrangle_batch(b, name_sheets, replicate_index):
-    """This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.
 
-    Parameters
-    ----------
-    b : str
-        Path file to the Excel Batch file of interest.
-
-    name_sheets : list
-        List of sheet names in b without Complete in them.
-
-    replicate_index : list
-        List of integers representing the replicate index of the Excel sheets in name_sheets.
-
-    Returns
-    -------
-    list_of_clean_dfs : list
-        List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
-        Tuples are in a "key-value pair format", where the key (at index 0 of the tuple) is:
-        current_book_title, a string containing the title of the current excel input book
-        And the value (at index 1 of the tuple) is:
-        clean_df, the cleaned pandas dataframe corresponding to that book title!
-    """
     # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
     current_polymer_df_list = []
     list_of_clean_dfs = []
@@ -317,30 +242,7 @@ def wrangle_batch(b, name_sheets, replicate_index):
 
 # helper for book_to_dataframe
 def count_sheets(name_sheets):
-    """This function counts the number of sample and control datasheets from which data will be extracted for further processing.
 
-    Parameters
-    ----------
-    name_sheets : list
-        List of sheet names.
-
-    Returns
-    -------
-    num_samples : int
-        Number of sheets containing sample data.
-
-    num_controls : int
-        Number of sheets containing control data.
-
-    sample_control_initializer : list
-        List of Excel sheets containing all sample and control data.
-
-    sample_replicate_initializer : list
-        List of integers containing the replicate number of each sample sheet in sample_control_initializer.
-
-    control_replicate_initializer : list
-        List of integers containing the replicate number of each control sheet in sample_control_initializer.
-    """
     # initialize number of samples and controls to zero, then initialize the "list initializers" which will hold book-level data to eventually add to the book-level dataframe.
     num_samples = 0
     num_controls = 0
@@ -370,25 +272,7 @@ def count_sheets(name_sheets):
 
 # helper for add_attenuation_and_corr_attenuation_to_dataframe
 def attenuation_calc_equality_checker(df1, df2):
-    '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order
-    in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
-    'sat_time'.
 
-    Parameters
-    ----------
-    df1, df2 : Pandas.DataFrame
-        DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.
-
-    Returns
-    -------
-    bool
-        Returns True if the subset dataframes are equal, otherwise False.
-
-    Raises
-    ------
-    ValueError
-        If the passed dataframes do not have the same shape.
-    '''
 
     if (df1.shape == df2.shape):
 
@@ -426,25 +310,7 @@ def attenuation_calc_equality_checker(df1, df2):
 
 # helper for add_attenuation_and_corr_attenuation_to_dataframe
 def corrected_attenuation_calc_equality_checker(df1, df2, df3):
-    '''This functions checks to see if the three subset dataframes for calculating the corrected % attenuation
-    are equal and in the same order in terms of their shared fixed experimental parameters: 'replicate', 'concentration', and
-    'sat_time'
 
-    Parameters
-    ----------
-    df1, df2, df3 : Pandas.DataFrame
-        DataFrames involved in the corrected attenuation calculation.
-
-    Returns
-    -------
-    bool
-        Returns True if the subset dataframes are equal, otherwise False.
-
-    Raises
-    ------
-    ValueError
-        If the passed dataframes do not have the same shape.
-    '''
     #check if number of rows same in each df, number of columns not same as samples dfs contain attenuation data
     if (df1.shape[0] == df2.shape[0] == df3.shape[0]):
 
@@ -481,27 +347,6 @@ def corrected_attenuation_calc_equality_checker(df1, df2, df3):
 
 # helper for prep_mean_data_for_stats
 def get_dofs(peak_indices_array, df = pd.DataFrame([1, 2, 3])):
-    ''' This function calculates the number of degrees of freedom (i.e. number of experimental replicates minus one) for statistical calculations
-    using the "indices array" of a given experimenal set as input.
-
-    Input should be in the format: (in format: 11111 22222 3333 ... (specifically, it should be the proton_peak_index column from the "regrouped_df" above)
-    where the count of each repeated digit minus one represents the degrees of freedom for that peak (i.e. the number of replicates -1).
-    With zero based indexing, the function below generates the DOFs for the input array of proton_peak_index directly, in a format
-    that can be directly appended to the stats table.
-
-    Parameters
-    ----------
-    peak_indices_array : NumPy.array
-        NumPy array representing the proton_peak_index column from the "regrouped_df" from prep_mean_data_for_stats.
-
-    df: Pandas.DataFrame
-        contains the mean data, regrouped per concentration, sat time, proton peak ix, replicate, ppm
-
-    Returns
-    -------
-    dof_list : list
-        List containing the DOFs for peak_indices_array.
-    '''
 
     dof_list = []
     dof_count = 0
@@ -540,17 +385,7 @@ def get_dofs(peak_indices_array, df = pd.DataFrame([1, 2, 3])):
     return dof_list
 
 def get_dofs_one_peak(df):
-    '''Calculates the degrees of freedom for the edge case where there is only one peak.
 
-    Paramters:
-    ----------
-    df: Pandas.DataFrame
-        contains the mean data, regrouped per concentration, sat time, proton peak ix, replicate, ppm
-    Returns:
-    --------
-    dof_list: list
-        list to append to the dataframe with the degrees of freedom
-    '''
 
     replicates = df.index.get_level_values(3)
 
@@ -562,65 +397,10 @@ def get_dofs_one_peak(df):
 
     return dof_list
 
-#Function is never actually used
-'''
-def flatten_multicolumns(mean_df):
-'''
-'''Takes in a mean df and flattens the multi-tier column
-    index into a directly indexable index.'''
-'''
-    # clean up multi index for both
-    colnames = mean_df.columns.get_level_values(0).values
-    mean_df = mean_df.droplevel(1, axis=1)
-    colnames[4] = "corr_%_attenuation_mean"
-    colnames[5] = "corr_%_attenuation_std"
-    mean_df.columns = colnames
 
-    return mean_df
-
-'''
 # helper for execute_curvefit
 def y_hat_fit(t, a, b):
-    '''This function returns y_ikj_hat as the fit model based on alpha and beta.
 
-    Parameters
-    ----------
-    t : NumPy.array
-        NumPy array representing all the variable saturation times for each unique proton.
-
-    a : float
-        Least-squares curve fitting parameter, represents STDmax. the asymptomic maximum of the build-up curve.
-
-    b : float
-        Least-squares curve fitting parameter, represents -k_sat, the negative of the rate constant related to the relaxation
-        properties of a given proton.
-
-    Returns
-    -------
-    NumPy.array
-        NumPy array representing the output values of the fit model based on alpha and beta.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> t = np.array([0.25, 0.5, 0.75])
-    >>> a = 0.5
-    >>> b = 0.5
-    >>> y_hat_fit(t, a, b)
-    array([0.05875155, 0.11059961, 0.15635536])
-
-    >>> a = 0
-    >>> y_hat_fit(t, a, b)
-    array([0., 0., 0.])
-
-    Notes
-    -----
-
-    Some useful scipy example references for curve fitting:
-    1) https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html#scipy.optimize.least_squares
-    2) https://lmfit.github.io/lmfit-py/model.html
-    3) https://astrofrog.github.io/py4sci/_static/15.%20Fitting%20models%20to%20data.html
-    '''
     return a * (1 - np.exp(t * -b))
 
 # running doctest

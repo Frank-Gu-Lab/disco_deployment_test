@@ -23,22 +23,6 @@ idx = pd.IndexSlice
 # functions are ordered below in the order they are called in the disco-data-processing script
 
 def batch_to_dataframe(b):
-    '''This function converts and cleans excel books of type "Batch" (containing many polymers in one book) into dataframes for further analysis.
-
-    Parameters
-    ----------
-    b : str
-        The file path to the excel book of interest.
-
-    Returns
-    -------
-    list_of_clean_dfs : list
-        List of tuples, where each tuple contains ('polymer_name', CleanPolymerDataFrame)
-        Tuples are in a "key-value pair format", where the key (at index 0 of the tuple) is:
-        current_book_title, a string containing the title of the current excel input book
-        And the value (at index 1 of the tuple) is:
-        clean_df, the cleaned pandas dataframe corresponding to that book title!
-    '''
     # load excel book into Pandas
     current_book_title = os.path.basename(str(b))
 
@@ -65,19 +49,6 @@ def batch_to_dataframe(b):
     return list_of_clean_dfs
 
 def clean_the_batch_tuple_list(list_of_clean_dfs):
-    '''This function performs simple data cleaning operations on batch processed data such that further analysis can be performed equivalently
-    on inputs of batch or individual data formats.
-
-    Parameters
-    ----------
-    list_of_clean_dfs : list
-        List of dataframes to be cleaned.
-
-    Returns
-    -------
-    final_clean_polymer_df_list : list
-        List of clean polymer dataframes.
-    '''
 
     print("Beginning batch data cleaning.")
 
@@ -132,30 +103,6 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
 
 
 def add_attenuation(current_book):
-    ''' This function calculates the attenuation if the dataframe passes all checks
-    (based on the order of items) by means of simple arithmetic operations.
-
-    Parameters
-    ----------
-    current_book : Pandas.DataFrame
-        The dataframe output from the convert_excel_to_dataframe() function. (Or batch processing equivalent)
-
-    batch_or_book : str, {'book', 'batch'}
-        Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
-
-    Returns
-    -------
-    intensity_irrad_true : Pandas.DataFrame
-        An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.
-
-    intensity_irrad_false : Pandas.DataFrame
-        A dataframe containing the non-irradiated intensity datapoints.
-
-    Raises
-    ------
-    ValueError
-        If the subset dataframes ((corrected) true and false irrad dataframes) are not equal.
-    '''
 
     # to get % attenuation of peak integral, define true and false irrad dataframes below, can perform simple subtraction if passes check
 
@@ -181,28 +128,6 @@ def add_attenuation(current_book):
     return intensity_irrad_true, intensity_irrad_false
 
 def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false):
-    """This function calculates the corr_%_attenuation if the dataframe passes all checks
-    (based on the order of items) by means of simple arithmetic operations.
-
-    Parameters
-    ----------
-    intensity_irrad_true : Pandas.DataFrame
-        An updated dataframe that includes the attenuation columns, contains the irradiated intensity datapoints.
-
-    intensity_irrad_false : Pandas.DataFrame
-        A dataframe containing the non-irradiated intensity datapoints
-
-
-    Returns
-    -------
-    corr_p_attenuation_df : Pandas.DataFrame
-        An updated dataframe that includes the attenuation and corr_%_attenuation columns.
-
-    Raises
-    ------
-    ValueError
-        If the subset dataframes ((corrected) true and false irrad dataframes) are not equal.
-    """
     # Now check we are good to calculate the corrected % attenuation, and then calculate: ------------------------
 
     #subset the dataframe where irrad is true for samples only
@@ -238,26 +163,6 @@ def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false):
         raise ValueError("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
 
 def prep_mean(corr_p_attenuation_df):
-    '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
-    columns have been added.
-
-    Statisical analysis is performed on a "mean" basis, across many experimental replicates.
-    This code prepares the per-observation data accordingly, and outputs the mean_df_for_stats.
-
-    It drops the columns and rows not required for stats, calculates the mean and std of parameters we do
-    care about, and also appends the degrees of freedom and sample size.
-
-    Parameters
-    ----------
-    corr_p_attenuation_df : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
-        (output from add_attenuation_and_corr_attenuation_to_dataframe).
-
-    -------
-    mean_corr_attenuation_ppm : Pandas.DataFrame
-        Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of
-        interest are appended.
-    '''
 
     # if data came from a batch, ppm value is static and 1 less DoF, so perform adjusted operations
 
@@ -277,7 +182,7 @@ def prep_mean(corr_p_attenuation_df):
     peak_index_array = np.array(input_for_dofs)
 
     dofs = get_dofs(peak_index_array, regrouped_df)
-    
+
     # print(mean_corr_attenuation_ppm)
     # append a new column with the calculated degrees of freedom to the table for each proton peak index
     mean_corr_attenuation_ppm['dofs'] = dofs
@@ -286,28 +191,7 @@ def prep_mean(corr_p_attenuation_df):
     return mean_corr_attenuation_ppm
 
 def prep_replicate(corr_p_attenuation_df):
-    '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
-    columns have been added.
 
-    This code prepares the per-observation data accordingly, and outputs the replicate_df_for_stats.
-
-    It drops the columns and rows not required for stats, and adds the proton peak index.
-
-    Parameters
-    ----------
-    corr_p_attenuation_df : Pandas.DataFrame
-        Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
-        (output from add_attenuation_and_corr_attenuation_to_dataframe).
-
-    batch_or_book : str, {'book', 'batch'}
-        Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
-
-    Returns
-    -------
-    replicate_df_for_stats : Pandas.DataFrame
-        Modified dataframe, where columns not required for statistical modelling are dropped and the column for proton peak index
-        is appended.
-    '''
 
     # drop any rows that are entirely null from the dataframe
     corr_p_attenuation_df = corr_p_attenuation_df.dropna(how = "any")
@@ -317,36 +201,7 @@ def prep_replicate(corr_p_attenuation_df):
     return replicate_df_for_stats
 
 def t_test(mean_corr_attenuation_ppm, p=0.05):
-    ''' Tests to see if mean corr attenuation (DISCO effect) is statistically significantly different from zero
-        at a given peak and saturation time point. One sample, two-sided t-test.
 
-        Parameters
-        ----------
-        mean_corr_attenuation_ppm : Pandas.DataFrame
-            Modified dataframe that has been prepared for statistical modelling (output from prep_mean_data_for_stats).
-
-        p : float, default=0.05
-            Threshold for statistical significance
-
-        Returns
-        -------
-        mean_corr_attenuation_ppm : Pandas.DataFrame
-            The input dataframe, now with the t-test values and results appended.
-
-        Notes
-        -----
-        Book and batch paths are the same.
-
-        Theory:
-        ------
-        Two sided Null/Alt Hyp
-        --> H0: disco effect = 0 | H1: disco effect !=0
-
-        Rejection Criteria for Fixed-Level Test
-        --> |t0| > tcrit(alpha/2, n-1)
-        --> abs(mean) - x0 / std/(sqrt(n)) > tcrit | here x0 = 0
-        --> if abs(mean) - tcrit * (std/(sqrt(n))) > 0, reject null
-    '''
     # Initialize Relevant t test Parameters
     dof = mean_corr_attenuation_ppm['dofs']
     mean_t = mean_corr_attenuation_ppm['corr_%_attenuation']['mean'].abs()
@@ -365,37 +220,6 @@ def t_test(mean_corr_attenuation_ppm, p=0.05):
     return mean_corr_attenuation_ppm
 
 def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator):
-    '''This function computes an amplification factor for the mean stats df and the replicate stats df.
-    Each polymer may have a different denominator to consider for the amp factor calculation, so it
-    is passed into this function as a variable.
-
-    Parameters
-    ----------
-    current_mean_stats_df : Pandas.DataFrame
-        Modified dataframe with t-test values and results appended (output from get_t_test_results).
-
-    current_replicate_stats_df : Pandas.DataFrame
-        Modified dataframe from prep_replicate_data_for_stats.
-
-    af_denominator : int
-        The denominator for amp factor calculation.
-
-    Returns
-    -------
-    current_mean_stats_df : Pandas.DataFrame
-        The mean_stats_df dataframe with the amp factor column appended.
-
-    current_replicates_stats_df : Pandas.DataFrame
-        The replicates_stats_df dataframe with the amp factor column appended.
-
-    Notes
-    -----
-    For each concentration, compute the amplification factor AFconc = Cj/10.
-
-    Defaults to book path but will take batch path if 'batch' is passed.
-
-    Might need to do some further work with custom af_denominators
-    '''
 
     amp_factor_denominator = af_denominator
     amp_factor = np.array(current_mean_stats_df.index.get_level_values(0))/amp_factor_denominator
@@ -408,41 +232,6 @@ def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator
     return current_mean_stats_df, current_replicate_stats_df
 
 def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory):
-    '''This function identifies whether proton peaks pass or fail an acceptance criterion to allow
-    them to be further analyzed. If the peaks fail, they are dropped from further analysis.
-
-    Further consideration: If more than two proton peak datapoints are flagged as not significant in the mean dataframe
-    WITHIN a given concentration, the associated proton peak is removed from further analysis.
-
-    Parameters
-    ----------
-    current_df_mean : Pandas.DataFrame
-        Modifed dataframe from compute_amplification_factor.
-
-    current_df_replicates : Pandas.DataFrame
-        Modified dataframe from compute_amplification_factor.
-
-    current_df_title : str
-        Title of the dataframe of interest.
-
-    output_directory : str
-        File path to the output directory where the text file containing the dropped points is saved.
-
-    batch_or_book : str, {'book', 'batch'}
-        Default is book, but it will run the batch path if 'batch' is passed to function.
-
-    Returns
-    -------
-    current_df_mean_passed : Pandas.DataFrame
-        The current_df_mean dataframe with the insignificant proton peaks removed.
-
-    current_df_replicates_passed : Pandas.DataFrame
-        The current_df_replicates dataframe with the insignificant proton peaks removed.
-
-    Notes
-    -----
-    Function also saves a text file of which points have been dropped.
-    '''
 
     #initialize a df that will keep data from the current mean df that meet the criterion above
     significant_corr_attenuation = current_df_mean
@@ -527,53 +316,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
     return current_df_mean_passed, current_df_replicates_passed
 
 def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, output_directory3, current_df_title):
-    ''' We are now ready to calculate the nonlinear curve fit models (or "hat" models),
-    for both individual replicate data (via stats_df_replicates), and on a mean (or "bar") basis (via stats_df_mean).
 
-    This function carries out the curve fitting process for the current dataframe.
-    It calculates the nonlinear curve fit, then the SSE and AFo on a mean and replicate basis using only significant points.
-
-    Parameters
-    ----------
-    stats_df_mean, stats_df_replicates : Pandas.DataFrame
-        Fully pre-processed dataframes.
-
-    output_directory2 : str
-        File path to the output directory where the figures are saved.
-
-    output_directory3 : str
-        File path to the output directory where the final Excel files are saved.
-
-    current_df_title : str
-        Title of current dataframe.
-
-    batch_or_book : str, {'book', 'batch'}
-        Default is book, but it will run the batch path if 'batch' is passed to function.
-
-    Returns
-    -------
-    stats_df_mean : Pandas.DataFrame
-        The input stats_df_mean dataframe with results from curve fitting appended to table.
-
-    stats_df_replicates : Pandas.DataFrame
-        The input stats_df_replicates dataframe with results from curve fitting appended to table.
-
-    Notes
-    -----
-    Figures are displayed and saved as a file in custom directory. Dataframes are also saved to Excel files with final results.
-
-    Mean, average, and bar are used equivalently in this part of the code.
-
-    ikj sub-scripts are used in this script to keep track of the fixed experimental variables pertinent to this analysis.
-    For clarity:
-    i = NMR saturation time (sat_time) column
-    k = Sample proton peak index (proton_peak_index) column
-    j = Sample concentration (concentration) column
-
-    yikj = response model (Amp Factor x Corr % Attenuation) on a per replicate basis (not mean), fits with stats_df_replicates
-    yikj_bar = response model (Amp Factor x Corr % Attenuation) on an average basis, fits with stats_df_mean
-    yikj_hat = the fitted nonlinear model according to the levenburg marquadt minimization of least squares algorithm
-    '''
 
     # first assign yijk to the replicate dataframe
     stats_df_replicates['yikj'] = stats_df_replicates[['corr_%_attenuation']].values*(stats_df_replicates[['amp_factor']].values)
