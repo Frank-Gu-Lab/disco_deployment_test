@@ -434,3 +434,16 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
 
                 generate_curvefit_plot(sat_time, y_ikj, best_param_vals, mean_current_ppm, output_file_name_figsrep, c, r, mean_or_rep = 'rep')
+
+    #export tabulated results to file and return updated dataframes
+    output_file_name = "stats_analysis_output_replicate_{}.xlsx".format(current_df_title)
+
+    #export replicates final results table to a summary file in Excel
+    stats_df_replicates.to_excel(os.path.join(output_directory3, output_file_name))
+
+    #export mean final results table to a summary file in Excel
+    #if there are replicates, and mean data was created, export the final mean data to excel as well
+    if stats_df_mean.shape[0] != 0:
+
+        output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
+        stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
