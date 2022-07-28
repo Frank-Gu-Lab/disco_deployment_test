@@ -441,21 +441,19 @@ def etl_per_sat_time(source_path, destination_path):
     return summary_df
 
 def etl_per_proton(summary_df):
-    '''Subsets the full ETL to a smaller, per proton table.
-    '''
     proton_df = summary_df.drop(columns = ["AFo_bar", "SSE_bar", "yikj_bar", "alpha_bar", "beta_bar"]).copy()
     primary_key1 = ["polymer_name", "concentration", "proton_peak_index", "sat_time", "ppm"]
     mean_proton_df = proton_df.groupby(by = primary_key1).mean().reset_index()
     std_proton_df = proton_df.groupby(by = primary_key1).std().reset_index()
 
-    # pivot to move sat time into feature cols
+    # pivot mean data to move sat time into feature cols
     primary_key2 = ["polymer_name", "concentration", "proton_peak_index", "ppm"]
     sat_time_cols = mean_proton_df.pivot(index = primary_key2, columns = ["sat_time"], values = ["corr_%_attenuation"]).reset_index()
     sat_time_cols.columns = sat_time_cols.columns.map('{0[0]}{0[1]}'.format) # make one level from multi index
 
-    #pivot std data to get std dev of corr attenuation and rename to have std indicated in colnames
+    # pivot std data to get std dev of corr attenuation and rename to have std indicated in colnames
     sat_time_cols_std = std_proton_df.pivot(index = primary_key2, columns = ["sat_time"], values = ["corr_%_attenuation"]).reset_index()
-    sat_time_cols_std.columns = sat_time_cols_std.columns.map('{0[0]}{0[1]}'.format)
+    sat_time_cols_std.columns = sat_time_cols_std.columns.map('{0[0]}{0[1]}'.format) # make one level from multi index
     std_colnames = [str(col)+"_std" if "attenuation" in col else col for col in sat_time_cols_std.columns]
     sat_time_cols_std.columns = std_colnames
 
@@ -464,6 +462,7 @@ def etl_per_proton(summary_df):
 
     # merge into final df
     mean_binding_df = pd.merge(all_other_cols, sat_time_cols, on = primary_key2).drop_duplicates()
+    mean_binding_df = pd.merge(mean_binding_df, sat_time_cols_std, on = primary_key2).drop_duplicates()
 
     return mean_binding_df
 
