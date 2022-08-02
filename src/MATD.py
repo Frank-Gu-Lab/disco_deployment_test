@@ -514,36 +514,29 @@ if choice == "Plot data (Step 2)":
                                 list_of_replicates_for_diff = []
                                 for polymer in list_of_polymers_by_weight:
                                     for polymer2 in list_of_polymers_by_weight:
-                                        if polymer2[0] in polymer[0] and (NP_choice == False and polymer[1] != polymer2[1]) and polymer == grab_polymer_weight(poly_choice) and polymer2[1] == weight_choice and "NP" not in polymer2[0]:
+                                        if polymer2[0] in polymer[0] and ((NP_choice == False and polymer[1] != polymer2[1]) or (NP_choice == True and (("NP" not in polymer2[0]) or polymer[1] != polymer2[1]) )) and polymer == grab_polymer_weight(poly_choice) and polymer2[1] == weight_choice and "NP" not in polymer2[0]:
 
                                             st.info([polymer, polymer2])
 
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and ((NP_choice == False and "NP" not in tuple[1]) or (NP_choice == True and "NP" in tuple[1])):
-                                                        st.info(tuple[1])
                                                         temp[0] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
-                                                        st.info(tuple[1])
                                                         temp[1] = tuple
                                                 else:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and ((NP_choice == False and "NP" not in tuple[1]) or (NP_choice == True and "NP" in tuple[1])):
-                                                        st.info(tuple[1])
                                                         temp[1] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
-                                                        st.info(tuple[1])
                                                         temp[0] = tuple
                                             condition = 0
                                             for pair in list_of_replicates_for_diff:
                                                 if pair[0][1] != temp[0][1]:
                                                     condition = 1
                                             if condition == 0:
-                                                st.info(temp[0])
                                                 list_of_replicates_for_diff.append([temp[0], temp[1]])
 
                                 if len(list_of_replicates_for_diff) > 0:
-
-                                    st.info(list_of_replicates_for_diff[0][1][0])
 
                                     effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
                                     subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
