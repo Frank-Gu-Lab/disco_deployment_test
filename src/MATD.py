@@ -498,6 +498,7 @@ if choice == "Plot data (Step 2)":
                                     print(polymer[0])
                                     possible_weights.append(polymer[1])
                                 if (grab_polymer_weight(poly_choice)[0] in polymer[0] and "NP" in polymer[0] and polymer[1] not in possible_NP_weights and ((polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]) or (polymer[0] != grab_polymer_weight(poly_choice)[0]))):
+                                    print(polymer[0])
                                     possible_NP_weights.append(polymer[1])
 
                             weight_choice = st.radio("Please choose the molecular weight to compare with", possible_weights, key = 7)
@@ -508,18 +509,18 @@ if choice == "Plot data (Step 2)":
                                 list_of_replicates_for_diff = []
                                 for polymer in list_of_polymers_by_weight:
                                     for polymer2 in list_of_polymers_by_weight:
-                                        if polymer[0] == polymer2[0] and polymer[1] != polymer2[1] and polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and polymer2[1] == weight_choice:
+                                        if polymer2[0] in polymer[0] and polymer[1] != polymer2[1] and polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and polymer2[1] == weight_choice and "NP" not in polymer2[0]:
 
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
                                                         temp[0] = tuple
-                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
                                                         temp[1] = tuple
                                                 else:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
                                                         temp[1] = tuple
-                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
                                                         temp[0] = tuple
                                             condition = 0
                                             for pair in list_of_replicates_for_diff:
@@ -628,18 +629,18 @@ if choice == "Plot data (Step 2)":
                                 for polymer in list_of_polymers_by_weight:
                                     for polymer2 in list_of_NP:
                                         #print(polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and grab_polymer_weight(poly_choice)[0] in polymer2[0] and weight_np_choice == polymer2[1])
-                                        if polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and grab_polymer_weight(poly_choice)[0] in polymer2[0] and weight_np_choice == polymer2[1]:
+                                        if polymer == grab_polymer_weight(poly_choice) and grab_polymer_weight(poly_choice)[0] in polymer2[0] and weight_np_choice == polymer2[1] and "NP" in polymer2[0]:
 
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
                                                         temp[0] = tuple
-                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" in tuple[1]:
                                                         temp[1] = tuple
                                                 else:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
                                                         temp[1] = tuple
-                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                    if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" in tuple[1]:
                                                         temp[0] = tuple
                                             condition = 0
                                             for pair in list_of_np_replicates_for_diff:
