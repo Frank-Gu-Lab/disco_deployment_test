@@ -532,7 +532,7 @@ if choice == "Plot data (Step 2)":
                                                 if pair[0][1] != temp[0][1]:
                                                     condition = 1
                                             if condition == 0:
-                                                st.info([temp[0])
+                                                st.info(temp[0])
                                                 list_of_replicates_for_diff.append([temp[0], temp[1]])
 
                                 if len(list_of_replicates_for_diff) > 0:
