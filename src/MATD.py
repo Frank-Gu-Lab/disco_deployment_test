@@ -519,13 +519,17 @@ if choice == "Plot data (Step 2)":
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and (NP_choice == False and "NP" not in tuple[1]) and (NP_choice == True and "NP" in tuple[1]):
+                                                        st.info(tuple[1])
                                                         temp[0] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
+                                                        st.info(tuple[1])
                                                         temp[1] = tuple
                                                 else:
                                                     if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and (NP_choice == False and "NP" not in tuple[1]) and (NP_choice == True and "NP" in tuple[1]):
+                                                        st.info(tuple[1])
                                                         temp[1] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
+                                                        st.info(tuple[1])
                                                         temp[0] = tuple
                                             condition = 0
                                             for pair in list_of_replicates_for_diff:
@@ -537,7 +541,7 @@ if choice == "Plot data (Step 2)":
 
                                 if len(list_of_replicates_for_diff) > 0:
 
-                                    st.info(list_of_replicates_for_diff)
+                                    st.info(list_of_replicates_for_diff[0][0][0])
 
                                     effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
                                     subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
