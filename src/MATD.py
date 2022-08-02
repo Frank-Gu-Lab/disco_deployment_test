@@ -494,7 +494,7 @@ if choice == "Plot data (Step 2)":
                             possible_NP_weights = []
 
                             for polymer in list_of_polymers_by_weight:
-                                if (polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]):
+                                if ("NP" not in poly_choice and polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1] and "NP" not in polymer[0]) or ("NP" in poly_choice and polymer[0] in poly_choice and "NP" not in polymer[0]):
                                     print(polymer[0])
                                     possible_weights.append(polymer[1])
                                 if (grab_polymer_weight(poly_choice)[0] in polymer[0] and "NP" in polymer[0] and polymer[1] not in possible_NP_weights and ((polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]) or (polymer[0] != grab_polymer_weight(poly_choice)[0]))):
@@ -514,9 +514,7 @@ if choice == "Plot data (Step 2)":
                                 list_of_replicates_for_diff = []
                                 for polymer in list_of_polymers_by_weight:
                                     for polymer2 in list_of_polymers_by_weight:
-                                        if polymer2[0] in polymer[0] and ((NP_choice == False and polymer[1] != polymer2[1]) or (NP_choice == True and (("NP" not in polymer2[0]) or polymer[1] != polymer2[1]) )) and polymer == grab_polymer_weight(poly_choice) and polymer2[1] == weight_choice and "NP" not in polymer2[0]:
-
-                                            st.info([polymer, polymer2])
+                                        if polymer2[0] in polymer[0] and ((NP_choice == False and polymer[1] != polymer2[1]) or (NP_choice == True and (("NP" not in polymer2[0]) or polymer[1] != polymer2[1]))) and polymer == grab_polymer_weight(poly_choice) and polymer2[1] == weight_choice and "NP" not in polymer2[0]:
 
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
