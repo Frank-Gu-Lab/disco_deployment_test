@@ -787,7 +787,7 @@ if choice == "Plot data (Step 2)":
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
 
-        except AttributeError:
+        except NameError:
             st.warning("You do not have any datafiles to graph!")
-        except FileNotFoundError:
+        except NameError:
             st.warning("You do not have any datafiles to graph!")
