@@ -536,7 +536,7 @@ if choice == "Plot data (Step 2)":
 
                                 if len(list_of_replicates_for_diff) > 0:
 
-                                    print(list_of_replicates_for_diff)
+                                    st.info(list_of_replicates_for_diff)
 
                                     effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
                                     subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
