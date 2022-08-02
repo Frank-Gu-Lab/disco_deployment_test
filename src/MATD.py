@@ -501,6 +501,11 @@ if choice == "Plot data (Step 2)":
                                     print(polymer[0])
                                     possible_NP_weights.append(polymer[1])
 
+                            NP_choice = False
+
+                            if "NP" in poly_choice:
+                                NP_choice = True
+
                             weight_choice = st.radio("Please choose the molecular weight to compare with", possible_weights, key = 7)
 
                             if len(possible_weights) > 0:
@@ -513,12 +518,12 @@ if choice == "Plot data (Step 2)":
 
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
-                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and (NP_choice == False and "NP" not in tuple[1]) and (NP_choice == True and "NP" in tuple[1]):
                                                         temp[0] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
                                                         temp[1] = tuple
                                                 else:
-                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and (NP_choice == False and "NP" not in tuple[1]) and (NP_choice == True and "NP" in tuple[1]):
                                                         temp[1] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" not in tuple[1]:
                                                         temp[0] = tuple
@@ -633,12 +638,12 @@ if choice == "Plot data (Step 2)":
 
                                             for tuple in replicate_all_list:
                                                 if polymer[1] > polymer2[1]:
-                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and (NP_choice == False and "NP" not in tuple[1]) and (NP_choice == True and "NP" in tuple[1]):
                                                         temp[0] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" in tuple[1]:
                                                         temp[1] = tuple
                                                 else:
-                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                    if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1] and (NP_choice == False and "NP" not in tuple[1]) and (NP_choice == True and "NP" in tuple[1]):
                                                         temp[1] = tuple
                                                     if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1] and "NP" in tuple[1]:
                                                         temp[0] = tuple
