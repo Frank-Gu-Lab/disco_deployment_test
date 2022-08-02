@@ -544,19 +544,18 @@ if choice == "Plot data (Step 2)":
 
                                     add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
 
-                                    axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
-                                    axy.set_ylim(-3, 2.5)
+                                    axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 12)
                                     axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-                                    axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
-                                    axy.tick_params(axis = 'x', labelsize = 6)
-                                    axy.tick_params(axis = 'y', labelsize = 6)
+                                    axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 12)
+                                    axy.tick_params(axis = 'x', labelsize = 12)
+                                    axy.tick_params(axis = 'y', labelsize = 12)
                                     plt.title(list_of_replicates_for_diff[0][1][1] + " vs " + list_of_replicates_for_diff[0][0][1])
 
 
                                     output_filename_2 = f"{output_directory}/" + list_of_replicates_for_diff[0][1][1] + "_diff" + ".png"
                                     figure.patch.set_facecolor("white")
                                     plt.tight_layout(pad = 1)
-                                    figure.savefig(output_filename_2, dpi = 500, transparent = False)
+                                    figure.savefig(output_filename_2, dpi = 250, transparent = False)
 
                                     st.image(output_filename_2, use_column_width = True)
                                     i += 1
@@ -665,12 +664,11 @@ if choice == "Plot data (Step 2)":
 
                                     add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
 
-                                    axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
-                                    axy.set_ylim(-3, 2.5)
+                                    axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 12)
                                     axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-                                    axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
-                                    axy.tick_params(axis = 'x', labelsize = 6)
-                                    axy.tick_params(axis = 'y', labelsize = 6)
+                                    axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 12)
+                                    axy.tick_params(axis = 'x', labelsize = 12)
+                                    axy.tick_params(axis = 'y', labelsize = 12)
                                     plt.title(list_of_np_replicates_for_diff[0][1][1] + " vs " + list_of_np_replicates_for_diff[0][0][1])
 
 
