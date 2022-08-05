@@ -314,7 +314,7 @@ if choice == "Upload and analyze (Step 1)":
             with open(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"), "rb") as f:
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
-        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        myclient = pymongo.MongoClient("mongodb+srv://GuDataScience:WzAq@w2tW92CGYH@cluster0.urpc3lc.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
         mydb = myclient["mydatabase"]
 
