@@ -35,6 +35,7 @@ from streamlit import caching
 
 import random
 import string
+import pymongo
 
 from tempfile import TemporaryDirectory
 
@@ -312,6 +313,13 @@ if choice == "Upload and analyze (Step 1)":
         if i == 7:
             with open(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"), "rb") as f:
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
+
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+
+        mydb = myclient["mydatabase"]
+
+        print(myclient.list_database_names())
+
 
 
 if choice == "Plot data (Step 2)":
