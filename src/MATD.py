@@ -318,7 +318,7 @@ if choice == "Upload and analyze (Step 1)":
 
         client = pymongo.MongoClient("mongodb+srv://GuDataScience:WzAq%40w2tW92CGYH@cluster0.urpc3lc.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
         db = client.test
-        if db not None:
+        if db != None:
             st.success("Database created")
 
 
