@@ -316,7 +316,7 @@ if choice == "Upload and analyze (Step 1)":
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
 
-        client = pymongo.MongoClient("mongodb+srv://GuDataScience:WzAq%40w2tW92CGYH@cluster0.urpc3lc.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'), serverSelectionTimeoutMS=5000)
+        client = pymongo.MongoClient("mongodb+srv://GuDataScience:WzAq%40w2tW92CGYH@cluster0.urpc3lc.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
         db = client["proton_binding_database"]
 
