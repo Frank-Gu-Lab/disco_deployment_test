@@ -36,6 +36,7 @@ from streamlit import caching
 import random
 import string
 import pymongo
+from pymongo import ServerApi
 
 from tempfile import TemporaryDirectory
 
@@ -314,11 +315,10 @@ if choice == "Upload and analyze (Step 1)":
             with open(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"), "rb") as f:
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
 
-        myclient = pymongo.MongoClient("mongodb+srv://GuDataScience:WzAq@w2tW92CGYH@cluster0.urpc3lc.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
-        mydb = myclient["mydatabase"]
+        client = pymongo.MongoClient("mongodb+srv://GuDataScience:WzAq%40w2tW92CGYH@cluster0.urpc3lc.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
+        db = client.test
 
-        print(myclient.list_database_names())
 
 
 
