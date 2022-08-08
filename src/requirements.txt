@@ -6,4 +6,4 @@ SciencePlots #1.0.9
 openpyxl
 scikit-learn
 pingouin
-pymongo["srv"]
+pymongo[srv]
