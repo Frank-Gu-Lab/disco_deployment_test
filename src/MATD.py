@@ -36,7 +36,7 @@ from streamlit import caching
 import random
 import string
 import pymongo
-from pymongo import ServerApi
+from pymongo.server_api import ServerApi
 
 from tempfile import TemporaryDirectory
 
