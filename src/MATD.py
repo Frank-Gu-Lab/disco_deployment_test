@@ -320,7 +320,7 @@ if choice == "Upload and analyze (Step 1)":
 
         #db = client["proton_binding_database"]
 
-        #st.success(client.server_info())
+        st.success(client.server_info())
 
 
 
