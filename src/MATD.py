@@ -317,9 +317,11 @@ if choice == "Upload and analyze (Step 1)":
 
 
 
-        client = pymongo.MongoClient("mongodb+srv://GuDataScience:<password>@discojam.md7mbjs.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
-        db = client.test
+        client = pymongo.MongoClient("mongodb+srv://GuDataScience:ek6M0iSpctfSMd4R@discojam.md7mbjs.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
+        db = client["proton_binding_database"]
+
+        st.success(client.server_info())
 
 
 
