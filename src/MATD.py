@@ -293,6 +293,17 @@ if choice == "Upload and analyze (Step 1)":
 
             proton_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"))
 
+
+            if "client" not in st.session_state:
+                st.session_state["client"] = pymongo.MongoClient(**st.secrets["mongo"])
+
+            db = st.session_state["client"].MurderAtTheDisco
+            polymers = db.Polymers
+
+            polymers.insert_many(proton_summary_df.to_dict('records'))
+
+            
+
             del proton_summary_df
 
             with st.expander("Open to see Merged Binding Dataset"):
@@ -314,18 +325,6 @@ if choice == "Upload and analyze (Step 1)":
         if i == 7:
             with open(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"), "rb") as f:
                 st.download_button("Download Proton Binding Dataset (for ML)", f, file_name = "proton_binding_dataset" + ".xlsx")
-
-
-
-        if "client" not in st.session_state:
-            st.session_state["client"] = pymongo.MongoClient(**st.secrets["mongo"])
-
-        db = st.session_state["client"].MurderAtTheDisco
-        items = db.Polymers.find()
-        items = list(items)
-        st.success("See these items: " + items)
-
-
 
 
 if choice == "Plot data (Step 2)":
