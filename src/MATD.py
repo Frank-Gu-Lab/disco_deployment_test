@@ -317,11 +317,13 @@ if choice == "Upload and analyze (Step 1)":
 
 
 
-        #client = pymongo.MongoClient("mongodb+srv://GuDataScience:ek6M0iSpctfSMd4R@discojam.md7mbjs.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
+        if "client" not in st.session_state:
+            st.session_state["client"] = pymongo.MongoClient(**st.secrets["mongo"])
 
-        #db = client["proton_binding_database"]
-
-        #st.success(client.server_info())
+        db = client.MurderAtTheDisco
+        items = db.mycollection.find()
+        items = list(items)
+        st.success("See these items: " + items)
 
 
 
