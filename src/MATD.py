@@ -320,8 +320,8 @@ if choice == "Upload and analyze (Step 1)":
         if "client" not in st.session_state:
             st.session_state["client"] = pymongo.MongoClient(**st.secrets["mongo"])
 
-        db = client.MurderAtTheDisco
-        items = db.mycollection.find()
+        db = st.session_state["client"].MurderAtTheDisco
+        items = db.Polymers.find()
         items = list(items)
         st.success("See these items: " + items)
 
