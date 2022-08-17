@@ -302,8 +302,9 @@ if choice == "Upload and analyze (Step 1)":
                 polymers = db.Polymers
 
                 polymers.insert_many(proton_summary_df.to_dict('records'))
+
             except pymongo.errors.ServerSelectionTimeoutError:
-                continue
+                pass
 
 
             del proton_summary_df
