@@ -294,15 +294,17 @@ if choice == "Upload and analyze (Step 1)":
             proton_summary_df.to_excel(os.path.join(st.session_state["merged_output_directory"], "proton_binding_dataset.xlsx"))
 
 
-            if "client" not in st.session_state:
-                st.session_state["client"] = pymongo.MongoClient(**st.secrets["mongo"])
+            try:
+                if "client" not in st.session_state:
+                    st.session_state["client"] = pymongo.MongoClient(**st.secrets["mongo"])
 
-            db = st.session_state["client"].MurderAtTheDisco
-            polymers = db.Polymers
+                db = st.session_state["client"].MurderAtTheDisco
+                polymers = db.Polymers
 
-            polymers.insert_many(proton_summary_df.to_dict('records'))
+                polymers.insert_many(proton_summary_df.to_dict('records'))
+            except pymongo.errors.ServerSelectionTimeoutError:
+                continue
 
-            
 
             del proton_summary_df
 
