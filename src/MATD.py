@@ -336,7 +336,7 @@ if "time" in st.session_state:
 
                 i += 1
 
-            except FileNotFoundError:
+            except ValueError:
                 st.warning("No binding polymers detected.  Rerun with binding polymers for binding datasets")
                 i += 1
 
