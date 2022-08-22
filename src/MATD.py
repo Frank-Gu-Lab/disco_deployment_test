@@ -252,6 +252,21 @@ if "time" in st.session_state:
             st.image(os.path.abspath("src/aesthetic/table_exemplar.png"))
         st.markdown("With the range keyword indicating to the program a datatable to be processed.  Please note how the on and off resonance tables for each saturation time must be formatted exactly as in the photo for each saturation time.  Also note the control column and the protein column (in this case BSM)")
 
+        try:
+            try:
+                database_df = pd.read_pickle("proton_binding_dataset_db.pkl")
+                os.remove("proton_binding_dataset_db.pkl")
+            except FileNotFoundError:
+                database_df = pd.read_pickle(os.path.abspath("src/proton_binding_dataset_db.pkl"))
+                os.remove(os.path.abspath("src/proton_binding_dataset_db.pkl"))
+
+            with st.expander("Click to see database of polymer data"):
+                st.table(database_df)
+
+            del database_df
+        except FileNotFoundError:
+            st.warning("Polymer database is currently empty")
+
     if choice == "Upload and analyze (Step 1)":
         st.info("Please upload your data files to begin data processing!")
         list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
